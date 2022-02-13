@@ -1,5 +1,3 @@
-import Foundation
-
 extension BinaryInteger {
     public var binaryDescription: String {
         var binaryString = ""
