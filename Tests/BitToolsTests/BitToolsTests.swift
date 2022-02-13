@@ -23,11 +23,13 @@ final class BitToolsTests: XCTestCase {
     }
 
     func testBitIterator() {
-        var a: UInt16 = 0b101010
+        let a: UInt16 = 0b101010
 
-        for e in a.bitSequence() {
-            print(e)
-        }
+//        for e in a.bitSequence() {
+//            print(e)
+//        }
+
+        XCTAssert(a.bitSequence().elementsEqual([1,3,5]))
 
     }
 }
