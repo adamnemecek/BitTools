@@ -99,7 +99,9 @@ func nthbitset(_ value: UInt32, n: UInt) -> UInt {
     }
     return base
 }
+extension UInt16 : FixedWidthInteger {
 
+}
 
 public extension FixedWidthInteger {
     func containsBit(_ at: Self) -> Bool {
