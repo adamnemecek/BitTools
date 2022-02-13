@@ -22,7 +22,7 @@ extension BinaryInteger {
 extension BinaryInteger {
     public func truncate(to bits: Int) -> Self {
 //        print("truncate \(Self.self) to \(bitWidth)")
-        self & Self(1<<bits - 1)
+        self & Self(1 << bits - 1)
     }
 }
 
@@ -31,6 +31,7 @@ public extension FixedWidthInteger {
 //    let shift = n % $bits;
 //               let mask = self.mask().0;
 //               $name((mask << shift) | (mask >> ($bits - shift)))
+    @inline(__always)
     func rotateLeft(by shiftAmount: Int) -> Self {
         let shift = shiftAmount % Self.bitWidth
         if shift < 0 {
@@ -39,6 +40,7 @@ public extension FixedWidthInteger {
         return (self << shift) | (self >> (Self.bitWidth - shift))
     }
 
+    @inline(__always)
     func rotateRight(by shiftAmount: Int) -> Self {
         let shift = shiftAmount % Self.bitWidth
         if shift < 0 {
@@ -48,9 +50,9 @@ public extension FixedWidthInteger {
     }
 }
 
-extension UnsignedInteger {
-
-}
+//extension UnsignedInteger {
+//
+//}
 
 // unsigned int nth_bit_set(uint32_t value, unsigned int n)
 // {
@@ -76,38 +78,37 @@ extension UnsignedInteger {
 //    return base;
 // }
 // finds the nth bit set
-func nthbitset(_ value: UInt32, n: UInt) -> UInt {
-    var mask: UInt32 = 0x0000ffff
-    var size: UInt16 = 16
-    var base: UInt = 0
-    let n = n + 1
-
-    if n > value.nonzeroBitCount {
-        return 32
-    }
-
-    while size > 0 {
-        let count = value & mask
-        if n > count {
-            base += UInt(size)
-            size >>= 1
-            mask |= mask << size
-        } else {
-            size >>= 1
-            mask >>= size
-        }
-    }
-    return base
-}
-extension UInt16 : FixedWidthInteger {
-
-}
+//func nthbitset(_ value: UInt32, n: UInt) -> UInt {
+//    var mask: UInt32 = 0x0000ffff
+//    var size: UInt16 = 16
+//    var base: UInt = 0
+//    let n = n + 1
+//
+//    if n > value.nonzeroBitCount {
+//        return 32
+//    }
+//
+//    while size > 0 {
+//        let count = value & mask
+//        if n > count {
+//            base += UInt(size)
+//            size >>= 1
+//            mask |= mask << size
+//        } else {
+//            size >>= 1
+//            mask >>= size
+//        }
+//    }
+//    return base
+//}
 
 public extension FixedWidthInteger {
+    @inline(__always)
     func containsBit(_ at: Self) -> Bool {
         self & (1 << at) != 0
     }
 
+    @inline(__always)
     mutating func insertBit(_ newMember: Self) -> (inserted: Bool, memberAfterInsert: Self) {
         defer {
             self |= (1 << newMember)
@@ -116,6 +117,7 @@ public extension FixedWidthInteger {
 
     }
 
+    @inline(__always)
     mutating func removeBit(_ newMember: Self) -> Self? {
         defer {
             self &= ~(1 << newMember)
@@ -127,45 +129,14 @@ public extension FixedWidthInteger {
         }
     }
 
+    @inline(__always)
     func unionBits(_ other: Self) -> Self {
         self | other
     }
 
+    @inline(__always)
     func intersectBits(_ other: Self) -> Self {
         self & other
-    }
-}
-
-public struct BitIterator<T: FixedWidthInteger> {
-    var value: T
-
-    init(value: T) {
-        self.value = value
-    }
-}
-
-
-extension BitIterator : IteratorProtocol {
-    public typealias Element = Int
-
-    public mutating func next() -> Element? {
-        guard value.nonzeroBitCount != 0 else { return nil }
-        let trailing = self.value.trailingZeroBitCount
-
-        defer {
-            _ = self.value.removeBit(T(exactly: trailing)!)
-        }
-        return trailing
-    }
-}
-
-public struct BitSequence<T: FixedWidthInteger> {
-    var value: T
-}
-
-extension BitSequence : Sequence {
-    public func makeIterator() ->  BitIterator<T> {
-        BitIterator(value: self.value)
     }
 }
 
