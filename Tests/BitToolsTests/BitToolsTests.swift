@@ -34,16 +34,27 @@ final class BitToolsTests: XCTestCase {
     }
 
     func testBoolArrayIterator() {
-        var a = Array<Bool>(repeating: false, count: 128)
-        a[10] = true
-        a[20] = true
-        a[100] = true
-        a.withUnsafeBufferPointer {
-            var i = BitPtrIterator(ptr: $0)
-            while let idx = i.next() {
-                print(idx)
-            }
-        }
+//        var a = Array<Bool>(repeating: false, count: 128)
+//        a[10] = true
+//        a[20] = true
+//        a[125] = true
+//        a.withUnsafeBufferPointer {
+//            var i = BitPtrIterator(ptr: $0)
+//            while let idx = i.next() {
+//                print(idx)
+//            }
+//        }
+        var a = [false, false, false, false, false, false, false, false,
+                 true, false, false, false, false, false, false, false, ]
 
+        a.withUnsafeBufferPointer {
+            $0.baseAddress!.withMemoryRebound(to: UInt16.self, capacity: 1) {
+                print($0.pointee)
+            }
+//            var i = BitPtrIterator(ptr: $0)
+//            while let idx = i.next() {
+//                print(idx)
+//            }
+        }
     }
 }

@@ -37,24 +37,26 @@ extension UnsafeBufferPointer {
 }
 
 public struct BitPtrIterator {
-    var ptr: UnsafePointer<UInt64>
+    typealias Block = UInt8
+
+    var ptr: UnsafePointer<Block>
     let blockCapacity: Int
     var blockIndex: Int
-    var iterator: BitIterator<UInt64>
+    var iterator: BitIterator<Block>
 
     public init(ptr: UnsafeBufferPointer<Bool>) {
-        let elementByteSize = MemoryLayout<Bool>.size
-        let byteSize = ptr.count * elementByteSize
-        let blockSize = MemoryLayout<UInt64>.size
+//        let elementByteSize = MemoryLayout<Bool>.size
+        let byteSize = ptr.count //* elementByteSize
+        let blockSize = MemoryLayout<Block>.size * 8
         assert(byteSize % blockSize == 0)
         let blockCapacity = byteSize / blockSize
-        let ptr = ptr.baseAddress!.withMemoryRebound(to: UInt64.self, capacity: blockCapacity) { ptr in
+        let rawPtr = ptr.baseAddress!.withMemoryRebound(to: Block.self, capacity: blockCapacity) { ptr in
             ptr
         }
-        self.ptr = ptr
+        self.ptr = rawPtr
         self.blockCapacity = blockCapacity
         self.blockIndex = 0
-        self.iterator = BitIterator(value: ptr[0])
+        self.iterator = BitIterator(value: rawPtr[0])
     }
 }
 
