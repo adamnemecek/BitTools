@@ -32,4 +32,18 @@ final class BitToolsTests: XCTestCase {
         XCTAssert(a.bitSequence().elementsEqual([1,3,5]))
 
     }
+
+    func testBoolArrayIterator() {
+        var a = Array<Bool>(repeating: false, count: 128)
+        a[10] = true
+        a[20] = true
+        a[100] = true
+        a.withUnsafeBufferPointer {
+            var i = BitPtrIterator(ptr: $0)
+            while let idx = i.next() {
+                print(idx)
+            }
+        }
+
+    }
 }
