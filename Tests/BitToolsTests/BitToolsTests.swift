@@ -38,7 +38,7 @@ final class BitToolsTests: XCTestCase {
 //            print(e)
 //        }
 
-        XCTAssert(a.bitSequence().elementsEqual([1,3,5]))
+//        XCTAssert(a.bitSequence().elementsEqual([1,3,5]))
 
     }
 

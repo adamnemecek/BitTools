@@ -1,5 +1,5 @@
 import XCTest
-import Arena
+import BitTools
 
 class BitArrayTest: XCTestCase {
 

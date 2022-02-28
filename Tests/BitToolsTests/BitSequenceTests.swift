@@ -1,5 +1,5 @@
 import XCTest
-import Arena
+import BitTools
 
 func slowBitVector<T: FixedWidthInteger>(_ value: T) -> [T] {
     (0..<T(value.bitWidth)).filter { value.contains(bit: $0) }
