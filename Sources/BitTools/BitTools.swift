@@ -1,8 +1,10 @@
 public struct BitIterator<T: FixedWidthInteger> {
     var value: T
+    private var count: Int
 
     init(value: T) {
         self.value = value
+        self.count = value.nonzeroBitCount
     }
 }
 

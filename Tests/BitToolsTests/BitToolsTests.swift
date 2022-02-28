@@ -1,5 +1,14 @@
 import XCTest
 import BitTools
+import simd
+
+//struct A {
+//    let a: SIMD64<UInt64>
+//
+//    init() {
+//        a = SIMD64()
+//    }
+//}
 
 final class BitToolsTests: XCTestCase {
     func testExample() throws {
@@ -11,8 +20,8 @@ final class BitToolsTests: XCTestCase {
 
     func testBitRemove() {
         var a: UInt16 = 0b1010
-        XCTAssert(a.removeBit(2) == a)
-        XCTAssert(a.removeBit(1) == 8)
+//        XCTAssert(a.removeBit(2) == a)
+//        XCTAssert(a.removeBit(1) == 8)
     }
 
     func testTruncate() {
@@ -44,6 +53,7 @@ final class BitToolsTests: XCTestCase {
 //                print(idx)
 //            }
 //        }
+
         var a = [false, false, false, false, false, false, false, false,
                  true, false, false, false, false, false, false, false, ]
 
@@ -57,4 +67,15 @@ final class BitToolsTests: XCTestCase {
 //            }
         }
     }
+
+//    func testSimd() {
+//        // 512 bytes
+////        typealias T = SIMD64<UInt64>
+////        let size = MemoryLayout<T>.size
+////
+////        let z = T()
+////        let bits = z.trailingZeroBitCount
+////        print(bits)
+////        print(size)
+//    }
 }

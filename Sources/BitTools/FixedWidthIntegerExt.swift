@@ -106,25 +106,26 @@ public extension FixedWidthInteger {
         self & (1 << at) != 0
     }
 
+
     @inline(__always)
-    mutating func insertBit(_ newMember: Self) -> (inserted: Bool, memberAfterInsert: Self) {
-        defer {
-            self |= (1 << newMember)
-        }
-        return (!self.containsBit(newMember), newMember)
+    mutating func insertBit(_ newMember: Self) {
+//        defer {
+        self |= (1 << newMember)
+//        }
+//        return self.containsBit(newMember)
 
     }
 
     @inline(__always)
-    mutating func removeBit(_ newMember: Self) -> Self? {
-        defer {
-            self &= ~(1 << newMember)
-        }
-        if self.containsBit(newMember) {
-            return newMember
-        } else {
-            return nil
-        }
+    mutating func removeBit(_ newMember: Self) {
+//        defer {
+        self &= ~(1 << newMember)
+//        }
+//        if self.containsBit(newMember) {
+//            return newMember
+//        } else {
+//            return nil
+//        }
     }
 
     @inline(__always)
@@ -135,6 +136,10 @@ public extension FixedWidthInteger {
     @inline(__always)
     func intersectBits(_ other: Self) -> Self {
         self & other
+    }
+
+    func symmetricDifference(_ other: Self) -> Self {
+        self ^ other
     }
 }
 
