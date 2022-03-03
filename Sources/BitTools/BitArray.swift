@@ -2,6 +2,8 @@ public struct BitArray {
     public typealias Element = Int
     typealias Block = UInt64
 
+    typealias Container = ContiguousArray<UInt64>
+
     public private(set) var count: Int
     private var inner: ContiguousArray<UInt64>
 
@@ -26,24 +28,11 @@ public struct BitArray {
 // }
 
 extension BitArray: Sequence {
-
-//    public func makeIterator() -> AnyIterator<Int> {
-//        var currentBlock: UInt64 = 0
-//        var blockIndex = 0
-//        var count = 0
-//        return AnyIterator {
-//            while true {
-//                guard count < self.count else { return nil }
-//                while currentBlock.leadingZeroBitCount != 0 {
-//
-//                    count += 1
-//                }
-//            }
-//        }
-//    }
-
     public func makeIterator() -> AnyIterator<Int> {
-//        var i = self.inner.makeIterator()
+        guard !self.inner.isEmpty else { return AnyIterator { nil } }
+
+//        var blocks = self.inner.makeIterator()
+
         let nonzeroBitCount = self.count
         var bitCount = 0
 
@@ -190,6 +179,8 @@ extension BitArray: SetAlgebra {
         assert(capacity % Block.bitWidth == 0)
 
         var inner = ContiguousArray<UInt64>(repeating: 0, count: capacity)
+
+
 
 //        let startIndex = Swift.max(self.startIndex, other.startIndex)
 //        let endIndex = Swift.min(self.endIndex, other.endIndex)
