@@ -28,21 +28,60 @@ extension Comparable {
     }
 }
 
+
+//func subtract(Set<Element>)
+//Removes the elements of the given set from this set.
+//func subtract<S>(S)
+//Removes the elements of the given sequence from the set.
+//func subtracting(Set<Element>) -> Set<Element>
+//Returns a new set containing the elements of this set that do not occur in the given set.
+//func subtracting<S>(S) -> Set<Element>
+
 extension FixedWidthInteger {
     @inline(__always)
     public func contains(bit index: Self) -> Bool {
         (self & (1 << index)) != 0
     }
 
+    ///
+    /// insert
+    ///
     @inline(__always)
     public mutating func insert(bit index: Self) {
-        self |= (1 << index)
+        self = self.inserting(bit: index)
     }
 
     @inline(__always)
-    public mutating func remove(bit index: Self) {
-        self &= ~(1 << index)
+    public func inserting(bit index: Self) -> Self {
+        self | (1 << index)
     }
+
+    ///
+    /// remove
+    ///
+    @inline(__always)
+    public mutating func remove(bit index: Self) {
+        self = self.removing(bit: index)
+    }
+
+    @inline(__always)
+    public func removing(bit index: Self) -> Self {
+        self & ~(1 << index)
+    }
+
+    ///
+    /// subtracting (andnot)
+    ///
+    @inline(__always)
+    public func subtracting(bits other: Self) -> Self {
+        self & ~other
+    }
+
+    @inline(__always)
+    public mutating func subtract(bits other: Self) {
+        self = self.subtracting(bits: other)
+    }
+
 //
 //    @inline(__always)
 //    public func bit(after: Self) -> Self {

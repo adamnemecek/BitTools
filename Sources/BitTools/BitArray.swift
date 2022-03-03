@@ -221,7 +221,7 @@ extension BitArray: SetAlgebra {
 
         var count = 0
         for i in 0..<capacity {
-            let new = self.inner[i] ^ other.inner[i]
+            let new = self.inner[i] & other.inner[i]
             count += new.nonzeroBitCount
             self.inner[i] = new
         }

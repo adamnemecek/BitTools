@@ -17,6 +17,14 @@ class BitArrayTest: XCTestCase {
         }
     }
 
+    func testAndNot() {
+        let a = 0b101010
+        let b = 0b110000
+        let c = 0b001010
+
+        print((a & ~b) == c)
+    }
+
     func testUnion() {
         let aa = [1,1000,20, 200]
         let a = BitArray(aa)
