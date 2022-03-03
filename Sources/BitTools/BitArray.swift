@@ -144,7 +144,7 @@ extension BitArray: SetAlgebra {
         ) = self.capacity.extrema(other.capacity)
 
         var count = 0
-        var inner = ContiguousArray<UInt64>(bitCapacity: maxCapacity)
+        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
@@ -236,14 +236,60 @@ extension BitArray: SetAlgebra {
     public __consuming func symmetricDifference(
         _ other: __owned Self
     ) -> Self {
-        fatalError()
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.extrema(other.capacity)
+
+        var count = 0
+        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+
+        for i in 0..<minCapacity {
+            let new = self.inner[i] ^ other.inner[i]
+            count += new.nonzeroBitCount
+            inner[i] = new
+        }
+
+        let tail = self.inner[minCapacity...] ?? other.inner[minCapacity...]
+
+        for i in minCapacity..<maxCapacity {
+            let new = tail[i]
+            inner[i] = new
+            count += new.nonzeroBitCount
+        }
+
+        return Self(
+            inner: inner,
+            count: count
+        )
     }
 
     public mutating func formSymmetricDifference(
         _ other: __owned Self
     ) {
-//        self.reserveCapacity(other.capacity)
-        fatalError()
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.extrema(other.capacity)
+
+        self.reserveCapacity(other.capacity)
+
+        var count = 0
+        for i in 0..<minCapacity {
+            let new = self.inner[i] | other.inner[i]
+            count += new.nonzeroBitCount
+            self.inner[i] = new
+        }
+
+        let tail = other.inner[minCapacity...]
+
+        for i in minCapacity..<maxCapacity {
+            let new = tail[i]
+            self.inner[i] = new
+            count += new.nonzeroBitCount
+        }
+
+        self.count = count
     }
 
     public mutating func insert(
@@ -271,6 +317,7 @@ extension BitArray: SetAlgebra {
     public mutating func remove(
         _ member: Element
     ) -> Element? {
+        guard member < self.bitCapacity else { return nil }
         let ratio = self.ratio(for: member)
         let contains = self.inner[ratio]
         guard contains else { return nil }
@@ -292,22 +339,59 @@ extension BitArray: SetAlgebra {
     }
 
 
+    public mutating func subtract(_ other: Self) {
+//        let count = Swift.min(self.count, other.min)
+//        for index in count {
 
+//        }
 
+        fatalError()
+    }
+
+    public func subtracting(_ other: Self) -> Self {
+        fatalError()
+    }
 
 }
 
+extension BitArray {
+
+    public mutating func removeAll(
+        keepingCapacity keepCapacity: Bool = false
+    ) {
+        self.inner.zeroAll()
+    }
+
+    public mutating func removeAll(
+        where shouldBeRemoved: (Self.Element) throws -> Bool
+    ) rethrows {
+//        for i in self.capacity {
+//
+//        }
+        fatalError()
+    }
+}
+
 extension BitArray: Equatable {
+    ///
+    /// theoretically one bitset could be longer than the other and have only zeros in the tail
+    /// in which case the `BitArray`s are zero
+    ///
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs.count == rhs.count else { return false }
-        return lhs.inner == rhs.inner
+        let capacity = Swift.min(lhs.capacity, rhs.capacity)
+
+        if !lhs.inner[..<capacity].elementsEqual(rhs.inner[..<capacity]) {
+            return false
+        }
+        let tail = lhs.inner[capacity...] ?? rhs.inner[capacity...]
+        return tail.allZero()
     }
 }
 
 extension BitArray: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Element...) {
-        self.count = 0
-        self.inner = []
+        self.init()
 
         guard let max = elements.max() else { return }
         self.reserveCapacity(for: max)

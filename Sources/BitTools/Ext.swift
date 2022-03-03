@@ -20,6 +20,13 @@ extension Collection {
     }
 }
 
+extension Sequence where Element: FixedWidthInteger {
+    @inline(__always)
+    public func allZero() -> Bool {
+        self.allSatisfy { $0 == 0}
+    }
+}
+
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     public init(bitCapacity: Int) {
@@ -29,6 +36,12 @@ extension RangeReplaceableCollection where Element: FixedWidthInteger {
 
     public init(zeros count: Int) {
         self.init()
+        self.append(zeros: count)
+    }
+
+    public mutating func zeroAll() {
+        let count = self.count
+        self.removeAll(keepingCapacity: true)
         self.append(zeros: count)
     }
 
