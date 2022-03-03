@@ -365,10 +365,22 @@ extension BitArray {
     public mutating func removeAll(
         where shouldBeRemoved: (Self.Element) throws -> Bool
     ) rethrows {
-//        for i in self.capacity {
-//
-//        }
-        fatalError()
+
+        var i = (0..<self.inner.count).makeIterator()
+
+        var blockBitOffset = 0
+        var count = 0
+        let nonzeroBitCount = self.nonzeroBitCount
+
+        while let index = i.next(), count < nonzeroBitCount {
+            let current = self.inner[index]
+            count += current.nonzeroBitCount
+
+            self.inner[index] = try current.removingAll {
+                try shouldBeRemoved(blockBitOffset + Int($0))
+            }
+            blockBitOffset += Block.bitWidth
+        }
     }
 }
 
