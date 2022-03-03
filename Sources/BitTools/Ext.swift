@@ -33,8 +33,7 @@ extension RangeReplaceableCollection where Element: FixedWidthInteger {
     }
 
     public init(zeros count: Int) {
-        self.init()
-        self.append(zeros: count)
+        self.init(repeating: 0, count: count)
     }
 
     public mutating func zeroAll() {
