@@ -22,6 +22,9 @@ extension Collection {
     }
 }
 
+
+
+
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     init(bitCapacity: Int) {
         self.init()
@@ -48,22 +51,38 @@ extension Sequence where Element: FixedWidthInteger {
 //        return count
     }
 }
+//extension Collection where Index == Int, Element: FixedWidthInteger {
+//    func contains(bit index: Index) -> Bool {
+//        let (offset, bit) = index.divMod(Element.bitWidth)
+//        return self[offset].contains(bit: Element(bit))
+//    }
+// }
+//
+//extension MutableCollection where Index == Int, Element: FixedWidthInteger {
+//    mutating func insert(bit index: Index) {
+//        let (offset, bit) = index.divMod(Element.bitWidth)
+//        self[offset].insert(bit: Element(bit))
+//    }
+//
+//    mutating func remove(bit index: Index) {
+//        let (offset, bit) = index.divMod(Element.bitWidth)
+//        self[offset].remove(bit: Element(bit))
+//    }
+//}
 
-extension MutableCollection where Index == Int, Element == UInt64 {
+extension MutableCollection where Index == Int, Element: FixedWidthInteger {
     @inline(__always)
     public subscript(index: Ratio) -> Bool {
         get {
-            self[index.quot].contains(bit: UInt64(index.rem))
+            self[index.quot].contains(bit: Element(index.rem))
         }
         set {
             if newValue {
                 // insert
-//                self[index.quot] |= (1 << index.rem)
-                self[index.quot].insert(bit: UInt64(index.rem))
+                self[index.quot].insert(bit: Element(index.rem))
             } else {
                 // remove
-//                self[index.quot] &= ~(1 << index.rem)
-                self[index.quot].remove(bit: UInt64(index.rem))
+                self[index.quot].remove(bit: Element(index.rem))
             }
         }
     }

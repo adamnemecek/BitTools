@@ -1,16 +1,3 @@
-
-
-
-// extension Collection where Index == Int, Element == UInt64 {
-//    func contains(at index: Index) -> Bool {
-//        let (offset, bit) = index.divMod(Element.bitWidth)
-//        return self[offset].isBitSet(at: bit)
-//    }
-// }
-
-
-
-
 public struct BitArray {
     public typealias Element = Int
     typealias Block = UInt64
@@ -82,38 +69,10 @@ extension BitArray: Sequence {
         }
     }
 
-//    public func makeIterator1() -> AnyIterator<Int> {
-////        var i = self.inner.makeIterator()
-//        let nonzeroBitCount = self.count
-//        var count = 0
-////        let blockCount = self.inner.count
-////        var blockIndex = 0
-////        var bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
-//        var i = self.inner.enumerated().makeIterator()
-//        return AnyIterator {
-//            while count < nonzeroBitCount {
-//                if let next = bitIterator.next() {
-//                    count += 1
-//                    return blockIndex * Block.bitWidth + Int(next)
-//                } else {
-//                    guard blockIndex + 1 < blockCount else { return nil }
-//                    blockIndex += 1
-//                    bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
-//                }
-//            }
-//            return nil
-//        }
-//    }
-
     public var underestimatedCount: Int {
         self.count
     }
 }
-
-extension BitArray {
-
-}
-
 
 extension BitArray: SetAlgebra {
 
