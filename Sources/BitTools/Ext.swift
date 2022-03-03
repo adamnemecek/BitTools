@@ -48,3 +48,23 @@ extension Sequence where Element: FixedWidthInteger {
 //        return count
     }
 }
+
+extension MutableCollection where Index == Int, Element == UInt64 {
+    @inline(__always)
+    public subscript(index: Ratio) -> Bool {
+        get {
+            self[index.quot].contains(bit: UInt64(index.rem))
+        }
+        set {
+            if newValue {
+                // insert
+//                self[index.quot] |= (1 << index.rem)
+                self[index.quot].insert(bit: UInt64(index.rem))
+            } else {
+                // remove
+//                self[index.quot] &= ~(1 << index.rem)
+                self[index.quot].remove(bit: UInt64(index.rem))
+            }
+        }
+    }
+}

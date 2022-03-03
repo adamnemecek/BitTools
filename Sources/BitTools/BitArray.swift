@@ -10,25 +10,6 @@
 
 
 
-extension MutableCollection where Index == Int, Element == UInt64 {
-    @inline(__always)
-    public subscript(index: Ratio) -> Bool {
-        get {
-            self[index.quot].contains(bit: UInt64(index.rem))
-        }
-        set {
-            if newValue {
-                // insert
-//                self[index.quot] |= (1 << index.rem)
-                self[index.quot].insert(bit: UInt64(index.rem))
-            } else {
-                // remove
-//                self[index.quot] &= ~(1 << index.rem)
-                self[index.quot].remove(bit: UInt64(index.rem))
-            }
-        }
-    }
-}
 
 public struct BitArray {
     public typealias Element = Int
@@ -77,20 +58,25 @@ extension BitArray: Sequence {
     public func makeIterator() -> AnyIterator<Int> {
 //        var i = self.inner.makeIterator()
         let nonzeroBitCount = self.count
-        var count = 0
-        let blockCount = self.inner.count
+        var bitCount = 0
+
         var blockIndex = 0
+        let blockCount = self.inner.count
+
         var bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
+        var bitBlockOffset = 0
+
         return AnyIterator {
-            while count < nonzeroBitCount {
+            while bitCount < nonzeroBitCount {
                 if let next = bitIterator.next() {
-                    count += 1
-                    return blockIndex * Block.bitWidth + Int(next)
-                } else {
-                    guard blockIndex + 1 < blockCount else { return nil }
-                    blockIndex += 1
-                    bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
+                    bitCount += 1
+                    return bitBlockOffset + Int(next)
                 }
+
+                blockIndex += 1
+                guard blockIndex < blockCount else { return nil }
+                bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
+                bitBlockOffset += Block.bitWidth
             }
             return nil
         }
