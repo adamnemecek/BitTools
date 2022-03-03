@@ -26,14 +26,15 @@ extension Collection {
 
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
-    init(bitCapacity: Int) {
+    public init(bitCapacity: Int) {
         self.init()
         self.reserveBitCapacity(bitCapacity)
     }
 
     public mutating func reserveBitCapacity(_ bitCapacity: Int) {
-        assert(bitCapacity % Element.bitWidth == 0)
-        let minimumCapacity = bitCapacity / Element.bitWidth
+        let minimumCapacity = bitCapacity.blockCount(bitWidth: Element.bitWidth)
+//        assert(bitCapacity % Element.bitWidth == 0)
+//        let minimumCapacity = bitCapacity / Element.bitWidth
         let tail = minimumCapacity - self.count
         guard tail > 0 else { return }
         self.append(contentsOf: repeatElement(0, count: tail))

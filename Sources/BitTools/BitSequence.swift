@@ -33,7 +33,9 @@ public struct BitSequence<T: FixedWidthInteger> {
 }
 
 extension BitSequence: Sequence {
-    public func makeIterator() ->  BitIterator<T> {
-        BitIterator(self.value)
+    public typealias Iterator = BitIterator<T>
+
+    public func makeIterator() ->  Iterator {
+        Iterator(self.value)
     }
 }

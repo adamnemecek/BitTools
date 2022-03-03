@@ -20,7 +20,11 @@ class BitSequenceTests: XCTestCase {
         let s = BitSequence(a)
         XCTAssert(expected.elementsEqual(result))
         XCTAssert(expected.elementsEqual(s))
+    }
 
+    func testBitCapacity() {
+        let a = [Int](bitCapacity: 16)
+        print(a.count)
     }
 
     override func setUpWithError() throws {
