@@ -1,8 +1,11 @@
 public struct BitIterator<T: FixedWidthInteger> {
-    var value: T
+    private var value: T
+    private var remaining: Int
+
 
     public init(_ value: T) {
         self.value = value
+        self.remaining = value.nonzeroBitCount
     }
 }
 
@@ -10,10 +13,11 @@ extension BitIterator: IteratorProtocol {
     public typealias Element = Int
 
     public mutating func next() -> Element? {
-        guard value.nonzeroBitCount != 0 else { return nil }
+        guard self.remaining > 0 else { return nil }
         let trailing = self.value.trailingZeroBitCount
 
         defer {
+            self.remaining -= 1
             self.value.remove(bit: T(exactly: trailing)!)
         }
         return trailing

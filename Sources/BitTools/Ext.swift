@@ -14,7 +14,7 @@ extension Collection {
 //    }
 
     @inline(__always)
-    public static func ??(lhs: Self, rhs: Self) -> Self {
+    static func ??(lhs: Self, rhs: Self) -> Self {
         if lhs.isEmpty {
             return rhs
         }
