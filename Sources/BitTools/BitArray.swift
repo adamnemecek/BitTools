@@ -359,6 +359,7 @@ extension BitArray {
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
+        self.count = 0
         self.inner.zeroAll()
     }
 
@@ -371,16 +372,21 @@ extension BitArray {
         var blockBitOffset = 0
         var count = 0
         let nonzeroBitCount = self.nonzeroBitCount
+        var newCount = 0
 
         while let index = i.next(), count < nonzeroBitCount {
             let current = self.inner[index]
             count += current.nonzeroBitCount
 
-            self.inner[index] = try current.removingAll {
+            let new = try current.removingAll {
                 try shouldBeRemoved(blockBitOffset + Int($0))
             }
+
+            newCount += new.nonzeroBitCount
+            self.inner[index] = new
             blockBitOffset += Block.bitWidth
         }
+        self.count = newCount
     }
 }
 

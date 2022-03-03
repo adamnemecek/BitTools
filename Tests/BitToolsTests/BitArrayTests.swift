@@ -25,6 +25,17 @@ class BitArrayTest: XCTestCase {
         print((a & ~b) == c)
     }
 
+    func testRemoveAll() {
+        var a = BitArray((0..<100))
+        for e in a {
+            print(e)
+        }
+        a.removeAll { $0 % 2 == 0 }
+        for e in a {
+            print(e)
+        }
+    }
+
     func testUnion() {
         let aa = [1,1000,20, 200]
         let a = BitArray(aa)
