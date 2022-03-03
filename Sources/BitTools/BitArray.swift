@@ -399,11 +399,8 @@ extension BitArray: Equatable {
         guard lhs.count == rhs.count else { return false }
         let capacity = Swift.min(lhs.capacity, rhs.capacity)
 
-        if !lhs.inner[..<capacity].elementsEqual(rhs.inner[..<capacity]) {
-            return false
-        }
         let tail = lhs.inner[capacity...] ?? rhs.inner[capacity...]
-        return tail.allZero()
+        return tail.allZeros() || lhs.inner[..<capacity].elementsEqual(rhs.inner[..<capacity])
     }
 }
 

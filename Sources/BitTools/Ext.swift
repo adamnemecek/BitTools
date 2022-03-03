@@ -22,7 +22,7 @@ extension Collection {
 
 extension Sequence where Element: FixedWidthInteger {
     @inline(__always)
-    public func allZero() -> Bool {
+    public func allZeros() -> Bool {
         self.allSatisfy { $0 == 0}
     }
 }
