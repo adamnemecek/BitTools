@@ -340,12 +340,10 @@ extension BitArray: SetAlgebra {
 
 
     public mutating func subtract(_ other: Self) {
-//        let count = Swift.min(self.count, other.min)
-//        for index in count {
-
-//        }
-
-        fatalError()
+        let capacity = Swift.min(self.capacity, other.capacity)
+        for i in 0..<capacity {
+            self.inner[i].subtract(bits: other.inner[i])
+        }
     }
 
     public func subtracting(_ other: Self) -> Self {
@@ -364,7 +362,7 @@ extension BitArray {
     }
 
     public mutating func removeAll(
-        where shouldBeRemoved: (Self.Element) throws -> Bool
+        where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
 
         var i = (0..<self.inner.count).makeIterator()
