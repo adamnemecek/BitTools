@@ -2,8 +2,6 @@ public struct BitArray {
     public typealias Element = Int
     typealias Block = UInt64
 
-    typealias Container = ContiguousArray<UInt64>
-
     public private(set) var count: Int
     private var inner: ContiguousArray<UInt64>
 
@@ -44,7 +42,9 @@ extension BitArray: Sequence {
         return AnyIterator {
             while bitCount < nonzeroBitCount {
                 guard let next = bitIterator.next() else {
-                    guard let nextBlock = blocks.next() else { return nil }
+                    guard let nextBlock = blocks.next() else {
+                        return nil
+                    }
                     bitIterator = BitIterator(nextBlock)
                     bitBlockOffset += Block.bitWidth
                     continue
@@ -154,7 +154,8 @@ extension BitArray: SetAlgebra {
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ?? other.inner[minCapacity...]
+        let tail = self.inner[minCapacity...] ??
+                    other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {
             let new = tail[i]

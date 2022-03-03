@@ -64,6 +64,27 @@ class BitArrayTest: XCTestCase {
         print(a)
     }
 
+    func testIntersection() {
+        var a: BitArray = [1,2,3,4,5,6]
+        var b: BitArray = [2,3,4,5,6]
+
+        let expected: BitArray = [2,3,4,5,6]
+        let result = a.intersection(b)
+        print(expected)
+        print(result)
+        XCTAssert(result == expected)
+    }
+
+    func testFormIntersection() {
+        var result: BitArray = [1,2,3,4,5,6]
+        var b: BitArray = [2,3,4,5,6]
+
+        result.formIntersection(b)
+
+        let expected: BitArray = [2,3,4,5,6]
+        XCTAssert(result == expected)
+    }
+
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
