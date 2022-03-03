@@ -28,7 +28,6 @@ public struct BitArray {
 }
 
 extension BitArray: Sequence {
-
     public func makeIterator() -> AnyIterator<Int> {
         var blocks = self.inner.makeIterator()
         guard let fst = blocks.next() else { return AnyIterator { nil } }
@@ -42,10 +41,10 @@ extension BitArray: Sequence {
         return AnyIterator {
             while bitCount < nonzeroBitCount {
                 guard let next = bitIterator.next() else {
-                    guard let nextBlock = blocks.next() else {
+                    guard let block = blocks.next() else {
                         return nil
                     }
-                    bitIterator = BitIterator(nextBlock)
+                    bitIterator = BitIterator(block)
                     bitBlockOffset += Block.bitWidth
                     continue
                 }
@@ -90,7 +89,6 @@ extension BitArray: Sequence {
 }
 
 extension BitArray: SetAlgebra {
-
     public init() {
         self.count = 0
         self.inner = []
@@ -355,7 +353,6 @@ extension BitArray: SetAlgebra {
 }
 
 extension BitArray {
-
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
@@ -371,6 +368,7 @@ extension BitArray {
 
         var blockBitOffset = 0
         var count = 0
+
         let nonzeroBitCount = self.nonzeroBitCount
         var newCount = 0
 

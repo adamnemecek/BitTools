@@ -65,8 +65,8 @@ class BitArrayTest: XCTestCase {
     }
 
     func testIntersection() {
-        var a: BitArray = [1,2,3,4,5,6]
-        var b: BitArray = [2,3,4,5,6]
+        let a: BitArray = [1,2,3,4,5,6]
+        let b: BitArray = [2,3,4,5,6]
 
         let expected: BitArray = [2,3,4,5,6]
         let result = a.intersection(b)
