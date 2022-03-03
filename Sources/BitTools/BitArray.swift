@@ -1,34 +1,5 @@
 
-protocol DivMod {
-    func divMod(_ other: Self) -> (Self, Self)
-}
 
-extension RangeReplaceableCollection where Element: FixedWidthInteger {
-    init(bitCapacity: Int) {
-        assert(bitCapacity % Element.bitWidth == 0)
-        let blocks = bitCapacity / Element.bitWidth
-        self.init()
-        self.append(contentsOf: repeatElement(0, count: blocks))
-    }
-}
-
-public struct Ratio: Equatable {
-    let quot: Int
-    let rem: Int
-}
-
-extension Int {
-    public func ratio(_ other: Int) -> Ratio {
-        let (quot, rem) = self.divMod(other)
-        return Ratio(quot: quot, rem: rem)
-    }
-}
-
-extension Int: DivMod {
-    func divMod(_ other: Self) -> (Self, Self) {
-        self.quotientAndRemainder(dividingBy: other)
-    }
-}
 
 // extension Collection where Index == Int, Element == UInt64 {
 //    func contains(at index: Index) -> Bool {
@@ -37,17 +8,7 @@ extension Int: DivMod {
 //    }
 // }
 
-/// goes over blocks and sums the population
-extension Sequence where Element: FixedWidthInteger {
-    public var nonzeroBitCount: Int {
-        self.reduce(0) { $0 + $1.nonzeroBitCount }
-//        var count = 0
-//        for e in self {
-//            count += e.nonzeroBitCount
-//        }
-//        return count
-    }
-}
+
 
 extension MutableCollection where Index == Int, Element == UInt64 {
     @inline(__always)
@@ -167,28 +128,6 @@ extension BitArray {
 
 }
 
-extension Collection {
-
-//    var isSome: Bool {
-//        !self.isEmpty
-//    }
-
-//    @inline(__always)
-//    public func or(_ other: Self) -> Self {
-//        if self.isEmpty {
-//            return other
-//        }
-//        return self
-//    }
-
-    @inline(__always)
-    public static func ??(lhs: Self, rhs: Self) -> Self {
-        if lhs.isEmpty {
-            return rhs
-        }
-        return lhs
-    }
-}
 
 extension BitArray: SetAlgebra {
 
