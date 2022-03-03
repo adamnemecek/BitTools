@@ -28,36 +28,60 @@ public struct BitArray {
 // }
 
 extension BitArray: Sequence {
+
     public func makeIterator() -> AnyIterator<Int> {
-        guard !self.inner.isEmpty else { return AnyIterator { nil } }
+        var blocks = self.inner.makeIterator()
+        guard let fst = blocks.next() else { return AnyIterator { nil } }
 
-//        var blocks = self.inner.makeIterator()
-
-        let nonzeroBitCount = self.count
         var bitCount = 0
+        let nonzeroBitCount = self.count
 
-        var blockIndex = 0
-        let blockCount = self.inner.count
-
-        var bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
         var bitBlockOffset = 0
+        var bitIterator = BitIterator(fst)
 
         return AnyIterator {
             while bitCount < nonzeroBitCount {
-                if let next = bitIterator.next() {
-                    bitCount += 1
-                    return bitBlockOffset + Int(next)
+                guard let next = bitIterator.next() else {
+                    guard let nextBlock = blocks.next() else { return nil }
+                    bitIterator = BitIterator(nextBlock)
+                    bitBlockOffset += Block.bitWidth
+                    continue
                 }
-
-                blockIndex += 1
-                guard blockIndex < blockCount else { return nil }
-                bitIterator = BitSequence(self.inner[blockIndex]).makeIterator()
-                bitBlockOffset += Block.bitWidth
+                bitCount += 1
+                return bitBlockOffset + Int(next)
             }
             return nil
         }
     }
 
+//    public func makeIterator() -> AnyIterator<Int> {
+//           var blocks = self.inner.makeIterator()
+//
+//           guard let fst = blocks.next() else { return AnyIterator { nil } }
+//
+//           let nonzeroBitCount = self.count
+//           var bitCount = 0
+//
+//           var bitIterator = BitIterator(fst)
+//           var bitBlockOffset = 0
+//
+//           return AnyIterator {
+//               while bitCount < nonzeroBitCount {
+//                   if let next = bitIterator.next() {
+//                       bitCount += 1
+//                       return bitBlockOffset + Int(next)
+//                   }
+//
+//                   if let nextBlock = blocks.next() {
+//                       bitIterator = BitIterator(nextBlock)
+//                       bitBlockOffset += Block.bitWidth
+//                   } else {
+//                       return nil
+//                   }
+//               }
+//               return nil
+//           }
+//       }
     public var underestimatedCount: Int {
         self.count
     }
@@ -80,7 +104,7 @@ extension BitArray: SetAlgebra {
 
     public init(capacity: Int) {
         self.count = 0
-        self.inner = ContiguousArray(repeating: 0, count: capacity)
+        self.inner = ContiguousArray(zeros: count)
     }
 
     public init(bitCapacity: Int) {
@@ -99,7 +123,7 @@ extension BitArray: SetAlgebra {
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self.inner.count
         guard count > 0 else { return }
-        self.inner.append(contentsOf: repeatElement(0, count: count))
+        self.inner.append(zeros: count)
     }
 
     mutating func reserveCapacity(for value: Element) {
@@ -119,9 +143,9 @@ extension BitArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.extrema(other.capacity)
 
-        var inner = ContiguousArray<UInt64>(repeating: 0, count: maxCapacity)
-
         var count = 0
+        var inner = ContiguousArray<UInt64>(bitCapacity: maxCapacity)
+
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
             count += new.nonzeroBitCount
@@ -173,38 +197,36 @@ extension BitArray: SetAlgebra {
     public __consuming func intersection(
         _ other: Self
     ) -> Self {
-
-        let capacity = Swift.min(self.bitCapacity, other.bitCapacity)
-
-        assert(capacity % Block.bitWidth == 0)
-
-        var inner = ContiguousArray<UInt64>(repeating: 0, count: capacity)
-
-
-
-//        let startIndex = Swift.max(self.startIndex, other.startIndex)
-//        let endIndex = Swift.min(self.endIndex, other.endIndex)
+        let capacity = Swift.min(self.capacity, other.capacity)
 
         var count = 0
+        var inner = ContiguousArray<UInt64>(zeros: capacity)
+
         for i in 0..<capacity {
-            let new = self.inner[i] | other.inner[i]
+            let new = self.inner[i] & other.inner[i]
             count += new.nonzeroBitCount
             inner[i] = new
         }
 
-        if self.capacity < other.capacity {
+        return Self(
+            inner: inner,
+            count: count
+        )
+    }
 
-        } else {
+    public mutating func formIntersection(
+        _ other: Self
+    ) {
+        let capacity = Swift.min(self.capacity, other.capacity)
 
+        var count = 0
+        for i in 0..<capacity {
+            let new = self.inner[i] ^ other.inner[i]
+            count += new.nonzeroBitCount
+            self.inner[i] = new
         }
-        fatalError()
-//
-//        return Self(
-//            inner: inner
-////            count: count
-////            startIndex: startIndex
-////            endIndex: endIndex
-//        )
+
+        self.count = count
     }
 
     func ratio(for member: Int) -> Ratio {
@@ -214,6 +236,13 @@ extension BitArray: SetAlgebra {
     public __consuming func symmetricDifference(
         _ other: __owned Self
     ) -> Self {
+        fatalError()
+    }
+
+    public mutating func formSymmetricDifference(
+        _ other: __owned Self
+    ) {
+//        self.reserveCapacity(other.capacity)
         fatalError()
     }
 
@@ -264,19 +293,8 @@ extension BitArray: SetAlgebra {
 
 
 
-    public mutating func formIntersection(
-        _ other: Self
-    ) {
 
-        fatalError()
-    }
 
-    public mutating func formSymmetricDifference(
-        _ other: __owned Self
-    ) {
-//        self.reserveCapacity(other.capacity)
-        fatalError()
-    }
 }
 
 extension BitArray: Equatable {

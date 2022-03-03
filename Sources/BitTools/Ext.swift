@@ -20,10 +20,21 @@ extension Collection {
     }
 }
 
+
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     public init(bitCapacity: Int) {
         self.init()
         self.reserveBitCapacity(bitCapacity)
+    }
+
+    public init(zeros count: Int) {
+        self.init()
+        self.append(zeros: count)
+    }
+
+    @inline(__always)
+    public mutating func append(zeros count: Int) {
+        self.append(contentsOf: repeatElement(0, count: count))
     }
 
     public mutating func reserveBitCapacity(_ bitCapacity: Int) {
@@ -32,7 +43,7 @@ extension RangeReplaceableCollection where Element: FixedWidthInteger {
 //        let minimumCapacity = bitCapacity / Element.bitWidth
         let tail = minimumCapacity - self.count
         guard tail > 0 else { return }
-        self.append(contentsOf: repeatElement(0, count: tail))
+        self.append(zeros: tail)
     }
 }
 
