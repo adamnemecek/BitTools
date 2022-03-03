@@ -26,14 +26,11 @@ class BitArrayTest: XCTestCase {
     }
 
     func testRemoveAll() {
-        var a = BitArray((0..<100))
-        for e in a {
-            print(e)
-        }
-        a.removeAll { $0 % 2 == 0 }
-        for e in a {
-            print(e)
-        }
+        let expected = [1, 3, 5, 7, 9]
+        var result = BitArray((0..<10))
+        result.removeAll { $0 % 2 == 0 }
+        XCTAssert(result.count == 5)
+        XCTAssert(expected.elementsEqual(result))
     }
 
     func testUnion() {
@@ -56,8 +53,11 @@ class BitArrayTest: XCTestCase {
 
     func testFormUnion() {
 
-        var a: BitArray = [1,2,1000, 2000]
-        a.formUnion([1, 200, 3000, 40, 5000])
+        var a: BitArray = [1, 2, 10, 20]
+        print(a.capacity)
+        let b: BitArray = [1, 4, 6]
+        print(b.capacity)
+        a.formUnion(b)
 
 //        let expected = (a)
         print(a.count )

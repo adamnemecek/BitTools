@@ -11,7 +11,7 @@ public struct BitArray {
     /// capacity in blocks
     ///
     public var capacity: Int {
-        self.inner.capacity
+        self.inner.count
     }
 
     public var bitCapacity: Int {
@@ -120,7 +120,7 @@ extension BitArray: SetAlgebra {
     ///
     /// this is in blocks
     ///
-    public mutating func reserveCapacity(_ minimumCapacity: Int) {
+    mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self.inner.count
         guard count > 0 else { return }
         self.inner.append(zeros: count)
@@ -179,8 +179,8 @@ extension BitArray: SetAlgebra {
         var count = 0
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
-            count += new.nonzeroBitCount
             self.inner[i] = new
+            count += new.nonzeroBitCount
         }
 
         let tail = other.inner[minCapacity...]
