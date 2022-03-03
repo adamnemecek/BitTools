@@ -1,10 +1,8 @@
 
 extension Collection {
-
 //    var isSome: Bool {
 //        !self.isEmpty
 //    }
-
 //    @inline(__always)
 //    public func or(_ other: Self) -> Self {
 //        if self.isEmpty {
@@ -21,9 +19,6 @@ extension Collection {
         return lhs
     }
 }
-
-
-
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     public init(bitCapacity: Int) {
@@ -52,12 +47,13 @@ extension Sequence where Element: FixedWidthInteger {
 //        return count
     }
 }
-//extension Collection where Index == Int, Element: FixedWidthInteger {
-//    func contains(bit index: Index) -> Bool {
-//        let (offset, bit) = index.divMod(Element.bitWidth)
-//        return self[offset].contains(bit: Element(bit))
-//    }
-// }
+extension Collection where Index == Int, Element: FixedWidthInteger {
+    @inline(__always)
+    func contains(bit index: Index) -> Bool {
+        let (offset, bit) = index.divMod(Element.bitWidth)
+        return self[offset].contains(bit: Element(bit))
+    }
+ }
 //
 //extension MutableCollection where Index == Int, Element: FixedWidthInteger {
 //    mutating func insert(bit index: Index) {
@@ -73,8 +69,9 @@ extension Sequence where Element: FixedWidthInteger {
 
 extension MutableCollection where Index == Int, Element: FixedWidthInteger {
     @inline(__always)
-    public subscript(index: Ratio) -> Bool {
+    subscript(index: Ratio) -> Bool {
         get {
+            // contains
             self[index.quot].contains(bit: Element(index.rem))
         }
         set {
@@ -84,7 +81,17 @@ extension MutableCollection where Index == Int, Element: FixedWidthInteger {
             } else {
                 // remove
                 self[index.quot].remove(bit: Element(index.rem))
-            }
+                }
+        }
+    }
+
+    @inline(__always)
+    subscript(bit index: Int) -> Bool {
+        get {
+            self[index.ratio(Element.bitWidth)]
+        }
+        set {
+            self[index.ratio(Element.bitWidth)] = newValue
         }
     }
 }

@@ -313,3 +313,15 @@ extension BitArray: CustomStringConvertible {
         "BitArray(\(Array(self)))"
     }
 }
+
+extension BitArray {
+    @inline(__always)
+    public subscript(index: Int) -> Bool {
+        get {
+            self.inner[bit: index]
+        }
+        set {
+            self.inner[bit: index] = newValue
+        }
+    }
+}
