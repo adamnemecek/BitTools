@@ -1,4 +1,4 @@
-//public struct BitIterator<T: FixedWidthInteger> {
+// public struct BitIterator<T: FixedWidthInteger> {
 //    var value: T
 //    private var count: Int
 //
@@ -6,9 +6,9 @@
 //        self.value = value
 //        self.count = value.nonzeroBitCount
 //    }
-//}
+// }
 //
-//extension BitIterator : IteratorProtocol {
+// extension BitIterator : IteratorProtocol {
 //    public typealias Element = Int
 //
 //    public mutating func next() -> Element? {
@@ -20,25 +20,25 @@
 //        }
 //        return trailing
 //    }
-//}
+// }
 //
-//public struct BitSequence<T: FixedWidthInteger> {
+// public struct BitSequence<T: FixedWidthInteger> {
 //    var value: T
-//}
+// }
 //
-//extension BitSequence : Sequence {
+// extension BitSequence : Sequence {
 //    public func makeIterator() ->  BitIterator<T> {
 //        BitIterator(value: self.value)
 //    }
-//}
+// }
 //
-//extension UnsafeBufferPointer {
+// extension UnsafeBufferPointer {
 //    func withMemoryReboundToUInt64() -> UnsafeBufferPointer<UInt64> {
 //        fatalError()
 //    }
-//}
+// }
 //
-//public struct BitPtrIterator {
+// public struct BitPtrIterator {
 //    typealias Block = UInt8
 //
 //    var ptr: UnsafePointer<Block>
@@ -60,9 +60,9 @@
 //        self.blockIndex = 0
 //        self.iterator = BitIterator(value: rawPtr[0])
 //    }
-//}
+// }
 //
-//extension BitPtrIterator : IteratorProtocol {
+// extension BitPtrIterator : IteratorProtocol {
 //    public typealias Element = Int
 //
 //    mutating public func next() -> Element? {
@@ -76,5 +76,5 @@
 //            }
 //        }
 //    }
-//}
+// }
 //

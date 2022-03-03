@@ -1,4 +1,3 @@
-
 extension Collection {
 //    var isSome: Bool {
 //        !self.isEmpty
@@ -26,7 +25,6 @@ extension Sequence where Element: FixedWidthInteger {
         self.allSatisfy { $0 == 0}
     }
 }
-
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     public init(bitCapacity: Int) {
@@ -79,7 +77,7 @@ extension Collection where Index == Int, Element: FixedWidthInteger {
     }
  }
 //
-//extension MutableCollection where Index == Int, Element: FixedWidthInteger {
+// extension MutableCollection where Index == Int, Element: FixedWidthInteger {
 //    mutating func insert(bit index: Index) {
 //        let (offset, bit) = index.divMod(Element.bitWidth)
 //        self[offset].insert(bit: Element(bit))
@@ -89,7 +87,7 @@ extension Collection where Index == Int, Element: FixedWidthInteger {
 //        let (offset, bit) = index.divMod(Element.bitWidth)
 //        self[offset].remove(bit: Element(bit))
 //    }
-//}
+// }
 
 extension MutableCollection where Index == Int, Element: FixedWidthInteger {
     @inline(__always)

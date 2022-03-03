@@ -34,10 +34,10 @@ class BitArrayTest: XCTestCase {
     }
 
     func testUnion() {
-        let aa = [1,1000,20, 200]
+        let aa = [1, 1000, 20, 200]
         let a = BitArray(aa)
 
-        let bb = [2,2000,40, 400]
+        let bb = [2, 2000, 40, 400]
         let b = BitArray(bb)
 
         let c = BitArray(aa + bb)

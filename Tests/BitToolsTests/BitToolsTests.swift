@@ -2,13 +2,13 @@ import XCTest
 import BitTools
 import simd
 
-//struct A {
+// struct A {
 //    let a: SIMD64<UInt64>
 //
 //    init() {
 //        a = SIMD64()
 //    }
-//}
+// }
 
 final class BitToolsTests: XCTestCase {
     func testExample() throws {
@@ -55,7 +55,7 @@ final class BitToolsTests: XCTestCase {
 //        }
 
         var a = [false, false, false, false, false, false, false, false,
-                 true, false, false, false, false, false, false, false, ]
+                 true, false, false, false, false, false, false, false ]
 
         a.withUnsafeBufferPointer {
             $0.baseAddress!.withMemoryRebound(to: UInt16.self, capacity: 1) {

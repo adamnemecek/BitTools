@@ -18,14 +18,16 @@ public struct BitArray {
         self.capacity * Block.bitWidth
     }
 
+    @inline(__always)
     public var isEmpty: Bool {
         self.count == 0
     }
-}
 
-// extension BitVector: SetAlgebra {
-//
-// }
+    @inline(__always)
+    public var isSome: Bool {
+        !self.isEmpty
+    }
+}
 
 extension BitArray: Sequence {
 
@@ -337,7 +339,6 @@ extension BitArray: SetAlgebra {
 //        }
         fatalError()
     }
-
 
     public mutating func subtract(_ other: Self) {
         let capacity = Swift.min(self.capacity, other.capacity)

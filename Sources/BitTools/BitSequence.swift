@@ -2,7 +2,6 @@ public struct BitIterator<T: FixedWidthInteger> {
     private var value: T
     private var remaining: Int
 
-
     public init(_ value: T) {
         self.value = value
         self.remaining = value.nonzeroBitCount
@@ -35,7 +34,7 @@ public struct BitSequence<T: FixedWidthInteger> {
 extension BitSequence: Sequence {
     public typealias Iterator = BitIterator<T>
 
-    public func makeIterator() ->  Iterator {
+    public func makeIterator() -> Iterator {
         Iterator(self.value)
     }
 }

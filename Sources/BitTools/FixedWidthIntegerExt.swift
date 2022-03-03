@@ -17,7 +17,6 @@ extension BinaryInteger {
     }
 }
 
-
 extension Comparable {
     func extrema(_ other: Self) -> (lower: Self, higher: Self) {
         if self < other {
@@ -28,14 +27,13 @@ extension Comparable {
     }
 }
 
-
-//func subtract(Set<Element>)
-//Removes the elements of the given set from this set.
-//func subtract<S>(S)
-//Removes the elements of the given sequence from the set.
-//func subtracting(Set<Element>) -> Set<Element>
-//Returns a new set containing the elements of this set that do not occur in the given set.
-//func subtracting<S>(S) -> Set<Element>
+// func subtract(Set<Element>)
+// Removes the elements of the given set from this set.
+// func subtract<S>(S)
+// Removes the elements of the given sequence from the set.
+// func subtracting(Set<Element>) -> Set<Element>
+// Returns a new set containing the elements of this set that do not occur in the given set.
+// func subtracting<S>(S) -> Set<Element>
 
 extension FixedWidthInteger {
     @inline(__always)
@@ -81,7 +79,6 @@ extension FixedWidthInteger {
     public mutating func subtract(bits other: Self) {
         self = self.subtracting(bits: other)
     }
-
 
     mutating func removeAll(
         where shouldBeRemoved: (Self) throws -> Bool
@@ -130,7 +127,6 @@ extension FixedWidthInteger {
     }
 }
 
-
 extension BinaryInteger {
     public func truncate(to bits: Int) -> Self {
 //        print("truncate \(Self.self) to \(bitWidth)")
@@ -138,7 +134,7 @@ extension BinaryInteger {
     }
 }
 //
-//public extension FixedWidthInteger {
+// public extension FixedWidthInteger {
 //    // from https://stackoverflow.com/questions/67745231/how-do-i-perform-a-circular-shift-in-swift
 ////    let shift = n % $bits;
 ////               let mask = self.mask().0;
@@ -160,11 +156,11 @@ extension BinaryInteger {
 //        }
 //        return (self >> shift) | (self << (Self.bitWidth - shift))
 //    }
-//}
+// }
 //
-////extension UnsignedInteger {
+//// extension UnsignedInteger {
 ////
-////}
+//// }
 //
 //// unsigned int nth_bit_set(uint32_t value, unsigned int n)
 //// {
@@ -190,7 +186,7 @@ extension BinaryInteger {
 ////    return base;
 //// }
 //// finds the nth bit set
-////func nthbitset(_ value: UInt32, n: UInt) -> UInt {
+//// func nthbitset(_ value: UInt32, n: UInt) -> UInt {
 ////    var mask: UInt32 = 0x0000ffff
 ////    var size: UInt16 = 16
 ////    var base: UInt = 0
@@ -212,9 +208,9 @@ extension BinaryInteger {
 ////        }
 ////    }
 ////    return base
-////}
+//// }
 //
-//public extension FixedWidthInteger {
+// public extension FixedWidthInteger {
 //    @inline(__always)
 //    func containsBit(_ at: Self) -> Bool {
 //        self & (1 << at) != 0
@@ -255,16 +251,15 @@ extension BinaryInteger {
 //    func symmetricDifference(_ other: Self) -> Self {
 //        self ^ other
 //    }
-//}
+// }
 //
-//extension FixedWidthInteger {
+// extension FixedWidthInteger {
 //    public func bitSequence() -> BitSequence<Self> {
 //        BitSequence(value: self)
 //    }
-//}
+// }
 
-
-//extension RawGPUArray where Element == Bool {
+// extension RawGPUArray where Element == Bool {
 //    func iterSetBits() -> AnyIterator<Int> {
 //        let blockSize = MemoryLayout<UInt64>.size
 //        let byteSize = self.memAlign.byteSize
@@ -291,4 +286,4 @@ extension BinaryInteger {
 //
 //        }
 //    }
-//}
+// }

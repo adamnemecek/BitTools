@@ -5,16 +5,16 @@ func slowBitVector<T: FixedWidthInteger>(_ value: T) -> [T] {
     (0..<T(value.bitWidth)).filter { value.contains(bit: $0) }
 }
 
-//func slowBitReduce(_ a: [Int]) -> Int {
+// func slowBitReduce(_ a: [Int]) -> Int {
 //    a.reduce(0) { $0.insert(bit: <#T##Int#>)}
-//}
+// }
 
 class BitSequenceTests: XCTestCase {
 
     func testSlowBitVector() {
         let a = 0b10010010010
 
-        let expected = [1,4,7,10]
+        let expected = [1, 4, 7, 10]
         let result = slowBitVector(a)
 //        let s = BitSequence(a)
         let s = BitSequence(a)
