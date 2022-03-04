@@ -48,14 +48,15 @@ extension BoolArray: Sequence {
     public func makeIterator() -> AnyIterator<Element> {
         var seen = 0
         var i = self.inner.enumerated().makeIterator()
+
         return AnyIterator {
             while
                 let (idx, value) = i.next(),
-                seen < self.count,
-                value {
-
-                seen += 1
-                return idx
+                seen < self.count{
+                if value {
+                    seen += 1
+                    return idx
+                }
             }
             return nil
         }
@@ -97,6 +98,7 @@ extension BoolArray {
 }
 
 extension BoolArray: SetAlgebra {
+
     public func union(_ other: Self) -> Self {
         let (
             minCapacity,
