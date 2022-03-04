@@ -1,4 +1,3 @@
-
 struct BoolArray {
     public private(set) var count: Int
     var inner: ContiguousArray<Bool>
@@ -60,7 +59,7 @@ extension BoolArray {
     public mutating func removeAll(
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
-        for index in 0..<self.inner.count  {
+        for index in 0..<self.inner.count {
             if try self[index] && shouldBeRemoved(index) {
                 self.inner[index] = false
                 self.count -= 1
@@ -74,7 +73,6 @@ extension BoolArray {
         self.inner.append(false: count)
     }
 }
-
 
 extension BoolArray: SetAlgebra {
     public func union(_ other: Self) -> Self {
@@ -131,18 +129,21 @@ extension BoolArray: SetAlgebra {
     }
 
     public func intersection(_ other: Self) -> Self {
+
         fatalError()
     }
 
     public mutating func formIntersection(_ other: Self) {
         let capacity = Swift.min(self.capacity, other.capacity)
 
-        var count = 0
+        var newCount = 0
+        var oldCount = 0
         for i in 0..<capacity {
+            oldCount += Int(self[i])
             self[i] = self[i] && other[i]
-            count += Int(self[i])
+            newCount += Int(self[i])
         }
-        self.count = count
+        self.count += (newCount - oldCount)
     }
 
     public func symmetricDifference(_ other: Self) -> Self {
@@ -156,22 +157,33 @@ extension BoolArray: SetAlgebra {
     public mutating func insert(
         _ newMember: Int
     ) -> (inserted: Bool, memberAfterInsert: Int) {
-        defer {
+        let contains = self.inner[newMember]
+
+        if !contains {
+            self.count += 1
             self.inner[newMember] = true
         }
-        return (self.inner[newMember], newMember)
+        return (!contains, newMember)
     }
 
-    public func update(with newMember: Int) -> Int? {
-        fatalError()
+    public mutating func update(with newMember: Int) -> Int? {
+        if self.insert(newMember).inserted {
+            return newMember
+        } else {
+            return nil
+        }
     }
 
     public func contains(_ member: Int) -> Bool {
         self.inner[member]
     }
 
-    public func remove(_ member: Int) -> Int? {
-        fatalError()
+    public mutating func remove(_ member: Int) -> Int? {
+        let contains = self.inner[member]
+        if contains {
+            self.count -= 1
+            return member
+        }
+        return nil
     }
 }
-

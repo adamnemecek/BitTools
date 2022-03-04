@@ -65,10 +65,10 @@ class BitArrayTest: XCTestCase {
     }
 
     func testIntersection() {
-        let a: BitArray = [1,2,3,4,5,6]
-        let b: BitArray = [2,3,4,5,6]
+        let a: BitArray = [1, 2, 3, 4, 5, 6]
+        let b: BitArray = [2, 3, 4, 5, 6]
 
-        let expected: BitArray = [2,3,4,5,6]
+        let expected: BitArray = [2, 3, 4, 5, 6]
         let result = a.intersection(b)
         print(expected)
         print(result)
@@ -76,12 +76,12 @@ class BitArrayTest: XCTestCase {
     }
 
     func testFormIntersection() {
-        var result: BitArray = [1,2,3,4,5,6]
-        let b: BitArray = [2,3,4,5,6]
+        var result: BitArray = [1, 2, 3, 4, 5, 6]
+        let b: BitArray = [2, 3, 4, 5, 6]
 
         result.formIntersection(b)
 
-        let expected: BitArray = [2,3,4,5,6]
+        let expected: BitArray = [2, 3, 4, 5, 6]
         XCTAssert(result == expected)
     }
 }

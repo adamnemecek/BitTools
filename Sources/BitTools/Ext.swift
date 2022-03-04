@@ -19,6 +19,16 @@ extension Collection {
     }
 }
 
+extension Sequence where Element == Bool {
+    func countTrue() -> Int {
+        var count = 0
+        for e in self where e {
+            count += 1
+        }
+        return count
+    }
+}
+
 extension Sequence where Element: FixedWidthInteger {
     @inline(__always)
     public func allZeros() -> Bool {
