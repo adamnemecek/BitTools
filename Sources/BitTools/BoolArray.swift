@@ -170,13 +170,10 @@ extension BoolArray: SetAlgebra {
     public mutating func insert(
         _ newMember: Int
     ) -> (inserted: Bool, memberAfterInsert: Int) {
-        let contains = self.inner[newMember]
-
-        if !contains {
-            self.count += 1
-            self.inner[newMember] = true
-        }
-        return (!contains, newMember)
+        guard !self.contains(newMember) else { return (false, newMember) }
+        self.count += 1
+        self.inner[newMember] = true
+        return (true, newMember)
     }
 
     public mutating func update(with newMember: Int) -> Int? {
@@ -192,11 +189,9 @@ extension BoolArray: SetAlgebra {
     }
 
     public mutating func remove(_ member: Int) -> Int? {
-        let contains = self.inner[member]
-        if contains {
-            self.count -= 1
-            return member
-        }
-        return nil
+        guard self.contains(member) else { return nil }
+        self.count -= 1
+        self.inner[member] = false
+        return member
     }
 }
