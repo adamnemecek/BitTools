@@ -429,6 +429,14 @@ extension BitArray {
             self.inner[bit: index]
         }
         set {
+            switch (self.inner[bit: index], newValue) {
+            case (true, false):
+                count -= 1
+            case (false, true):
+                count += 1
+            default:
+                break
+            }
             self.inner[bit: index] = newValue
         }
     }
