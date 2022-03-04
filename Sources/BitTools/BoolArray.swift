@@ -129,8 +129,21 @@ extension BoolArray: SetAlgebra {
     }
 
     public func intersection(_ other: Self) -> Self {
+        let capacity = Swift.min(self.capacity, other.capacity)
 
-        fatalError()
+        var count = 0
+        var inner = ContiguousArray<Bool>(false: capacity)
+
+        for i in 0..<capacity {
+            let new = self.inner[i] && other.inner[i]
+            count += Int(new)
+            inner[i] = new
+        }
+
+        return Self(
+            count: count,
+            inner: inner
+        )
     }
 
     public mutating func formIntersection(_ other: Self) {
