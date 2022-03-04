@@ -2,13 +2,18 @@
 struct BitArray2 {
     public private(set) var count: Int
     var inner: ContiguousArray<Bool>
+
+    public init(count: Int, inner: ContiguousArray<Bool>) {
+        self.count = count
+        self.inner = inner
+    }
+
+    public init() {
+        self.init(count: 0, inner: [])
+    }
 }
 
 extension BitArray2 {
-    public init() {
-        self.count = 0
-        self.inner = []
-    }
 
     public var isEmpty: Bool {
         self.count != 0
@@ -16,6 +21,10 @@ extension BitArray2 {
 
     public var underestimatedCount: Int {
         self.count
+    }
+
+    public var capacity: Int {
+        self.inner.count
     }
 }
 
@@ -41,7 +50,7 @@ extension BitArray2: Sequence {
             self.inner[index]
         }
         set {
-            // update count
+            count += self.inner[index].diff(newValue)
             self.inner[index] = newValue
         }
     }
@@ -51,19 +60,48 @@ extension BitArray2 {
     public mutating func removeAll(
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
-        for index in 0..<self.inner.count {
-            if try shouldBeRemoved(index) {
-                self.inner[index] = false
-                self.count -= 1
-            }
+        for index in 0..<self.inner.count where try shouldBeRemoved(index) {
+//            if try shouldBeRemoved(index) {
+            self.inner[index] = false
+            self.count -= 1
+//            }
         }
+    }
+
+    mutating func reserveCapacity(_ minimumCapacity: Int) {
+        let count = minimumCapacity - self.inner.count
+        guard count > 0 else { return }
+        self.inner.append(false: count)
     }
 }
 
 
 extension BitArray2: SetAlgebra {
     public func union(_ other: Self) -> Self {
-        fatalError()
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.extrema(other.capacity)
+
+        var count = 0
+        var inner = ContiguousArray<Bool>(false: maxCapacity)
+
+        for i in 0..<minCapacity {
+            let new = self.inner[i] || other.inner[i]
+            count += Int(new)
+            inner[i] = new
+        }
+
+        let tail = self.inner[minCapacity...] ??
+                    other.inner[minCapacity...]
+
+        for i in minCapacity..<maxCapacity {
+            let new = tail[i]
+            inner[i] = new
+            count += Int(new)
+        }
+        return Self(count: count, inner: inner)
+
     }
 
     public mutating func formUnion(_ other: Self) {

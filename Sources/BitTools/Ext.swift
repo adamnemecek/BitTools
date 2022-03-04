@@ -26,6 +26,35 @@ extension Sequence where Element: FixedWidthInteger {
     }
 }
 
+extension Bool {
+    func diff(_ other: Bool) -> Int {
+        switch (self, other) {
+        case (true, false):
+            return -1
+        case (false, true):
+            return 1
+        default:
+            return 0
+        }
+    }
+}
+
+extension Int {
+    init(_ bool: Bool) {
+        self = bool ? 1 : 0
+    }
+}
+
+extension RangeReplaceableCollection where Element == Bool {
+    public init(false count: Int) {
+        self.init(repeating: false, count: count)
+    }
+
+    public mutating func append(false count: Int) {
+        self.append(contentsOf: repeatElement(false, count: count))
+    }
+}
+
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     public init(bitCapacity: Int) {
         self.init()

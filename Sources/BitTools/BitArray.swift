@@ -25,6 +25,19 @@ public struct BitArray {
     public var isSome: Bool {
         !self.isEmpty
     }
+
+    public init() {
+        self.count = 0
+        self.inner = []
+    }
+
+    init(
+        count: Int,
+        inner: ContiguousArray<UInt64>
+    ) {
+        self.count = count
+        self.inner = inner
+    }
 }
 
 extension BitArray: Sequence {
@@ -91,18 +104,6 @@ extension BitArray: Sequence {
 }
 
 extension BitArray: SetAlgebra {
-    public init() {
-        self.count = 0
-        self.inner = []
-    }
-
-    init(
-        inner: ContiguousArray<UInt64>,
-        count: Int
-    ) {
-        self.inner = inner
-        self.count = count
-    }
 
     public init(capacity: Int) {
         self.count = 0
@@ -164,8 +165,8 @@ extension BitArray: SetAlgebra {
         }
 
         return Self(
-            inner: inner,
-            count: count
+            count: count,
+            inner: inner
         )
     }
 
@@ -212,8 +213,8 @@ extension BitArray: SetAlgebra {
         }
 
         return Self(
-            inner: inner,
-            count: count
+            count: count,
+            inner: inner
         )
     }
 
@@ -262,8 +263,8 @@ extension BitArray: SetAlgebra {
         }
 
         return Self(
-            inner: inner,
-            count: count
+            count: count,
+            inner: inner
         )
     }
 
