@@ -71,6 +71,10 @@ extension BoolArray: Sequence {
 }
 
 extension BoolArray {
+    public mutating func removeAll() {
+        self.count = 0
+    }
+
     public mutating func removeAll(
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
@@ -175,11 +179,34 @@ extension BoolArray: SetAlgebra {
     }
 
     public func symmetricDifference(_ other: Self) -> Self {
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.extrema(other.capacity)
 
-        fatalError()
+        var count = 0
+        var inner = ContiguousArray<Bool>(false: maxCapacity)
+
+        for i in 0..<minCapacity {
+            let new = self.inner[i].xor(other.inner[i])
+            count += Int(new)
+            inner[i] = new
+        }
+
+        let tail = self.inner[minCapacity...] ??
+                    other.inner[minCapacity...]
+
+        for i in minCapacity..<maxCapacity {
+            let new = tail[i]
+            inner[i] = new
+            count += Int(new)
+        }
+        return Self(count: count, inner: inner)
     }
 
     public mutating func formSymmetricDifference(_ other: Self) {
+        let capacity = Swift.min(self.capacity, other.capacity)
+
         fatalError()
     }
 

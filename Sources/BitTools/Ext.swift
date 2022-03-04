@@ -37,6 +37,18 @@ extension Sequence where Element: FixedWidthInteger {
 }
 
 extension Bool {
+    public func xor(_ other: Self) -> Self {
+        self != other
+    }
+
+    // t, t => f
+    // t, f => t
+    // f, t => f
+    // f, f => f
+    public func nand(_ other: Self) -> Self {
+        fatalError()
+    }
+
     @inline(__always)
     func diff(_ other: Bool) -> Int {
         switch (self, other) {
@@ -63,6 +75,12 @@ extension RangeReplaceableCollection where Element == Bool {
 
     public mutating func append(false count: Int) {
         self.append(contentsOf: repeatElement(false, count: count))
+    }
+
+    public mutating func falseAll() {
+        let count = self.count
+        self.removeAll(keepingCapacity: true)
+        self.append(false: count)
     }
 }
 
