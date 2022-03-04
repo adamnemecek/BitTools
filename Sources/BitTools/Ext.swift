@@ -49,6 +49,9 @@ extension Bool {
         fatalError()
     }
 
+    ///
+    /// oldvalue, newvalue
+    ///
     @inline(__always)
     func diff(_ other: Bool) -> Int {
         switch (self, other) {
@@ -68,6 +71,14 @@ extension Int {
     }
 }
 
+extension MutableCollection where Element == Bool {
+    mutating func falseAll() {
+        for index in self.indices {
+            self[index] = false
+        }
+    }
+}
+
 extension RangeReplaceableCollection where Element == Bool {
     public init(false count: Int) {
         self.init(repeating: false, count: count)
@@ -77,11 +88,12 @@ extension RangeReplaceableCollection where Element == Bool {
         self.append(contentsOf: repeatElement(false, count: count))
     }
 
-    public mutating func falseAll() {
-        let count = self.count
-        self.removeAll(keepingCapacity: true)
-        self.append(false: count)
-    }
+
+//    public mutating func falseAll() {
+//        let count = self.count
+//        self.removeAll(keepingCapacity: true)
+//        self.append(false: count)
+//    }
 }
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {

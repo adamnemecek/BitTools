@@ -73,6 +73,7 @@ extension BoolArray: Sequence {
 extension BoolArray {
     public mutating func removeAll() {
         self.count = 0
+        self.inner.falseAll()
     }
 
     public mutating func removeAll(
@@ -168,14 +169,12 @@ extension BoolArray: SetAlgebra {
     public mutating func formIntersection(_ other: Self) {
         let capacity = Swift.min(self.capacity, other.capacity)
 
-        var newCount = 0
-        var oldCount = 0
         for i in 0..<capacity {
-            oldCount += Int(self[i])
-            self[i] = self[i] && other[i]
-            newCount += Int(self[i])
+            let oldValue = self[i]
+            let newValue = oldValue && other[i]
+            self[i] = newValue
+            self.count += newValue.diff(oldValue)
         }
-        self.count += (newCount - oldCount)
     }
 
     public func symmetricDifference(_ other: Self) -> Self {
@@ -206,6 +205,10 @@ extension BoolArray: SetAlgebra {
 
     public mutating func formSymmetricDifference(_ other: Self) {
         let capacity = Swift.min(self.capacity, other.capacity)
+
+        for i in 0..<capacity {
+            self.inner[i] = self.inner[i].xor(other.inner[i])
+        }
 
         fatalError()
     }
