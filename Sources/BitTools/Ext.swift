@@ -88,7 +88,6 @@ extension RangeReplaceableCollection where Element == Bool {
         self.append(contentsOf: repeatElement(false, count: count))
     }
 
-
 //    public mutating func falseAll() {
 //        let count = self.count
 //        self.removeAll(keepingCapacity: true)

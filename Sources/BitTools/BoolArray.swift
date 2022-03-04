@@ -13,7 +13,7 @@ public struct BoolArray {
 
     public init<S>(
         _ sequence: __owned S
-    ) where S : Sequence, Int == S.Element {
+    ) where S: Sequence, Int == S.Element {
         self.init()
         guard let max = sequence.max() else { return }
         self.reserveCapacity(max + 1)
@@ -49,11 +49,13 @@ extension BoolArray: Sequence {
         var seen = 0
         var i = self.inner.enumerated().makeIterator()
         return AnyIterator {
-            while let (idx, value) = i.next(), seen < self.count {
-                if value {
-                    seen += 1
-                    return idx
-                }
+            while
+                let (idx, value) = i.next(),
+                seen < self.count,
+                value {
+
+                seen += 1
+                return idx
             }
             return nil
         }
@@ -132,9 +134,11 @@ extension BoolArray: SetAlgebra {
 
         var count = 0
         for i in 0..<minCapacity {
-            let new = self.inner[i] || other.inner[i]
-            self.inner[i] = new
-            count += Int(new)
+            let oldValue = self.inner[i]
+            let newValue = self.inner[i] || other.inner[i]
+
+            self.inner[i] = newValue
+            count += oldValue.diff(newValue)
         }
 
         let tail = other.inner[minCapacity...]
@@ -145,7 +149,7 @@ extension BoolArray: SetAlgebra {
             count += Int(new)
         }
 
-        self.count = count
+        self.count += count
     }
 
     public func intersection(_ other: Self) -> Self {
@@ -249,8 +253,6 @@ extension BoolArray: SetAlgebra {
         fatalError()
     }
 }
-
-
 
 extension BoolArray: CustomStringConvertible {
     public var description: String {
