@@ -37,6 +37,7 @@ extension Sequence where Element: FixedWidthInteger {
 }
 
 extension Bool {
+    @inline(__always)
     func diff(_ other: Bool) -> Int {
         switch (self, other) {
         case (true, false):

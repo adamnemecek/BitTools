@@ -160,6 +160,7 @@ extension BoolArray: SetAlgebra {
     }
 
     public func symmetricDifference(_ other: Self) -> Self {
+
         fatalError()
     }
 
@@ -193,5 +194,23 @@ extension BoolArray: SetAlgebra {
         self.count -= 1
         self.inner[member] = false
         return member
+    }
+}
+
+extension BoolArray: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Int...) {
+        self.init()
+
+        guard let max = elements.max() else { return }
+        self.reserveCapacity(max + 1)
+        elements.forEach {
+            _ = self.insert($0)
+        }
+    }
+}
+
+extension BoolArray: CustomStringConvertible {
+    public var description: String {
+        "BoolArray(\(Array(self)))"
     }
 }

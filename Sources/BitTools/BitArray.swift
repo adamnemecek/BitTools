@@ -405,15 +405,21 @@ extension BitArray: Equatable {
     }
 }
 
-extension BitArray: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: Element...) {
+extension BitArray {
+    public init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
         self.init()
 
-        guard let max = elements.max() else { return }
+        guard let max = sequence.max() else { return }
         self.reserveCapacity(for: max)
-        elements.forEach {
+        sequence.forEach {
             _ = self.insert($0)
         }
+    }
+}
+
+extension BitArray: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Element...) {
+        self.init(elements)
     }
 }
 
