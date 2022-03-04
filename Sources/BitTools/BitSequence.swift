@@ -11,6 +11,7 @@ public struct BitIterator<T: FixedWidthInteger> {
 extension BitIterator: IteratorProtocol {
     public typealias Element = Int
 
+    @inline(__always)
     public mutating func next() -> Element? {
         guard self.remaining > 0 else { return nil }
         let trailing = self.value.trailingZeroBitCount

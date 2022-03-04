@@ -28,6 +28,8 @@ public struct BitArray {
 }
 
 extension BitArray: Sequence {
+
+    @inline(__always)
     public func makeIterator() -> AnyIterator<Int> {
         var blocks = self.inner.makeIterator()
         guard let fst = blocks.next() else { return AnyIterator { nil } }
