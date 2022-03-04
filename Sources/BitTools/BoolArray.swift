@@ -60,11 +60,11 @@ extension BitArray2 {
     public mutating func removeAll(
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
-        for index in 0..<self.inner.count where try shouldBeRemoved(index) {
-//            if try shouldBeRemoved(index) {
-            self.inner[index] = false
-            self.count -= 1
-//            }
+        for index in 0..<self.inner.count  {
+            if try self[index] && shouldBeRemoved(index) {
+                self.inner[index] = false
+                self.count -= 1
+            }
         }
     }
 
@@ -105,7 +105,29 @@ extension BitArray2: SetAlgebra {
     }
 
     public mutating func formUnion(_ other: Self) {
-        fatalError()
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.extrema(other.capacity)
+
+        self.reserveCapacity(other.capacity)
+
+        var count = 0
+        for i in 0..<minCapacity {
+            let new = self.inner[i] || other.inner[i]
+            self.inner[i] = new
+            count += Int(new)
+        }
+
+        let tail = other.inner[minCapacity...]
+
+        for i in minCapacity..<maxCapacity {
+            let new = tail[i]
+            self.inner[i] = new
+            count += Int(new)
+        }
+
+        self.count = count
     }
 
     public func intersection(_ other: Self) -> Self {
@@ -113,7 +135,14 @@ extension BitArray2: SetAlgebra {
     }
 
     public mutating func formIntersection(_ other: Self) {
-        fatalError()
+        let capacity = Swift.min(self.capacity, other.capacity)
+
+        var count = 0
+        for i in 0..<capacity {
+            self[i] = self[i] && other[i]
+            count += Int(self[i])
+        }
+        self.count = count
     }
 
     public func symmetricDifference(_ other: Self) -> Self {
@@ -124,7 +153,9 @@ extension BitArray2: SetAlgebra {
         fatalError()
     }
 
-    public mutating func insert(_ newMember: Int) -> (inserted: Bool, memberAfterInsert: Int) {
+    public mutating func insert(
+        _ newMember: Int
+    ) -> (inserted: Bool, memberAfterInsert: Int) {
         defer {
             self.inner[newMember] = true
         }
