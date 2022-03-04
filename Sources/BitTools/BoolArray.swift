@@ -1,4 +1,4 @@
-struct BoolArray {
+public struct BoolArray {
     public private(set) var count: Int
     var inner: ContiguousArray<Bool>
 
@@ -9,6 +9,21 @@ struct BoolArray {
 
     public init() {
         self.init(count: 0, inner: [])
+    }
+
+    public init<S>(
+        _ sequence: __owned S
+    ) where S : Sequence, Int == S.Element {
+        self.init()
+        guard let max = sequence.max() else { return }
+        self.reserveCapacity(max + 1)
+        sequence.forEach {
+            _ = self.insert($0)
+        }
+    }
+
+    public init(arrayLiteral elements: Int...) {
+        self.init(elements)
     }
 }
 
@@ -44,7 +59,7 @@ extension BoolArray: Sequence {
         }
     }
 
-    subscript(index: Int) -> Bool {
+    public subscript(index: Int) -> Bool {
         get {
             self.inner[index]
         }
@@ -67,7 +82,7 @@ extension BoolArray {
         }
     }
 
-    mutating func reserveCapacity(_ minimumCapacity: Int) {
+    public mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self.inner.count
         guard count > 0 else { return }
         self.inner.append(false: count)
@@ -195,19 +210,17 @@ extension BoolArray: SetAlgebra {
         self.inner[member] = false
         return member
     }
-}
 
-extension BoolArray: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: Int...) {
-        self.init()
+    public mutating func subtract(_ other: Self) {
+        fatalError()
+    }
 
-        guard let max = elements.max() else { return }
-        self.reserveCapacity(max + 1)
-        elements.forEach {
-            _ = self.insert($0)
-        }
+    public func subtracting(_ other: Self) -> Self {
+        fatalError()
     }
 }
+
+
 
 extension BoolArray: CustomStringConvertible {
     public var description: String {
