@@ -1,5 +1,5 @@
 
-struct BitArray2 {
+struct BoolArray {
     public private(set) var count: Int
     var inner: ContiguousArray<Bool>
 
@@ -13,7 +13,7 @@ struct BitArray2 {
     }
 }
 
-extension BitArray2 {
+extension BoolArray {
 
     public var isEmpty: Bool {
         self.count != 0
@@ -28,7 +28,7 @@ extension BitArray2 {
     }
 }
 
-extension BitArray2: Sequence {
+extension BoolArray: Sequence {
     public typealias Element = Int
 
     public func makeIterator() -> AnyIterator<Element> {
@@ -56,7 +56,7 @@ extension BitArray2: Sequence {
     }
 }
 
-extension BitArray2 {
+extension BoolArray {
     public mutating func removeAll(
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
@@ -76,7 +76,7 @@ extension BitArray2 {
 }
 
 
-extension BitArray2: SetAlgebra {
+extension BoolArray: SetAlgebra {
     public func union(_ other: Self) -> Self {
         let (
             minCapacity,
