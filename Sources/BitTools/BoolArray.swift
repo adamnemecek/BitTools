@@ -1,6 +1,6 @@
 public struct BoolArray {
     public private(set) var count: Int
-    var inner: ContiguousArray<Bool>
+    private var inner: ContiguousArray<Bool>
 
     public init(count: Int, inner: ContiguousArray<Bool>) {
         self.count = count
