@@ -43,7 +43,7 @@ public struct BitArray {
 extension BitArray: Sequence {
 
     @inline(__always)
-    public func makeIterator() -> AnyIterator<Int> {
+    public func makeIterator1() -> AnyIterator<Int> {
         var blocks = self.inner.makeIterator()
         guard let fst = blocks.next() else { return AnyIterator { nil } }
 
@@ -70,8 +70,8 @@ extension BitArray: Sequence {
     }
 
     @inline(__always)
-    public func makeIterator1() -> AnyIterator<Int> {
-        guard !self.isSome && !self.inner.isEmpty else { return AnyIterator { nil } }
+    public func makeIterator() -> AnyIterator<Int> {
+        guard self.isSome && !self.inner.isEmpty else { return AnyIterator { nil } }
         var blockIndex = 0
         let blockCount = self.inner.count
 

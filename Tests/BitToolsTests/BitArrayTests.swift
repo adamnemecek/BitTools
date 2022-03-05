@@ -51,6 +51,14 @@ class BitArrayTest: XCTestCase {
         XCTAssert(result.count == 8)
     }
 
+    func testIter() {
+        let a: BitArray = [1,2,3,4,10,12]
+
+        for e in a {
+            print(e)
+        }
+    }
+
     func testFormUnion() {
 
         var a: BitArray = [1, 2, 10, 20]
