@@ -14,7 +14,7 @@ extension HierarchicalBitArrayMeta {
     
 }
 
-public struct HierarchicalBitArray {
+public struct SparseBitArray {
     var meta: HierarchicalBitArrayMeta
     var inner: BitArray
 }
