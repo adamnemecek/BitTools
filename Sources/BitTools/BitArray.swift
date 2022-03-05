@@ -77,53 +77,53 @@ extension BitArray: Sequence {
         var block = self.inner[blockIndex]
         var bitBlockOffset = 0
         var remainingNonzeroBitCount = self.count
-//
+        //
         return AnyIterator {
-                while block == 0 {
-                    blockIndex += 1
-                    if remainingNonzeroBitCount == 0 || blockIndex == blockCount {
-                        return nil
-                    }
-
-                    block = self.inner[blockIndex]
-                    bitBlockOffset += Block.bitWidth
-                    continue
+            while block == 0 {
+                blockIndex += 1
+                if remainingNonzeroBitCount == 0 || blockIndex == blockCount {
+                    return nil
                 }
-                remainingNonzeroBitCount -= 1
-                let trailing = block.trailingZeroBitCount
-                block = block & ~(1 << trailing)
-                return bitBlockOffset + trailing
+
+                block = self.inner[blockIndex]
+                bitBlockOffset += Block.bitWidth
+                continue
+            }
+            remainingNonzeroBitCount -= 1
+            let trailing = block.trailingZeroBitCount
+            block = block & ~(1 << trailing)
+            return bitBlockOffset + trailing
         }
     }
 
-//    public func makeIterator() -> AnyIterator<Int> {
-//           var blocks = self.inner.makeIterator()
-//
-//           guard let fst = blocks.next() else { return AnyIterator { nil } }
-//
-//           let nonzeroBitCount = self.count
-//           var bitCount = 0
-//
-//           var bitIterator = BitIterator(fst)
-//           var bitBlockOffset = 0
-//
-//           return AnyIterator {
-//               while bitCount < nonzeroBitCount {
-//                   if let next = bitIterator.next() {
-//                       bitCount += 1
-//                       return bitBlockOffset + Int(next)
-//                   }
-//
-//                   if let nextBlock = blocks.next() {
-//                       bitIterator = BitIterator(nextBlock)
-//                       bitBlockOffset += Block.bitWidth
-//                   } else {
-//                       return nil
-//                   }
-//               }
-//               return nil
-//           }
-//       }
+    //    public func makeIterator() -> AnyIterator<Int> {
+    //           var blocks = self.inner.makeIterator()
+    //
+    //           guard let fst = blocks.next() else { return AnyIterator { nil } }
+    //
+    //           let nonzeroBitCount = self.count
+    //           var bitCount = 0
+    //
+    //           var bitIterator = BitIterator(fst)
+    //           var bitBlockOffset = 0
+    //
+    //           return AnyIterator {
+    //               while bitCount < nonzeroBitCount {
+    //                   if let next = bitIterator.next() {
+    //                       bitCount += 1
+    //                       return bitBlockOffset + Int(next)
+    //                   }
+    //
+    //                   if let nextBlock = blocks.next() {
+    //                       bitIterator = BitIterator(nextBlock)
+    //                       bitBlockOffset += Block.bitWidth
+    //                   } else {
+    //                       return nil
+    //                   }
+    //               }
+    //               return nil
+    //           }
+    //       }
     public var underestimatedCount: Int {
         self.count
     }
@@ -182,7 +182,7 @@ extension BitArray: SetAlgebra {
         }
 
         let tail = self.inner[minCapacity...] ??
-                    other.inner[minCapacity...]
+        other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {
             let new = tail[i]
@@ -362,9 +362,9 @@ extension BitArray: SetAlgebra {
         with newMember: __owned Element
     ) -> Element? {
         let ratio = self.ratio(for: newMember)
-//        if !contains {
-//
-//        }
+        //        if !contains {
+        //
+        //        }
         fatalError()
     }
 
