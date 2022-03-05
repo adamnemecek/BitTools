@@ -132,7 +132,7 @@ extension BoolArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.extrema(other.capacity)
 
-        self.reserveCapacity(other.capacity)
+        self.reserveCapacity(maxCapacity)
 
         var count = 0
         for i in 0..<minCapacity {
@@ -143,15 +143,16 @@ extension BoolArray: SetAlgebra {
             count += oldValue.diff(newValue)
         }
 
-        let tail = other.inner[minCapacity...]
-
-        for i in minCapacity..<maxCapacity {
-            let new = tail[i]
-            self.inner[i] = new
-            count += Int(new)
-        }
-
-        self.count += count
+        fatalError()
+//        let tail = other.inner[minCapacity...]
+//
+//        for i in minCapacity..<maxCapacity {
+//            let new = tail[i]
+//            self.inner[i] = new
+//            count += Int(new)
+//        }
+//
+//        self.count += count
     }
 
     public func intersection(_ other: Self) -> Self {

@@ -47,14 +47,13 @@ extension BitArray: Sequence {
         var blocks = self.inner.makeIterator()
         guard let fst = blocks.next() else { return AnyIterator { nil } }
 
-        var bitCount = 0
-        let nonzeroBitCount = self.count
+        var remainingBitCount = self.count
 
         var bitBlockOffset = 0
         var bitIterator = BitIterator(fst)
 
         return AnyIterator {
-            while bitCount < nonzeroBitCount {
+            while remainingBitCount > 0 {
                 guard let next = bitIterator.next() else {
                     guard let block = blocks.next() else {
                         return nil
@@ -63,12 +62,44 @@ extension BitArray: Sequence {
                     bitBlockOffset += Block.bitWidth
                     continue
                 }
-                bitCount += 1
+                remainingBitCount -= 1
                 return bitBlockOffset + Int(next)
             }
             return nil
         }
     }
+
+//    public func makeIteartor1() -> AnyIterator<Int> {
+//        
+//        guard !self.isSome && !self.inner.isEmpty else { return AnyIterator { nil } }
+//        var blockIndex = 0
+//
+//        var block = self.inner[blockIndex]
+//        var blockRemainingBitCount = block.nonzeroBitCount
+//
+//
+////        var remainingB
+////        let nonzeroBitCount = self.count
+////
+//////        var = blockNonzeroBitCount
+////        var bitCount = 0
+////
+//        return AnyIterator {
+//            while bitCount < nonzeroBitCount {
+//                if blockRemainingBitCount == 0 {
+//
+//                    blockIndex += 1
+//                    if blockIndex == self.inner.count {
+//                        return nil
+//                    }
+//                    block = self.inner[blockIndex]
+//                    blockRemainingBitCount = block.nonzeroBitCount
+//
+//                }
+//            }
+//            return nil
+//        }
+//    }
 
 //    public func makeIterator() -> AnyIterator<Int> {
 //           var blocks = self.inner.makeIterator()
