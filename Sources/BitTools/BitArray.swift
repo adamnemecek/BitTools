@@ -87,25 +87,27 @@ extension BitArray: Sequence {
 //        var bitCount = 0
 //
         return AnyIterator {
-            while remainingNonzeroBitCount > 0 {
-                if blockRemainingNonzeroBitCount == 0 {
-
+//            while remainingNonzeroBitCount > 0 {
+                while block == 0 {
+                    if remainingNonzeroBitCount == 0 {
+                        return nil
+                    }
                     blockIndex += 1
                     if blockIndex == blockCount {
                         return nil
                     }
                     block = self.inner[blockIndex]
-                    blockRemainingNonzeroBitCount = block.nonzeroBitCount
+//                    blockRemainingNonzeroBitCount = block.nonzeroBitCount
                     bitBlockOffset += Block.bitWidth
                     continue
                 }
                 remainingNonzeroBitCount -= 1
-                blockRemainingNonzeroBitCount -= 1
+//                blockRemainingNonzeroBitCount -= 1
                 let trailing = block.trailingZeroBitCount
                 block = block & ~(1 << trailing)
                 return bitBlockOffset + trailing
-            }
-            return nil
+//            }
+//            return nil
         }
     }
 
