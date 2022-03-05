@@ -71,7 +71,7 @@ extension BitArray: Sequence {
 
     @inline(__always)
     public func makeIterator() -> AnyIterator<Int> {
-        guard self.isSome && !self.inner.isEmpty else { return AnyIterator { nil } }
+        guard !self.inner.isEmpty else { return AnyIterator { nil } }
         var blockIndex = 0
         let blockCount = self.inner.count
 
@@ -100,6 +100,7 @@ extension BitArray: Sequence {
                     continue
                 }
                 remainingNonzeroBitCount -= 1
+                blockRemainingNonzeroBitCount -= 1
                 let trailing = block.trailingZeroBitCount
                 block = block & ~(1 << trailing)
                 return bitBlockOffset + trailing

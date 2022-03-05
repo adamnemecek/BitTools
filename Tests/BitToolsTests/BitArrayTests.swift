@@ -44,6 +44,8 @@ class BitArrayTest: XCTestCase {
 
         let result = a.union(b)
         let expected = (aa + bb).sorted()
+        print(expected)
+        print(result)
 
         XCTAssert(result.elementsEqual(expected))
         XCTAssert(c == result)
