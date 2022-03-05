@@ -69,37 +69,44 @@ extension BitArray: Sequence {
         }
     }
 
-//    public func makeIteartor1() -> AnyIterator<Int> {
-//        
-//        guard !self.isSome && !self.inner.isEmpty else { return AnyIterator { nil } }
-//        var blockIndex = 0
+    @inline(__always)
+    public func makeIterator1() -> AnyIterator<Int> {
+        guard !self.isSome && !self.inner.isEmpty else { return AnyIterator { nil } }
+        var blockIndex = 0
+        let blockCount = self.inner.count
+
+        var block = self.inner[blockIndex]
+        var blockRemainingNonzeroBitCount = block.nonzeroBitCount
+        var bitBlockOffset = 0
+
+
+//        var remainingB
+        var remainingNonzeroBitCount = self.count
 //
-//        var block = self.inner[blockIndex]
-//        var blockRemainingBitCount = block.nonzeroBitCount
+////        var = blockNonzeroBitCount
+//        var bitCount = 0
 //
-//
-////        var remainingB
-////        let nonzeroBitCount = self.count
-////
-//////        var = blockNonzeroBitCount
-////        var bitCount = 0
-////
-//        return AnyIterator {
-//            while bitCount < nonzeroBitCount {
-//                if blockRemainingBitCount == 0 {
-//
-//                    blockIndex += 1
-//                    if blockIndex == self.inner.count {
-//                        return nil
-//                    }
-//                    block = self.inner[blockIndex]
-//                    blockRemainingBitCount = block.nonzeroBitCount
-//
-//                }
-//            }
-//            return nil
-//        }
-//    }
+        return AnyIterator {
+            while remainingNonzeroBitCount > 0 {
+                if blockRemainingNonzeroBitCount == 0 {
+
+                    blockIndex += 1
+                    if blockIndex == blockCount {
+                        return nil
+                    }
+                    block = self.inner[blockIndex]
+                    blockRemainingNonzeroBitCount = block.nonzeroBitCount
+                    bitBlockOffset += Block.bitWidth
+                    continue
+                }
+                remainingNonzeroBitCount -= 1
+                let trailing = block.trailingZeroBitCount
+                block = block & ~(1 << trailing)
+                return bitBlockOffset + trailing
+            }
+            return nil
+        }
+    }
 
 //    public func makeIterator() -> AnyIterator<Int> {
 //           var blocks = self.inner.makeIterator()
