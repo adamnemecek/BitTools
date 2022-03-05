@@ -70,6 +70,13 @@ extension BitArray: Sequence {
     }
 
     @inline(__always)
+    public func withUnsafeBufferPointer<R>(
+        _ body: (UnsafeBufferPointer<UInt64>
+        ) throws -> R) rethrows -> R {
+        try self.inner.withUnsafeBufferPointer(body)
+    }
+
+    @inline(__always)
     public func makeIterator() -> AnyIterator<Int> {
         guard !self.inner.isEmpty else { return AnyIterator { nil } }
         var blockIndex = 0
@@ -87,7 +94,6 @@ extension BitArray: Sequence {
 
                 block = self.inner[blockIndex]
                 bitBlockOffset += Block.bitWidth
-                continue
             }
             remainingNonzeroBitCount -= 1
             let trailing = block.trailingZeroBitCount
