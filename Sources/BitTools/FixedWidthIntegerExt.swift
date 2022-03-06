@@ -80,26 +80,26 @@ extension FixedWidthInteger {
         self = self.subtracting(bits: other)
     }
 
-    mutating func removeAll(
-        where shouldBeRemoved: (Self) throws -> Bool
-    ) rethrows {
-        var i = BitIterator(self)
+//    mutating func removeAll(
+//        where shouldBeRemoved: (Self) throws -> Bool
+//    ) rethrows {
+//
+//
+//        while let next = i.next() {
+//            let nxt = Self(exactly: next)!
+//            if try shouldBeRemoved(nxt) {
+//                self.remove(bit: nxt)
+//            }
+//        }
+//    }
 
-        while let next = i.next() {
-            let nxt = Self(exactly: next)!
-            if try shouldBeRemoved(nxt) {
-                self.remove(bit: nxt)
-            }
-        }
-    }
-
-    func removingAll(
-        where shouldBeRemoved: (Self) throws -> Bool
-    ) rethrows -> Self {
-        var s = self
-        try s.removeAll(where: shouldBeRemoved)
-        return s
-    }
+//    func removingAll(
+//        where shouldBeRemoved: (Self) throws -> Bool
+//    ) rethrows -> Self {
+//        var s = self
+//        try s.removeAll(where: shouldBeRemoved)
+//        return s
+//    }
 }
 
 extension FixedWidthInteger {

@@ -1,41 +1,154 @@
-public struct BitIterator<T: FixedWidthInteger> {
-    private var value: T
-    private var remaining: Int
 
-    public init(_ value: T) {
-        self.value = value
-        self.remaining = value.nonzeroBitCount
+
+extension UnsafeBufferPointer where Element == UInt64 {
+    func nonzeroBitCount() -> Int {
+        guard var ptr = self.baseAddress else { return 0 }
+        var remaining = self.count
+        var sum = 0
+        while remaining > 0 {
+            sum += ptr.pointee.nonzeroBitCount
+            ptr = ptr.successor()
+            remaining -= 1
+        }
+        return sum
     }
 }
 
-extension BitIterator: IteratorProtocol {
-    public typealias Element = Int
+public struct BitArrayIterator {
+    private var ptr: UnsafePointer<UInt64>
+
+    ///
+    /// how many blocks total
+    ///
+    private let blockCount: Int
+
+    ///
+    /// how many bits were the at the beginning
+    ///
+//    private let nonzeroBitCount: Int
+    ///
+    /// how many nonzero bitcounts are there
+    ///
+    private var remainingNonzeroBitCount: Int
+    ///
+    /// index of the block we are processing
+    ///
+    private var blockIndex: Int
+    ///
+    /// the current block we are iterating
+    ///
+    private var block: UInt64
+    ///
+    /// how many blocks have we seen so far (in bits)
+    ///
+    private var bitBlockOffset: Int
+}
+
+extension BitArrayIterator: IteratorProtocol {
+    init(ptr: UnsafeBufferPointer<UInt64>, nonzeroBitCount: Int) {
+        guard let p = ptr.baseAddress else { fatalError() }
+
+        self.init(
+            ptr: p,
+            blockCount: ptr.count,
+//            nonzeroBitCount: nonzeroBitCount,
+            remainingNonzeroBitCount: nonzeroBitCount,
+            blockIndex: 0,
+            block: p.pointee,
+            bitBlockOffset: 0
+        )
+    }
+
+    public var underestimatedCount: Int {
+        fatalError()
+    }
 
     @inline(__always)
-    public mutating func next() -> Element? {
-        guard self.remaining > 0 else { return nil }
-        let trailing = self.value.trailingZeroBitCount
+    public mutating func next() -> Int? {
+        while self.block == 0 {
+            self.blockIndex += 1
+            if self.remainingNonzeroBitCount == 0 || self.blockIndex == self.blockCount {
+                return nil
+            }
 
-        defer {
-            self.remaining -= 1
-            self.value.remove(bit: T(exactly: trailing)!)
+            self.ptr = self.ptr.successor()
+            block = self.ptr.pointee
+            bitBlockOffset += UInt64.bitWidth
         }
-        return trailing
+
+        self.remainingNonzeroBitCount -= 1
+        let trailing = block.trailingZeroBitCount
+        self.block &= ~(1 << trailing)
+        return self.bitBlockOffset + trailing
     }
 }
 
-public struct BitSequence<T: FixedWidthInteger> {
-    let value: T
+public struct BitArrayIterator2 {
+    private var ptr: UnsafePointer<UInt64>
 
-    public init(_ value: T) {
-        self.value = value
+    ///
+    /// how many blocks total
+    ///
+    private let blockCount: Int
+
+    ///
+    /// how many bits were the at the beginning
+    ///
+//    private let nonzeroBitCount: Int
+    ///
+    /// how many nonzero bitcounts are there
+    ///
+    private var remainingNonzeroBitCount: Int
+    ///
+    /// index of the block we are processing
+    ///
+    private var blockIndex: Int
+    ///
+    /// the current block we are iterating
+    ///
+    private var block: UInt64
+    ///
+    /// how many blocks have we seen so far (in bits)
+    ///
+    private var bitBlockOffset: Int
+}
+
+extension BitArrayIterator2: IteratorProtocol {
+    init(ptr: UnsafeBufferPointer<UInt64>, nonzeroBitCount: Int) {
+        guard let p = ptr.baseAddress else { fatalError() }
+
+        self.init(
+            ptr: p,
+            blockCount: ptr.count,
+//            nonzeroBitCount: nonzeroBitCount,
+            remainingNonzeroBitCount: nonzeroBitCount,
+            blockIndex: 0,
+            block: p.pointee,
+            bitBlockOffset: 0
+        )
+    }
+
+    public var underestimatedCount: Int {
+        fatalError()
+    }
+
+    @inline(__always)
+    public mutating func next() -> (value: Int, block: Int, bit: Int)? {
+        while self.block == 0 {
+            self.blockIndex += 1
+            if self.remainingNonzeroBitCount == 0 || self.blockIndex == self.blockCount {
+                return nil
+            }
+
+            self.ptr = self.ptr.successor()
+            block = self.ptr.pointee
+            bitBlockOffset += UInt64.bitWidth
+        }
+
+        self.remainingNonzeroBitCount -= 1
+        let trailing = block.trailingZeroBitCount
+        self.block &= ~(1 << trailing)
+        return (self.bitBlockOffset + trailing, self.blockIndex, trailing)
     }
 }
 
-extension BitSequence: Sequence {
-    public typealias Iterator = BitIterator<T>
-
-    public func makeIterator() -> Iterator {
-        Iterator(self.value)
-    }
-}

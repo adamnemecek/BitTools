@@ -41,34 +41,6 @@ public struct BitArray {
 }
 
 extension BitArray: Sequence {
-
-    @inline(__always)
-    public func makeIterator1() -> AnyIterator<Int> {
-        var blocks = self.inner.makeIterator()
-        guard let fst = blocks.next() else { return AnyIterator { nil } }
-
-        var remainingBitCount = self.count
-
-        var bitBlockOffset = 0
-        var bitIterator = BitIterator(fst)
-
-        return AnyIterator {
-            while remainingBitCount > 0 {
-                guard let next = bitIterator.next() else {
-                    guard let block = blocks.next() else {
-                        return nil
-                    }
-                    bitIterator = BitIterator(block)
-                    bitBlockOffset += Block.bitWidth
-                    continue
-                }
-                remainingBitCount -= 1
-                return bitBlockOffset + Int(next)
-            }
-            return nil
-        }
-    }
-
     @inline(__always)
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
@@ -76,60 +48,74 @@ extension BitArray: Sequence {
         try self.inner.withUnsafeBufferPointer(body)
     }
 
-    @inline(__always)
-    public func makeIterator() -> AnyIterator<Int> {
-        guard !self.inner.isEmpty else { return AnyIterator { nil } }
-        var blockIndex = 0
-        let blockCount = self.inner.count
-        var block = self.inner[blockIndex]
-        var bitBlockOffset = 0
-        var remainingNonzeroBitCount = self.count
-        //
-        return AnyIterator {
-            while block == 0 {
-                blockIndex += 1
-                if remainingNonzeroBitCount == 0 || blockIndex == blockCount {
-                    return nil
-                }
-
-                block = self.inner[blockIndex]
-                bitBlockOffset += Block.bitWidth
-            }
-            remainingNonzeroBitCount -= 1
-            let trailing = block.trailingZeroBitCount
-            block = block & ~(1 << trailing)
-            return bitBlockOffset + trailing
+    public func makeIterator() -> BitArrayIterator {
+        let bitCount = self.count
+        return self.withUnsafeBufferPointer {
+            BitArrayIterator(ptr: $0, nonzeroBitCount: bitCount)
         }
     }
 
-    //    public func makeIterator() -> AnyIterator<Int> {
-    //           var blocks = self.inner.makeIterator()
-    //
-    //           guard let fst = blocks.next() else { return AnyIterator { nil } }
-    //
-    //           let nonzeroBitCount = self.count
-    //           var bitCount = 0
-    //
-    //           var bitIterator = BitIterator(fst)
-    //           var bitBlockOffset = 0
-    //
-    //           return AnyIterator {
-    //               while bitCount < nonzeroBitCount {
-    //                   if let next = bitIterator.next() {
-    //                       bitCount += 1
-    //                       return bitBlockOffset + Int(next)
-    //                   }
-    //
-    //                   if let nextBlock = blocks.next() {
-    //                       bitIterator = BitIterator(nextBlock)
-    //                       bitBlockOffset += Block.bitWidth
-    //                   } else {
-    //                       return nil
-    //                   }
-    //               }
-    //               return nil
-    //           }
-    //       }
+    func makeIterator2() -> BitArrayIterator2 {
+        let bitCount = self.count
+        return self.withUnsafeBufferPointer {
+            BitArrayIterator2(ptr: $0, nonzeroBitCount: bitCount)
+        }
+    }
+
+//    @inline(__always)
+//    public func makeIterator1() -> AnyIterator<Int> {
+//        var blocks = self.inner.makeIterator()
+//        guard let fst = blocks.next() else { return AnyIterator { nil } }
+//
+//        var remainingBitCount = self.count
+//
+//        var bitBlockOffset = 0
+//        var bitIterator = BitIterator(fst)
+//
+//        return AnyIterator {
+//            while remainingBitCount > 0 {
+//                guard let next = bitIterator.next() else {
+//                    guard let block = blocks.next() else {
+//                        return nil
+//                    }
+//                    bitIterator = BitIterator(block)
+//                    bitBlockOffset += Block.bitWidth
+//                    continue
+//                }
+//                remainingBitCount -= 1
+//                return bitBlockOffset + Int(next)
+//            }
+//            return nil
+//        }
+//    }
+//
+//
+//    @inline(__always)
+//    public func makeIterator2() -> AnyIterator<Int> {
+//        guard !self.inner.isEmpty else { return AnyIterator { nil } }
+//        var blockIndex = 0
+//        let blockCount = self.inner.count
+//        var block = self.inner[blockIndex]
+//        var bitBlockOffset = 0
+//        var remainingNonzeroBitCount = self.count
+//        //
+//        return AnyIterator {
+//            while block == 0 {
+//                blockIndex += 1
+//                if remainingNonzeroBitCount == 0 || blockIndex == blockCount {
+//                    return nil
+//                }
+//
+//                block = self.inner[blockIndex]
+//                bitBlockOffset += Block.bitWidth
+//            }
+//            remainingNonzeroBitCount -= 1
+//            let trailing = block.trailingZeroBitCount
+//            block = block & ~(1 << trailing)
+//            return bitBlockOffset + trailing
+//        }
+//    }
+
     public var underestimatedCount: Int {
         self.count
     }
@@ -398,28 +384,34 @@ extension BitArray {
     public mutating func removeAll(
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
+        var i = self.makeIterator2()
+        while let next = i.next() {
+            if try shouldBeRemoved(next.value) {
 
-        var i = (0..<self.inner.count).makeIterator()
-
-        var blockBitOffset = 0
-        var count = 0
-
-        let nonzeroBitCount = self.nonzeroBitCount
-        var newCount = 0
-
-        while let index = i.next(), count < nonzeroBitCount {
-            let current = self.inner[index]
-            count += current.nonzeroBitCount
-
-            let new = try current.removingAll {
-                try shouldBeRemoved(blockBitOffset + Int($0))
+                self.count -= 1
             }
-
-            newCount += new.nonzeroBitCount
-            self.inner[index] = new
-            blockBitOffset += Block.bitWidth
         }
-        self.count = newCount
+//        var i = (0..<self.inner.count).makeIterator()
+//
+//        var blockBitOffset = 0
+//        var count = 0
+//
+//        let nonzeroBitCount = self.nonzeroBitCount
+//        var newCount = 0
+//
+//        while let index = i.next(), count < nonzeroBitCount {
+//            let current = self.inner[index]
+//            count += current.nonzeroBitCount
+//
+//            let new = try current.removingAll {
+//                try shouldBeRemoved(blockBitOffset + Int($0))
+//            }
+//
+//            newCount += new.nonzeroBitCount
+//            self.inner[index] = new
+//            blockBitOffset += Block.bitWidth
+//        }
+//        self.count = newCount
     }
 }
 
