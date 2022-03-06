@@ -7,6 +7,10 @@ public struct GPUBitArray {
 }
 
 extension GPUBitArray: Sequence {
+    public var underestimatedCount: Int {
+        self.count
+    }
+
     public func makeIterator() -> BitArrayIterator {
         let count = self.count
         return self.inner.withUnsafeBufferPointer {
