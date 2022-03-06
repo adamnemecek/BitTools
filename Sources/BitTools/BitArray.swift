@@ -212,16 +212,16 @@ extension BitArray: SetAlgebra {
 //                }
 //            }
 //        }
-
-        count += dst.withUnsafeMutableBufferPointer { dst in
-            self.inner.withUnsafeBufferPointer { a in
-                var bitCount = other.inner.withUnsafeBufferPointer { b in
-                    dst.bitCopy(a, count: 10)
-                }
-
-                return bitCount
-            }
-        }
+//
+//        count += dst.withUnsafeMutableBufferPointer { dst in
+//            self.inner.withUnsafeBufferPointer { a in
+//                var bitCount = other.inner.withUnsafeBufferPointer { b in
+//                    dst.bitCopy(a, count: 10)
+//                }
+//
+//                return bitCount
+//            }
+//        }
 
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]

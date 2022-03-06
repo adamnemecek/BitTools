@@ -91,11 +91,13 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
     //    }
 
     @inlinable @inline(__always)
-    mutating func bitOp(
+    func bitOp(
         _ other: UnsafeBufferPointer<Element>,
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int  {
+//        assert(self.count <= count)
+        guard other.isSome, count > 0 else { return 0 }
 
         var nonzeroBitCount = 0
 
@@ -114,10 +116,33 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
     }
 
 
+//    @inlinable @inline(__always)
+//    func bitCopy(
+//        _ other: UnsafeBufferPointer<Element>
+//    ) -> Int {
+//        guard other.isSome else { return 0 }
+//
+//        var nonzeroBitCount = 0
+//
+//        guard var i = self.baseAddress,
+//              var j = other.baseAddress else { fatalError() }
+//
+//        for _ in 0..<other.count {
+//            let new = j.pointee
+//            nonzeroBitCount += new.nonzeroBitCount
+//            i.pointee = new
+//
+//            i = i.successor()
+//            j = j.successor()
+//        }
+//        return nonzeroBitCount
+//    }
+
+
     @inlinable @inline(__always)
-    mutating func bitCopy(
+    func bitCopy(
         _ other: UnsafeBufferPointer<Element>,
-        count: Int
+        offset: Int
     ) -> Int {
         guard other.isSome else { return 0 }
 
@@ -126,7 +151,10 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         guard var i = self.baseAddress,
               var j = other.baseAddress else { fatalError() }
 
-        for _ in 0..<count {
+        i = i.advanced(by: offset)
+        j = j.advanced(by: offset)
+
+        for _ in 0..<other.count {
             let new = j.pointee
             nonzeroBitCount += new.nonzeroBitCount
             i.pointee = new
@@ -137,6 +165,29 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         return nonzeroBitCount
     }
 
+//    @inlinable @inline(__always)
+//    mutating func bitCopy(
+//        _ other: UnsafeBufferPointer<Element>,
+//        count: Int
+//    ) -> Int {
+//        guard other.isSome, count > 0 else { return 0 }
+//
+//        var nonzeroBitCount = 0
+//
+//        guard var i = self.baseAddress,
+//              var j = other.baseAddress else { fatalError() }
+//
+//        for _ in 0..<count {
+//            let new = j.pointee
+//            nonzeroBitCount += new.nonzeroBitCount
+//            i.pointee = new
+//
+//            i = i.successor()
+//            j = j.successor()
+//        }
+//        return nonzeroBitCount
+//    }
+
     @inlinable @inline(__always)
     mutating func bitOp(
         _ a: UnsafeBufferPointer<Element>,
@@ -144,7 +195,7 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int  {
-        guard a.isSome, b.isSome else { return 0 }
+        guard a.isSome, b.isSome, count > 0 else { return 0 }
 
         var nonzeroBitCount = 0
 
