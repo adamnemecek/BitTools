@@ -2,11 +2,11 @@
 ///
 /// this stores data
 ///
-struct HierarchicalBitArrayMeta {
+struct SparseBitArrayMeta {
     var inner: ContiguousArray<UInt64>
 }
 
-extension HierarchicalBitArrayMeta {
+extension SparseBitArrayMeta {
     mutating func reserveCapacity(_ minimumCapacity: Int) {
         fatalError()
     }
@@ -15,6 +15,15 @@ extension HierarchicalBitArrayMeta {
 }
 
 public struct SparseBitArray {
-    var meta: HierarchicalBitArrayMeta
+    var meta: SparseBitArrayMeta
     var inner: BitArray
 }
+
+extension SparseBitArray {
+    var count: Int {
+        self.inner.count
+    }
+}
+
+
+

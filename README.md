@@ -8,7 +8,7 @@ Hierarchical Bit Array
 
 * we could have additional 3 uints64 which indicate if the particular uint64 has any bits set
 
-* when we compress the array, we would skip the 
+* when we compress the array, we would skip words that are full 
 * also if a bit is set on the meta level but the block itself is zero, that could mean
 
 * i guess we could have a compressed bit set on which would do the block thing and on top it would have another level that indicates full

@@ -385,9 +385,9 @@ extension BitArray {
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
         var i = self.makeIterator2()
-        while let next = i.next() {
-            if try shouldBeRemoved(next.value) {
-
+        while let (value, block, bit) = i.next() {
+            if try shouldBeRemoved(value) {
+                self.inner[block].remove(bit: UInt64(bit))
                 self.count -= 1
             }
         }
