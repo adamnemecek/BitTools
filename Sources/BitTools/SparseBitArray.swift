@@ -25,5 +25,16 @@ extension SparseBitArray {
     }
 }
 
+//extension SparseBitArray: Sequence {
+//    public func makeIterator() -> AnyIterator<Int> {
+
+//        fatalError()
+//    }
+//}
+
+//
+//struct SparseBitArrayIterator {
+//
+//}
 
 

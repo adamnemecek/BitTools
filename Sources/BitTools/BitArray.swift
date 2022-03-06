@@ -188,6 +188,38 @@ extension BitArray: SetAlgebra {
         )
     }
 
+    public __consuming func union1(
+        _ other: __owned Self
+    ) -> Self {
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.extrema(other.capacity)
+
+        var count = 0
+        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+
+        for i in 0..<minCapacity {
+            let new = self.inner[i] | other.inner[i]
+            count += new.nonzeroBitCount
+            inner[i] = new
+        }
+
+        let tail = self.inner[minCapacity...] ??
+        other.inner[minCapacity...]
+
+        for i in minCapacity..<maxCapacity {
+            let new = tail[i]
+            inner[i] = new
+            count += new.nonzeroBitCount
+        }
+
+        return Self(
+            count: count,
+            inner: inner
+        )
+    }
+
     public mutating func formUnion(
         _ other: __owned Self
     ) {
