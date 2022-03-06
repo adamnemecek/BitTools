@@ -69,14 +69,35 @@ extension MutableCollection where Element: FixedWidthInteger {
 
 extension UnsafeMutableBufferPointer where Element == UInt64 {
 
-    @inline(__always)
-    mutating func formBitOp(
+    //    mutating func formOr(
+    //        _ other: UnsafeBufferPointer<Element>,
+    //        count: Int
+    //    ) -> Int {
+    //        self.formBitOp(other, count: count, op: |)
+    //    }
+    //
+    //    mutating func formAnd(
+    //        _ other: UnsafeBufferPointer<Element>,
+    //        count: Int
+    //    ) -> Int {
+    //        self.formBitOp(other, count: count, op: &)
+    //    }
+    //
+    //    mutating func formXor(
+    //        _ other: UnsafeBufferPointer<Element>,
+    //        count: Int
+    //    ) -> Int {
+    //        self.formBitOp(other, count: count, op: ^)
+    //    }
+
+    @inlinable @inline(__always)
+    mutating func bitOp(
         _ other: UnsafeBufferPointer<Element>,
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int  {
-        var nonzeroBitCount = 0
 
+        var nonzeroBitCount = 0
 
         guard var i = self.baseAddress,
               var j = other.baseAddress else { fatalError() }
@@ -92,54 +113,39 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         return nonzeroBitCount
     }
 
-    mutating func formOr(
-        _ other: UnsafeBufferPointer<Element>,
-        count: Int
-    ) -> Int {
-        self.formBitOp(other, count: count, op: |)
-    }
 
-    mutating func formAnd(
-        _ other: UnsafeBufferPointer<Element>,
-        count: Int
-    ) -> Int {
-        self.formBitOp(other, count: count, op: &)
-    }
-
-    mutating func formXor(
-        _ other: UnsafeBufferPointer<Element>,
-        count: Int
-    ) -> Int {
-        self.formBitOp(other, count: count, op: ^)
-    }
-
+    @inlinable @inline(__always)
     mutating func bitCopy(
         _ other: UnsafeBufferPointer<Element>,
         count: Int
     ) -> Int {
+        guard other.isSome else { return 0 }
 
-        var bitCount = 0
+        var nonzeroBitCount = 0
 
         guard var i = self.baseAddress,
               var j = other.baseAddress else { fatalError() }
 
         for _ in 0..<count {
             let new = j.pointee
-            bitCount += new.nonzeroBitCount
+            nonzeroBitCount += new.nonzeroBitCount
             i.pointee = new
 
             i = i.successor()
             j = j.successor()
         }
-        return bitCount
+        return nonzeroBitCount
     }
 
+    @inlinable @inline(__always)
     mutating func bitOp(
         _ a: UnsafeBufferPointer<Element>,
         _ b: UnsafeBufferPointer<Element>,
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int  {
+        guard a.isSome, b.isSome else { return 0 }
+
         var nonzeroBitCount = 0
 
         var i = self.startIndex
@@ -158,35 +164,35 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         return nonzeroBitCount
     }
 
-    public func formUnion(_ other: UnsafeBufferPointer<Element>, count: Int) -> Int {
-        guard var a = self.baseAddress,
-              var b = other.baseAddress else { fatalError() }
-
-        var bitCount = 0
-        for _ in 0..<count {
-            let new = a.pointee | b.pointee
-            a = a.successor()
-            b = b.successor()
-            a.pointee = new
-            bitCount += new.nonzeroBitCount
-        }
-        return bitCount
-    }
-
-    public func formIntersection(_ other: UnsafeBufferPointer<Element>, count: Int) -> Int {
-        guard var a = self.baseAddress,
-              var b = other.baseAddress else { fatalError() }
-
-        var bitCount = 0
-        for _ in 0..<count {
-            let new = a.pointee & b.pointee
-            a = a.successor()
-            b = b.successor()
-            a.pointee = new
-            bitCount += new.nonzeroBitCount
-        }
-        return bitCount
-    }
+//    public func formUnion(_ other: UnsafeBufferPointer<Element>, count: Int) -> Int {
+//        guard var a = self.baseAddress,
+//              var b = other.baseAddress else { fatalError() }
+//
+//        var bitCount = 0
+//        for _ in 0..<count {
+//            let new = a.pointee | b.pointee
+//            a = a.successor()
+//            b = b.successor()
+//            a.pointee = new
+//            bitCount += new.nonzeroBitCount
+//        }
+//        return bitCount
+//    }
+//
+//    public func formIntersection(_ other: UnsafeBufferPointer<Element>, count: Int) -> Int {
+//        guard var a = self.baseAddress,
+//              var b = other.baseAddress else { fatalError() }
+//
+//        var bitCount = 0
+//        for _ in 0..<count {
+//            let new = a.pointee & b.pointee
+//            a = a.successor()
+//            b = b.successor()
+//            a.pointee = new
+//            bitCount += new.nonzeroBitCount
+//        }
+//        return bitCount
+//    }
 
 //    func copy(_ other: )
 }

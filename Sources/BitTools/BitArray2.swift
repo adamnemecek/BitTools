@@ -31,13 +31,14 @@ extension BitArray2 {
         let (minCapacity, maxCapacity) = self.capacity.order(other.capacity)
 
         self.reserveCapacity(other.capacity)
-
-        self.inner.withUnsafeMutableBufferPointer { dst in
-            other.inner.withUnsafeBufferPointer { src in
-                dst.formOr(src, count: minCapacity)
-                fatalError()
-            }
-        }
+        fatalError()
+//
+//        self.inner.withUnsafeMutableBufferPointer { dst in
+//            other.inner.withUnsafeBufferPointer { src in
+//                dst.formOr(src, count: minCapacity)
+//                fatalError()
+//            }
+//        }
     }
 
     func union(_ other: Self) -> Self {
