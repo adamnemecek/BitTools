@@ -199,6 +199,12 @@ extension BitArray: SetAlgebra {
         var count = 0
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
+//        count += inner.bitOp(
+//            self.inner,
+//            other.inner,
+//            count: minCapacity,
+//            op: |)
+
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
             count += new.nonzeroBitCount
