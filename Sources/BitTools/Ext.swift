@@ -1,38 +1,16 @@
-extension Collection {
-//    var isSome: Bool {
-//        !self.isEmpty
-//    }
-//    @inline(__always)
-//    public func or(_ other: Self) -> Self {
-//        if self.isEmpty {
-//            return other
-//        }
-//        return self
-//    }
+import Ext
 
-    @inline(__always)
-    static func ??(lhs: Self, rhs: Self) -> Self {
-        if lhs.isEmpty {
-            return rhs
-        }
-        return lhs
-    }
-}
 
 extension Sequence where Element == Bool {
     func countTrue() -> Int {
-        var count = 0
-        for e in self where e {
-            count += 1
-        }
-        return count
+        self.count(where: { $0 })
     }
 }
 
 extension Sequence where Element: FixedWidthInteger {
     @inline(__always)
     public func allZeros() -> Bool {
-        self.allSatisfy { $0 == 0}
+        self.allSatisfy { $0 == 0 }
     }
 }
 
@@ -85,7 +63,7 @@ extension RangeReplaceableCollection where Element == Bool {
     }
 
     public mutating func append(false count: Int) {
-        self.append(contentsOf: repeatElement(false, count: count))
+        self.append(repeating: false, count: count)
     }
 
 //    public mutating func falseAll() {
@@ -101,19 +79,10 @@ extension RangeReplaceableCollection where Element: FixedWidthInteger {
         self.reserveBitCapacity(bitCapacity)
     }
 
-    public init(zeros count: Int) {
-        self.init(repeating: 0, count: count)
-    }
-
     public mutating func zeroAll() {
         let count = self.count
         self.removeAll(keepingCapacity: true)
         self.append(zeros: count)
-    }
-
-    @inline(__always)
-    public mutating func append(zeros count: Int) {
-        self.append(contentsOf: repeatElement(0, count: count))
     }
 
     public mutating func reserveBitCapacity(_ bitCapacity: Int) {
@@ -137,11 +106,14 @@ extension Sequence where Element: FixedWidthInteger {
 //        return count
     }
 }
+
+
 extension Collection where Index == Int, Element: FixedWidthInteger {
     @inline(__always)
     func contains(bit index: Index) -> Bool {
-        let (offset, bit) = index.divMod(Element.bitWidth)
-        return self[offset].contains(bit: Element(bit))
+        let ratio = index.ratio(Int(Element.bitWidth))
+//        return self[offset].contains(bit: Element(bit))
+        fatalError()
     }
  }
 //
@@ -159,7 +131,7 @@ extension Collection where Index == Int, Element: FixedWidthInteger {
 
 extension MutableCollection where Index == Int, Element: FixedWidthInteger {
     @inline(__always)
-    subscript(index: Ratio) -> Bool {
+    subscript(index: Ratio<Index>) -> Bool {
         get {
             // contains
             self[index.quot].contains(bit: Element(index.rem))

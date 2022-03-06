@@ -1,31 +1,5 @@
-extension BinaryInteger {
-    public var binaryDescription: String {
-        var binaryString = ""
-        var n = self
-        var counter = 0
+import Ext
 
-        for _ in 1...self.bitWidth {
-            binaryString.insert(contentsOf: "\(n & 1)", at: binaryString.startIndex)
-            n >>= 1
-            counter += 1
-            if counter % 4 == 0 {
-                binaryString.insert(contentsOf: " ", at: binaryString.startIndex)
-            }
-        }
-
-        return binaryString
-    }
-}
-
-extension Comparable {
-    func extrema(_ other: Self) -> (lower: Self, higher: Self) {
-        if self < other {
-            return (self, other)
-        } else {
-            return (other, self)
-        }
-    }
-}
 
 // func subtract(Set<Element>)
 // Removes the elements of the given set from this set.
@@ -102,20 +76,8 @@ extension FixedWidthInteger {
 //    }
 }
 
+
 extension FixedWidthInteger {
-    func roundUp(to: Self) -> Self {
-        let m = self % to
-        if m == 0 {
-            return self
-        } else {
-            return self - m + to
-        }
-    }
-
-    var pageAligned: Self {
-        self.roundUp(to: 4096)
-    }
-
     ///
     /// how many blocks are needed to accomodate this number
     /// 0 => 1

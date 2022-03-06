@@ -5,20 +5,21 @@ extension MutableCollection where Element: FixedWidthInteger {
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int where C: Collection, C.Element == Element {
-        var bitCount = 0
-
-        var i = self.startIndex
-        var j = other.startIndex
-
-        for _ in 0..<count {
-            let new = op(self[i], other[j])
-            bitCount += new.nonzeroBitCount
-            self[i] = new
-
-            i = self.index(after: i)
-            j = other.index(after: j)
-        }
-        return bitCount
+//        var nonzeroBitCount = 0
+//
+//        var i = self.startIndex
+//        var j = other.startIndex
+//
+//        for _ in 0..<count {
+//            let new = op(self[i], other[j])
+//            nonzeroBitCount += new.nonzeroBitCount
+//            self[i] = new
+//
+//            i = self.index(after: i)
+//            j = other.index(after: j)
+//        }
+//        return nonzeroBitCount
+        self.bitOp(self, other, count: count, op: op)
     }
 
 
@@ -28,7 +29,7 @@ extension MutableCollection where Element: FixedWidthInteger {
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int where A: Collection, A.Element == Element, B: Collection, B.Element == Element {
-        var bitCount = 0
+        var nonzeroBitCount = 0
 
         var i = self.startIndex
         var j = a.startIndex
@@ -36,14 +37,14 @@ extension MutableCollection where Element: FixedWidthInteger {
 
         for _ in 0..<count {
             let new = op(a[j], b[k])
-            bitCount += new.nonzeroBitCount
+            nonzeroBitCount += new.nonzeroBitCount
             self[i] = new
 
             i = self.index(after: i)
             j = a.index(after: j)
             k = b.index(after: k)
         }
-        return bitCount
+        return nonzeroBitCount
     }
 }
 
@@ -56,20 +57,21 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         count: Int,
         op: (Element, Element) -> Element
     ) -> Int  {
-        var bitCount = 0
+        var nonzeroBitCount = 0
+
 
         guard var i = self.baseAddress,
               var j = other.baseAddress else { fatalError() }
 
         for _ in 0..<count {
             let new = op(i.pointee, j.pointee)
-            bitCount += new.nonzeroBitCount
+            nonzeroBitCount += new.nonzeroBitCount
             i.pointee = new
 
             i = i.successor()
             j = j.successor()
         }
-        return bitCount
+        return nonzeroBitCount
     }
 
     mutating func formOr(

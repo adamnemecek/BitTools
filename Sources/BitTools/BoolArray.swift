@@ -1,3 +1,5 @@
+import Ext
+
 public struct BoolArray {
     public private(set) var count: Int
     private var inner: ContiguousArray<Bool>
@@ -103,7 +105,7 @@ extension BoolArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         var count = 0
         var inner = ContiguousArray<Bool>(false: maxCapacity)
@@ -114,7 +116,7 @@ extension BoolArray: SetAlgebra {
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ??
+        let tail = self.inner[minCapacity...] ||
                     other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {
@@ -130,7 +132,7 @@ extension BoolArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         self.reserveCapacity(maxCapacity)
 
@@ -188,7 +190,7 @@ extension BoolArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         var count = 0
         var inner = ContiguousArray<Bool>(false: maxCapacity)
@@ -199,7 +201,7 @@ extension BoolArray: SetAlgebra {
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ??
+        let tail = self.inner[minCapacity...] ||
                     other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {

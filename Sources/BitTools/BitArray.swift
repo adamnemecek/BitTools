@@ -1,3 +1,5 @@
+import Ext
+
 public struct BitArray {
     public typealias Element = Int
     typealias Block = UInt64
@@ -165,7 +167,7 @@ extension BitArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         var count = 0
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
@@ -176,7 +178,7 @@ extension BitArray: SetAlgebra {
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ??
+        let tail = self.inner[minCapacity...] ||
         other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {
@@ -197,7 +199,7 @@ extension BitArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         var dst = ContiguousArray<UInt64>(zeros: maxCapacity)
         var count = 0
@@ -227,8 +229,8 @@ extension BitArray: SetAlgebra {
             dst[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ??
-        other.inner[minCapacity...]
+        let tail = self.inner[minCapacity...] ||
+            other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {
             let new = tail[i]
@@ -286,7 +288,7 @@ extension BitArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         self.reserveCapacity(other.capacity)
 
@@ -343,7 +345,7 @@ extension BitArray: SetAlgebra {
         self.count = count
     }
 
-    func ratio(for member: Int) -> Ratio {
+    func ratio(for member: Int) -> Ratio<Int> {
         member.ratio(Block.bitWidth)
     }
 
@@ -353,7 +355,7 @@ extension BitArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         var count = 0
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
@@ -364,7 +366,7 @@ extension BitArray: SetAlgebra {
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ?? other.inner[minCapacity...]
+        let tail = self.inner[minCapacity...] || other.inner[minCapacity...]
 
         for i in minCapacity..<maxCapacity {
             let new = tail[i]
@@ -384,7 +386,7 @@ extension BitArray: SetAlgebra {
         let (
             minCapacity,
             maxCapacity
-        ) = self.capacity.extrema(other.capacity)
+        ) = self.capacity.order(other.capacity)
 
         self.reserveCapacity(other.capacity)
 
@@ -516,7 +518,7 @@ extension BitArray: Equatable {
         guard lhs.count == rhs.count else { return false }
         let capacity = Swift.min(lhs.capacity, rhs.capacity)
 
-        let tail = lhs.inner[capacity...] ?? rhs.inner[capacity...]
+        let tail = lhs.inner[capacity...] || rhs.inner[capacity...]
         return tail.allZeros() || lhs.inner[..<capacity].elementsEqual(rhs.inner[..<capacity])
     }
 }
