@@ -1,51 +1,69 @@
 
+extension UnsafeBufferPointer {
+    @inlinable @inline(__always)
+    func advanced(by count: Int) -> Self {
+        let newCount = self.count - count
+        guard let base = self.baseAddress, newCount > 0 else { fatalError() }
+        return Self(start: base.advanced(by: count), count: newCount)
+    }
+}
+
+extension UnsafeMutableBufferPointer {
+    @inlinable @inline(__always)
+    func advanced(by count: Int) -> Self {
+        let newCount = self.count - count
+        guard let base = self.baseAddress, newCount > 0 else { fatalError() }
+        return Self(start: base.advanced(by: count), count: newCount)
+    }
+}
+
 extension MutableCollection where Element: FixedWidthInteger {
-    mutating func formBitOp<C>(
-        _ other: C,
-        count: Int,
-        op: (Element, Element) -> Element
-    ) -> Int where C: Collection, C.Element == Element {
+//    mutating func formBitOp<C>(
+//        _ other: C,
+//        count: Int,
+//        op: (Element, Element) -> Element
+//    ) -> Int where C: Collection, C.Element == Element {
+////        var nonzeroBitCount = 0
+////
+////        var i = self.startIndex
+////        var j = other.startIndex
+////
+////        for _ in 0..<count {
+////            let new = op(self[i], other[j])
+////            nonzeroBitCount += new.nonzeroBitCount
+////            self[i] = new
+////
+////            i = self.index(after: i)
+////            j = other.index(after: j)
+////        }
+////        return nonzeroBitCount
+//        self.bitOp(self, other, count: count, op: op)
+//    }
+
+
+//    mutating func bitOp<A, B>(
+//        _ a: A,
+//        _ b: B,
+//        count: Int,
+//        op: (Element, Element) -> Element
+//    ) -> Int where A: Collection, A.Element == Element, B: Collection, B.Element == Element {
 //        var nonzeroBitCount = 0
 //
 //        var i = self.startIndex
-//        var j = other.startIndex
+//        var j = a.startIndex
+//        var k = b.startIndex
 //
 //        for _ in 0..<count {
-//            let new = op(self[i], other[j])
+//            let new = op(a[j], b[k])
 //            nonzeroBitCount += new.nonzeroBitCount
 //            self[i] = new
 //
 //            i = self.index(after: i)
-//            j = other.index(after: j)
+//            j = a.index(after: j)
+//            k = b.index(after: k)
 //        }
 //        return nonzeroBitCount
-        self.bitOp(self, other, count: count, op: op)
-    }
-
-
-    mutating func bitOp<A, B>(
-        _ a: A,
-        _ b: B,
-        count: Int,
-        op: (Element, Element) -> Element
-    ) -> Int where A: Collection, A.Element == Element, B: Collection, B.Element == Element {
-        var nonzeroBitCount = 0
-
-        var i = self.startIndex
-        var j = a.startIndex
-        var k = b.startIndex
-
-        for _ in 0..<count {
-            let new = op(a[j], b[k])
-            nonzeroBitCount += new.nonzeroBitCount
-            self[i] = new
-
-            i = self.index(after: i)
-            j = a.index(after: j)
-            k = b.index(after: k)
-        }
-        return nonzeroBitCount
-    }
+//    }
 }
 
 
@@ -116,6 +134,29 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         return bitCount
     }
 
+    mutating func bitOp(
+        _ a: UnsafeBufferPointer<Element>,
+        _ b: UnsafeBufferPointer<Element>,
+        count: Int,
+        op: (Element, Element) -> Element
+    ) -> Int  {
+        var nonzeroBitCount = 0
+
+        var i = self.startIndex
+        var j = a.startIndex
+        var k = b.startIndex
+
+        for _ in 0..<count {
+            let new = op(a[j], b[k])
+            nonzeroBitCount += new.nonzeroBitCount
+            self[i] = new
+
+            i = self.index(after: i)
+            j = a.index(after: j)
+            k = b.index(after: k)
+        }
+        return nonzeroBitCount
+    }
 
     public func formUnion(_ other: UnsafeBufferPointer<Element>, count: Int) -> Int {
         guard var a = self.baseAddress,
