@@ -21,6 +21,7 @@ extension MutableCollection where Element: FixedWidthInteger {
         return bitCount
     }
 
+
     mutating func bitOp<A, B>(
         _ a: A,
         _ b: B,
@@ -48,6 +49,72 @@ extension MutableCollection where Element: FixedWidthInteger {
 
 
 extension UnsafeMutableBufferPointer where Element == UInt64 {
+
+    @inline(__always)
+    mutating func formBitOp(
+        _ other: UnsafeBufferPointer<Element>,
+        count: Int,
+        op: (Element, Element) -> Element
+    ) -> Int  {
+        var bitCount = 0
+
+        guard var i = self.baseAddress,
+              var j = other.baseAddress else { fatalError() }
+
+        for _ in 0..<count {
+            let new = op(i.pointee, j.pointee)
+            bitCount += new.nonzeroBitCount
+            i.pointee = new
+
+            i = i.successor()
+            j = j.successor()
+        }
+        return bitCount
+    }
+
+    mutating func formOr(
+        _ other: UnsafeBufferPointer<Element>,
+        count: Int
+    ) -> Int {
+        self.formBitOp(other, count: count, op: |)
+    }
+
+    mutating func formAnd(
+        _ other: UnsafeBufferPointer<Element>,
+        count: Int
+    ) -> Int {
+        self.formBitOp(other, count: count, op: &)
+    }
+
+    mutating func formXor(
+        _ other: UnsafeBufferPointer<Element>,
+        count: Int
+    ) -> Int {
+        self.formBitOp(other, count: count, op: ^)
+    }
+
+    mutating func bitCopy(
+        _ other: UnsafeBufferPointer<Element>,
+        count: Int
+    ) -> Int {
+
+        var bitCount = 0
+
+        guard var i = self.baseAddress,
+              var j = other.baseAddress else { fatalError() }
+
+        for _ in 0..<count {
+            let new = j.pointee
+            bitCount += new.nonzeroBitCount
+            i.pointee = new
+
+            i = i.successor()
+            j = j.successor()
+        }
+        return bitCount
+    }
+
+
     public func formUnion(_ other: UnsafeBufferPointer<Element>, count: Int) -> Int {
         guard var a = self.baseAddress,
               var b = other.baseAddress else { fatalError() }

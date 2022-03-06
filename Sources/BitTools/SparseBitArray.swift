@@ -1,4 +1,11 @@
 
+import Foundation
+
+public func koremetalbundle()  {
+    for b in Bundle.allFrameworks {
+        print(b)
+    }
+}
 ///
 /// this stores data
 ///

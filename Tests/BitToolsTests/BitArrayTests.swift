@@ -3,6 +3,10 @@ import BitTools
 
 class BitArrayTest: XCTestCase {
 
+    func testModule() {
+        koremetalbundle()
+    }
+
     func testBitArray() {
         var a: BitArray = [100, 64, 1000]
 

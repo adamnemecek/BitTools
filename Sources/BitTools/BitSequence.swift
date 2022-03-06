@@ -135,7 +135,7 @@ extension BitArrayIterator2: IteratorProtocol {
     @inline(__always)
     public mutating func next() -> (value: Int, block: Int, bit: Int)? {
         while self.block == 0 {
-            self.blockIndex += 1
+            self.blockIndex  += 1
             if self.remainingNonzeroBitCount == 0 || self.blockIndex == self.blockCount {
                 return nil
             }

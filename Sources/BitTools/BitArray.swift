@@ -42,6 +42,11 @@ public struct BitArray {
 
 extension BitArray: Sequence {
     @inline(__always)
+    public var underestimatedCount: Int {
+        self.count
+    }
+
+    @inline(__always)
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
@@ -116,9 +121,7 @@ extension BitArray: Sequence {
 //        }
 //    }
 
-    public var underestimatedCount: Int {
-        self.count
-    }
+
 }
 
 extension BitArray: SetAlgebra {
@@ -196,19 +199,32 @@ extension BitArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.extrema(other.capacity)
 
+        var dst = ContiguousArray<UInt64>(zeros: maxCapacity)
         var count = 0
-        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
-//        count += inner.bitOp(
-//            self.inner,
-//            other.inner,
-//            count: minCapacity,
-//            op: |)
+
+//        count += dst.withUnsafeMutableBufferPointer { dst in
+//            self.inner.withUnsafeBufferPointer { a in
+//                other.inner.withUnsafeBufferPointer { b in
+//                    dst.bitCopy(a, count: 10)
+//                }
+//            }
+//        }
+
+        count += dst.withUnsafeMutableBufferPointer { dst in
+            self.inner.withUnsafeBufferPointer { a in
+                var bitCount = other.inner.withUnsafeBufferPointer { b in
+                    dst.bitCopy(a, count: 10)
+                }
+
+                return bitCount
+            }
+        }
 
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
             count += new.nonzeroBitCount
-            inner[i] = new
+            dst[i] = new
         }
 
         let tail = self.inner[minCapacity...] ??
@@ -216,15 +232,53 @@ extension BitArray: SetAlgebra {
 
         for i in minCapacity..<maxCapacity {
             let new = tail[i]
-            inner[i] = new
+            dst[i] = new
             count += new.nonzeroBitCount
         }
 
         return Self(
             count: count,
-            inner: inner
+            inner: dst
         )
     }
+//
+//    public __consuming func union1(
+//        _ other: __owned Self
+//    ) -> Self {
+//        let (
+//            minCapacity,
+//            maxCapacity
+//        ) = self.capacity.extrema(other.capacity)
+//
+//        var count = 0
+//        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+//
+////        count += inner.bitOp(
+////            self.inner,
+////            other.inner,
+////            count: minCapacity,
+////            op: |)
+//
+//        for i in 0..<minCapacity {
+//            let new = self.inner[i] | other.inner[i]
+//            count += new.nonzeroBitCount
+//            inner[i] = new
+//        }
+//
+//        let tail = self.inner[minCapacity...] ??
+//        other.inner[minCapacity...]
+//
+//        for i in minCapacity..<maxCapacity {
+//            let new = tail[i]
+//            inner[i] = new
+//            count += new.nonzeroBitCount
+//        }
+//
+//        return Self(
+//            count: count,
+//            inner: inner
+//        )
+//    }
 
     public mutating func formUnion(
         _ other: __owned Self
