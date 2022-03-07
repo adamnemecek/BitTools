@@ -1,9 +1,13 @@
 import XCTest
 import BitTools
 
+
+
+
 class BitArrayTest: XCTestCase {
 
     func testModule() {
+//        BitArrayTestHarness()/
         koremetalbundle()
     }
 

@@ -1,5 +1,6 @@
 import Ext
 
+@frozen
 public struct BitArray {
     public typealias Element = Int
     typealias Block = UInt64
