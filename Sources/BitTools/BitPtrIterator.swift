@@ -1,5 +1,3 @@
-
-
 // doesnt' know the
 
 struct BitPtrIterator {
@@ -21,8 +19,7 @@ struct BitPtrIterator {
     }
 }
 
-
-extension BitPtrIterator : IteratorProtocol {
+extension BitPtrIterator: IteratorProtocol {
     public typealias Element = Int
     public func next() -> Element? {
         while true {

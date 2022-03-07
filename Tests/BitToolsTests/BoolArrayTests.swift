@@ -9,7 +9,6 @@ class BoolArrayTests: XCTestCase {
 
         let b = BoolArray([1, 2, 10])
 
-
         let c = a.union(b)
 
         var d = a

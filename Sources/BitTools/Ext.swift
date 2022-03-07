@@ -1,6 +1,5 @@
 import Ext
 
-
 extension Sequence where Element == Bool {
     func countTrue() -> Int {
         self.count(where: { $0 })
@@ -57,7 +56,6 @@ extension MutableCollection where Element == Bool {
     }
 }
 
-
 extension RangeReplaceableCollection where Element == Bool {
     public init(false count: Int) {
         self.init(repeating: false, count: count)
@@ -107,7 +105,6 @@ extension Sequence where Element: FixedWidthInteger {
 //        return count
     }
 }
-
 
 extension Collection where Index == Int, Element: FixedWidthInteger {
     @inline(__always)

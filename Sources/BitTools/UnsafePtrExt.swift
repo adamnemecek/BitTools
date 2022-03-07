@@ -1,4 +1,3 @@
-
 extension UnsafeBufferPointer {
     @inlinable @inline(__always)
     func advanced(by count: Int) -> Self {
@@ -26,12 +25,12 @@ extension UnsafeMutableBufferPointer {
 }
 
 //
-//struct UnsafeBitMaskBufferPointer {
+// struct UnsafeBitMaskBufferPointer {
 //    var nonzeroBitCount: Int
 //    var ptr: UnsafeBufferPointer<UInt64>
-//}
+// }
 //
-//extension UnsafeBitMaskBufferPointer {
+// extension UnsafeBitMaskBufferPointer {
 //    public static func |(lhs: Self, rhs: Self) -> Self {
 //        fatalError()
 //    }
@@ -39,7 +38,7 @@ extension UnsafeMutableBufferPointer {
 //    subscript(range: Range<Int>) -> UnsafeBitMaskBufferPointer {
 //        fatalError()
 //    }
-//}
+// }
 
 extension MutableCollection where Element: FixedWidthInteger {
 //    mutating func formBitOp<C>(
@@ -63,7 +62,6 @@ extension MutableCollection where Element: FixedWidthInteger {
 ////        return nonzeroBitCount
 //        self.bitOp(self, other, count: count, op: op)
 //    }
-
 
 //    mutating func bitOp<A, B>(
 //        _ a: A,
@@ -90,14 +88,14 @@ extension MutableCollection where Element: FixedWidthInteger {
 //    }
 }
 
-//extension Sequence where Element : FixedWidthInteger {
+// extension Sequence where Element : FixedWidthInteger {
 //    public static func |(lhs: Self, rhs: Self) -> Zip2Sequence<Self, Self> {
 //
 //        sequence(state: <#T##State#>, next: <#T##(inout State) -> T?#>)
 //    }
-//}
+// }
 
-//struct OrIterator: IteratorProtocol {
+// struct OrIterator: IteratorProtocol {
 //    init(a: UnsafeBufferPointer<UInt64>, b: UnsafeBufferPointer<UInt64>) {
 //        fatalError()
 //    }
@@ -105,7 +103,7 @@ extension MutableCollection where Element: FixedWidthInteger {
 //    func next() -> Element? {
 //        fatalError()
 //    }
-//}
+// }
 
 extension RangeReplaceableCollection where Self: BidirectionalCollection {
     @inlinable @inline(__always)
@@ -132,7 +130,7 @@ extension MutableCollection {
         subrange: Range<Index>,
         _ other: S,
         _ transform: (Element, S.Element) -> Element
-    ) -> Int where S: Sequence{
+    ) -> Int where S: Sequence {
         var i = other.makeIterator()
 
         var startIndex = subrange.lowerBound
@@ -147,7 +145,7 @@ extension MutableCollection {
     }
 }
 
-//extension RangeReplaceableCollection {
+// extension RangeReplaceableCollection {
 //    @inlinable @inline(__always)
 //    mutating func append<S>(
 //        contentsOf newElements: S,
@@ -166,13 +164,11 @@ extension MutableCollection {
 //
 //        return offset
 //    }
-//}
-
+// }
 
 ///////////////// push
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
-    
 
     mutating func bitAppend<S>(_ other: S) -> (
         offset: Int,
@@ -254,7 +250,7 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         _ other: UnsafeBufferPointer<Element>,
         count: Int,
         op: (Element, Element) -> Element
-    ) -> Int  {
+    ) -> Int {
 //        assert(self.count <= count)
         guard other.isSome, count > 0 else { return 0 }
 
@@ -277,7 +273,6 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
     func zeroAll() {
         fatalError()
     }
-
 
 //    @inlinable @inline(__always)
 //    func bitCopy(
@@ -312,7 +307,6 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
     ) -> Int {
         fatalError()
     }
-
 
     @inlinable @inline(__always)
     func bitCopy(
@@ -371,7 +365,7 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
         _ b: UnsafeBufferPointer<Element>,
         count: Int,
         op: (Element, Element) -> Element
-    ) -> Int  {
+    ) -> Int {
         guard a.isSome, b.isSome, count > 0 else { return 0 }
 
         var nonzeroBitCount = 0

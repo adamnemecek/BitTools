@@ -1,17 +1,16 @@
 import XCTest
 import BitTools
 
-//func check(_ a: BitArray, _ b: Set<Int>) -> Bool {
+// func check(_ a: BitArray, _ b: Set<Int>) -> Bool {
 //    guard a.count == b.count else { return false }
 //    let sorted = b.sorted()
 //    return a.elementsEqual(sorted)
-//}
+// }
 extension Range where Bound == Int {
     func randomElements(_ count: Int) -> [Bound] {
         (0..<count).map { _ in self.randomElement()! }
     }
 }
-
 
 extension BitArray {
     func equal(to other: Set<Int>) -> Bool {
@@ -20,7 +19,7 @@ extension BitArray {
     }
 }
 
-//func testUnion(_ a: [Int], _ b: [Int]) -> Bool {
+// func testUnion(_ a: [Int], _ b: [Int]) -> Bool {
 //    let a = BitArray(a)
 //    let b = BitArray(b)
 //
@@ -28,9 +27,9 @@ extension BitArray {
 //    let result = a.union(b)
 //
 //    return result.equal(to: expected)
-//}
+// }
 //
-//func testFormUnion(_ a: [Int], _ b: [Int]) -> Bool {
+// func testFormUnion(_ a: [Int], _ b: [Int]) -> Bool {
 //    let a = BitArray(a)
 //    let b = BitArray(b)
 //
@@ -38,8 +37,7 @@ extension BitArray {
 //    let result = a.union(b)
 //
 //    return result.equal(to: expected)
-//}
-
+// }
 
 class BitArrayTest: XCTestCase {
     typealias Harness = BitArrayTestHarness<BitArray>
@@ -90,7 +88,7 @@ class BitArrayTest: XCTestCase {
 
     func testFormIntersection1() {
         var result: BitArray = [60, 80, 63, 70, 75, 300, 1000]
-        let b: BitArray = [10,  22, 75, 63, 100]
+        let b: BitArray = [10, 22, 75, 63, 100]
 
         let expected = Set(result).intersection(b)
         result.formIntersection(b)
@@ -102,7 +100,7 @@ class BitArrayTest: XCTestCase {
         var a: BitArray = [60, 80, 70, 75]
         print(a)
 
-        let b: BitArray = [10,  22, 75, 63, 100]
+        let b: BitArray = [10, 22, 75, 63, 100]
 
         print(b)
 
@@ -156,7 +154,7 @@ class BitArrayTest: XCTestCase {
 
     func testFormSymmetricDifference1() {
         var result: BitArray = [60, 80, 63, 70, 75, 300, 1000]
-        let b: BitArray = [10,  22, 75, 63, 100]
+        let b: BitArray = [10, 22, 75, 63, 100]
 
         let expected = Set(result).symmetricDifference(b)
         result.formSymmetricDifference(b)
@@ -168,13 +166,9 @@ class BitArrayTest: XCTestCase {
         var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
         print(a)
 
-        let b: BitArray = [10,  22, 75, 63, 100]
-
-
+        let b: BitArray = [10, 22, 75, 63, 100]
 
         a.formSymmetricDifference(b)
-
-
 
 //        XCTAssert(a.check())
 //        print(a.count == a.nonzeroBitCount())
@@ -239,7 +233,7 @@ class BitArrayTest: XCTestCase {
     }
 
     func testIter() {
-        let a: BitArray = [1,2,3,4,10,12]
+        let a: BitArray = [1, 2, 3, 4, 10, 12]
 
         for e in a {
             print(e)

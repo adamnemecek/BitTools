@@ -54,7 +54,7 @@ extension BoolArray: Sequence {
         return AnyIterator {
             while
                 let (idx, value) = i.next(),
-                seen < self.count{
+                seen < self.count {
                 if value {
                     seen += 1
                     return idx

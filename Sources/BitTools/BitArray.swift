@@ -128,7 +128,6 @@ extension BitArray: Sequence {
 //        }
 //    }
 
-
 }
 
 extension BitArray: SetAlgebra {
@@ -265,7 +264,6 @@ extension BitArray: SetAlgebra {
             inner: inner
         )
     }
-
 
     // done
     public mutating func formIntersection(

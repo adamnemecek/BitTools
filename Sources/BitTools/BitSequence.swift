@@ -1,5 +1,3 @@
-
-
 extension UnsafeBufferPointer where Element == UInt64 {
     func nonzeroBitCount() -> Int {
         guard var ptr = self.baseAddress else { return 0 }
@@ -151,4 +149,3 @@ extension BitArrayIterator2: IteratorProtocol {
         return (self.bitBlockOffset + trailing, self.blockIndex, trailing)
     }
 }
-

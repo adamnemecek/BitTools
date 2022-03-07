@@ -1,10 +1,7 @@
-
-
 struct BitArrayTestHarness<S>: SetAlgebra, Sequence, ExpressibleByArrayLiteral where S: SetAlgebra & Sequence, S.Element == Int {
     typealias Element = Int
 
     typealias ArrayLiteralElement = Element
-
 
     var set: Set<Int>
     var array: S
@@ -58,7 +55,6 @@ struct BitArrayTestHarness<S>: SetAlgebra, Sequence, ExpressibleByArrayLiteral w
         self.set.formIntersection(other.set)
         self.array.formIntersection(other.array)
     }
-
 
     func symmetricDifference(_ other: Self) -> Self {
         Self(
@@ -127,7 +123,3 @@ struct BitArrayTestHarness<S>: SetAlgebra, Sequence, ExpressibleByArrayLiteral w
 //        "\(self.self)(\(Array(self)))"
 //    }
 }
-
-
-
-

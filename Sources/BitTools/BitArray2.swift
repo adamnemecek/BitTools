@@ -10,15 +10,15 @@ public struct BitArray2: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
         self.count = 0
         self.inner = inner
     }
-//}
+// }
 
-//extension BitArray2: ExpressibleByArrayLiteral {
+// extension BitArray2: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Int...) {
         self.init(elements)
     }
-//}
+// }
 
-//extension BitArray2 : SetAlgebra {
+// extension BitArray2 : SetAlgebra {
 
     public typealias Element = Int
     public typealias Block = UInt64
@@ -27,7 +27,7 @@ public struct BitArray2: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
         self.init(count: 0, inner: [])
     }
 
-    public init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
         self.init()
 
         guard let max = sequence.max() else { return }
@@ -265,7 +265,6 @@ public struct BitArray2: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
         fatalError()
     }
 
-
     @inlinable @inline(__always)
     func ratio(for member: Int) -> Ratio<Int> {
         member.ratio(Block.bitWidth)
@@ -282,9 +281,9 @@ public struct BitArray2: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
         self.count += 1
         return (true, newMember)
     }
-//}
+// }
 
-//extension BitArray2 : Sequence {
+// extension BitArray2 : Sequence {
     public func makeIterator() -> BitArrayIterator {
         let bitCount = self.count
         return self.withUnsafeBufferPointer {

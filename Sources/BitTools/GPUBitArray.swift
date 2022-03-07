@@ -19,8 +19,7 @@ extension GPUBitArray: Sequence {
     }
 }
 
-
-extension GPUBitArray : SetAlgebra {
+extension GPUBitArray: SetAlgebra {
     public typealias Element = Int
 
     public init(device: MTLDevice, capability: Int) {

@@ -1,6 +1,5 @@
 import Ext
 
-
 // func subtract(Set<Element>)
 // Removes the elements of the given set from this set.
 // func subtract<S>(S)
@@ -75,7 +74,6 @@ extension FixedWidthInteger {
 //        return s
 //    }
 }
-
 
 extension FixedWidthInteger {
     ///

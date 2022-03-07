@@ -4,9 +4,9 @@ import BitTools
 class BitArray2Tests: XCTestCase {
 
     func testBitArray() {
-        var a: BitArray2 = [1,2,1000, 2000]
+        var a: BitArray2 = [1, 2, 1000, 2000]
 
-        let b: BitArray2 = [3,4,500, 4000]
+        let b: BitArray2 = [3, 4, 500, 4000]
 
         let c = Set(a).union(b).sorted()
 

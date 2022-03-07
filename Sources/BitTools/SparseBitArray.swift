@@ -1,7 +1,6 @@
-
 import Foundation
 
-public func koremetalbundle()  {
+public func koremetalbundle() {
     for b in Bundle.allFrameworks {
         print(b)
     }
@@ -18,7 +17,6 @@ extension SparseBitArrayMeta {
         fatalError()
     }
 
-    
 }
 
 public struct SparseBitArray {
@@ -32,16 +30,14 @@ extension SparseBitArray {
     }
 }
 
-//extension SparseBitArray: Sequence {
+// extension SparseBitArray: Sequence {
 //    public func makeIterator() -> AnyIterator<Int> {
 
 //        fatalError()
 //    }
-//}
+// }
 
 //
-//struct SparseBitArrayIterator {
+// struct SparseBitArrayIterator {
 //
-//}
-
-
+// }
