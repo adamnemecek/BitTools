@@ -173,119 +173,45 @@ extension BitArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.order(other.capacity)
 
-        var count = 0
+        var nonzeroBitCount = 0
 
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
+        // combine the two that the arrays have in common
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
-            count += new.nonzeroBitCount
+            nonzeroBitCount += new.nonzeroBitCount
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] ||
-        other.inner[minCapacity...]
+        // copy over the tail
+        // note that only one of two loops will be executed, the
+        // other one is empty
 
-        for i in minCapacity..<maxCapacity {
-            let new = tail[i]
-            inner[i] = new
-            count += new.nonzeroBitCount
+        assert(
+            self.inner[minCapacity...].isEmpty
+            || other.inner[minCapacity...].isEmpty
+        )
+
+        var idx = minCapacity
+
+        for e in self.inner[minCapacity...] {
+            inner[idx] = e
+            nonzeroBitCount += e.nonzeroBitCount
+            idx += 1
+        }
+
+        for e in other.inner[minCapacity...] {
+            inner[idx] = e
+            nonzeroBitCount += e.nonzeroBitCount
+            idx += 1
         }
 
         return Self(
-            count: count,
+            count: nonzeroBitCount,
             inner: inner
         )
     }
-
-    public __consuming func union1(
-        _ other: __owned Self
-    ) -> Self {
-        let (
-            minCapacity,
-            maxCapacity
-        ) = self.capacity.order(other.capacity)
-
-        var dst = ContiguousArray<UInt64>(zeros: maxCapacity)
-        var count = 0
-
-
-//        count += dst.withUnsafeMutableBufferPointer { dst in
-//            self.inner.withUnsafeBufferPointer { a in
-//                other.inner.withUnsafeBufferPointer { b in
-//                    dst.bitCopy(a, count: 10)
-//                }
-//            }
-//        }
-//
-//        count += dst.withUnsafeMutableBufferPointer { dst in
-//            self.inner.withUnsafeBufferPointer { a in
-//                var bitCount = other.inner.withUnsafeBufferPointer { b in
-//                    dst.bitCopy(a, count: 10)
-//                }
-//
-//                return bitCount
-//            }
-//        }
-
-        for i in 0..<minCapacity {
-            let new = self.inner[i] | other.inner[i]
-            count += new.nonzeroBitCount
-            dst[i] = new
-        }
-
-        let tail = self.inner[minCapacity...] ||
-            other.inner[minCapacity...]
-
-        for i in minCapacity..<maxCapacity {
-            let new = tail[i]
-            dst[i] = new
-            count += new.nonzeroBitCount
-        }
-
-        return Self(
-            count: count,
-            inner: dst
-        )
-    }
-//
-//    public __consuming func union1(
-//        _ other: __owned Self
-//    ) -> Self {
-//        let (
-//            minCapacity,
-//            maxCapacity
-//        ) = self.capacity.extrema(other.capacity)
-//
-//        var count = 0
-//        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
-//
-////        count += inner.bitOp(
-////            self.inner,
-////            other.inner,
-////            count: minCapacity,
-////            op: |)
-//
-//        for i in 0..<minCapacity {
-//            let new = self.inner[i] | other.inner[i]
-//            count += new.nonzeroBitCount
-//            inner[i] = new
-//        }
-//
-//        let tail = self.inner[minCapacity...] ??
-//        other.inner[minCapacity...]
-//
-//        for i in minCapacity..<maxCapacity {
-//            let new = tail[i]
-//            inner[i] = new
-//            count += new.nonzeroBitCount
-//        }
-//
-//        return Self(
-//            count: count,
-//            inner: inner
-//        )
-//    }
 
     public mutating func formUnion(
         _ other: __owned Self

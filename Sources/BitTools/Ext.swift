@@ -57,6 +57,7 @@ extension MutableCollection where Element == Bool {
     }
 }
 
+
 extension RangeReplaceableCollection where Element == Bool {
     public init(false count: Int) {
         self.init(repeating: false, count: count)
