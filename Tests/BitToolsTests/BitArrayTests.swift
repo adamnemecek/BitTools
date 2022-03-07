@@ -5,9 +5,9 @@ import BitTools
 
 
 class BitArrayTest: XCTestCase {
-
+    typealias Harness = BitArrayTestHarness<BitArray>
     func testModule() {
-//        BitArrayTestHarness()/
+        var harness = Harness()
         koremetalbundle()
     }
 

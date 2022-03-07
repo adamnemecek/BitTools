@@ -1,6 +1,6 @@
 
 
-struct BitArrayTestHarness<S>: SetAlgebra, Sequence where S: SetAlgebra & Sequence, S.Element == Int {
+struct BitArrayTestHarness<S>: SetAlgebra, Sequence, ExpressibleByArrayLiteral where S: SetAlgebra & Sequence, S.Element == Int {
     typealias Element = Int
 
     typealias ArrayLiteralElement = Element
@@ -10,9 +10,17 @@ struct BitArrayTestHarness<S>: SetAlgebra, Sequence where S: SetAlgebra & Sequen
     var array: S
 
     init() {
-
         self.set = []
         self.array = []
+    }
+
+    init(arrayLiteral elements: Element...) {
+        self.init(elements)
+    }
+
+    init<T>(_ sequence: __owned T) where T: Sequence, Element == T.Element {
+        self.set = Set(sequence)
+        self.array = S(sequence)
     }
 
     init(_ set: Set<Int>, _ array: S) {
