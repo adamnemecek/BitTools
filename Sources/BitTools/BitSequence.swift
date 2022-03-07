@@ -146,7 +146,8 @@ extension BitArrayIterator2: IteratorProtocol {
         self.remainingNonzeroBitCount -= 1
         let trailing = block.trailingZeroBitCount
         self.block &= ~(1 << trailing)
-        return (self.bitBlockOffset + trailing, BlockIndex(self.blockIndex, trailing))
+        let value = self.bitBlockOffset + trailing
+        return (value, BlockIndex(self.blockIndex, trailing, value))
     }
 }
 

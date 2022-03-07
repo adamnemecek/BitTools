@@ -624,22 +624,27 @@ func blockIndex(_ value: Int) -> BlockIndex {
 
     let ret = BlockIndex(
         blockIndex,
-        value - (blockIndex << 6)
+        value - (blockIndex << 6),
+        value
     )
 
-    assert(ret.value == value)
+    assert(ret.recalculatedValue == value)
     return ret
 }
 
 // this is a divrem with 64
+@usableFromInline
+@frozen
 struct BlockIndex: Equatable {
     let blockIndex: Int
     let bitIndex: Int
+    let value: Int
 
     @inline(__always)
-    init(_ blockIndex: Int, _ bitIndex: Int) {
+    init(_ blockIndex: Int, _ bitIndex: Int, _ value: Int) {
         self.blockIndex = blockIndex
         self.bitIndex = bitIndex
+        self.value = value
     }
 
     @inline(__always)
@@ -656,11 +661,27 @@ struct BlockIndex: Equatable {
 //        assert(self.value == value)
     }
 
-    var value: Int {
+    var recalculatedValue: Int {
         self.blockIndex << 6 + self.bitIndex
     }
 
     var blocksNeeded: Int {
         Int((value + 1).roundUp(to: UInt64.bitWidth) / UInt64.bitWidth)
     }
+
+//    var blocksNeeded2: Int {
+//        let block = BitTools.blockIndex(self.value + 1)
+//        // bitindex is modulo
+//        if block.bitIndex == 0 {
+//            return block.blockIndex
+//        } else {
+//            return block.value - block.
+//        }
+//    }
 }
+
+//extension Int {
+//    func roundUp64() -> Self {
+//        let m = self - self
+//    }
+//}

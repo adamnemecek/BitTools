@@ -222,6 +222,8 @@ class BitArrayTest: XCTestCase {
 
     func testRemove() {
         var a: BitArray = [0, 10, 20, 500, 1000]
+        XCTAssert(a.contains(0))
+
         XCTAssert(a.count == 5)
         XCTAssert(a.contains(20))
         XCTAssert(!a.contains(30))
