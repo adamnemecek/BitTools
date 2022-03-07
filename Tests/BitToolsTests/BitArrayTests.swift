@@ -162,7 +162,6 @@ class BitArrayTest: XCTestCase {
         XCTAssert(result.equal(to: expected))
     }
 
-
     func testSubtracting() {
         let a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
         let b: BitArray = [10, 22, 75, 63, 100]

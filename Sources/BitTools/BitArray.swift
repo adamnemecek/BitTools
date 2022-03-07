@@ -367,7 +367,6 @@ extension BitArray: SetAlgebra {
         self.count += newCount - oldCount
     }
 
-
     public mutating func subtract(_ other: Self) {
         // remove elements in the other set from this set
 
@@ -388,7 +387,6 @@ extension BitArray: SetAlgebra {
 
         self.count += newCount - oldCount
     }
-
 
     public func subtracting(_ other: Self) -> Self {
         // this is essentially intersect but with a different operator, capacity
@@ -438,7 +436,6 @@ extension BitArray: SetAlgebra {
 //    public func isStrictSubset(of other: Self) -> Bool {
 //        fatalError()
 //    }
-
 
 //    x.isSubset(of: y) implies x.union(y) == y
 //
@@ -513,8 +510,6 @@ extension BitArray: SetAlgebra {
         return nil
     }
 
-
-
 }
 
 extension BitArray {
@@ -576,7 +571,6 @@ extension BitArray: CustomStringConvertible {
     }
 }
 
-
 extension BitArray {
     @inline(__always)
     public subscript(index: Int) -> Bool {
@@ -597,7 +591,6 @@ extension BitArray {
             // 0, 1 =>  1
             // 1, 1 =>  0
             //
-
 
             if oldValue {
                 // we are removing
@@ -638,7 +631,7 @@ func blockIndex(_ value: Int) -> BlockIndex {
 }
 
 // this is a divrem with 64
-struct BlockIndex : Equatable {
+struct BlockIndex: Equatable {
     let blockIndex: Int
     let bitIndex: Int
 
