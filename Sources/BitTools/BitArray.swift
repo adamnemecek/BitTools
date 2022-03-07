@@ -569,8 +569,9 @@ extension BitArray {
             self.contains(index)
         }
         set {
-            let blockIndex = blockIndex(index)
-            let oldValue = self.rawContains(blockIndex)
+
+//            let blockIndex = blockIndex(index)
+            let oldValue = self.contains(index)
             guard oldValue != newValue else { return }
 
             // this means that either we are adding or removing
@@ -585,12 +586,14 @@ extension BitArray {
 
             if oldValue {
                 // we are removing
-                self.rawRemove(blockIndex)
-                self.count -= 1
+                _ = self.remove(index)
+//                self.rawRemove(blockIndex)
+//                self.count -= 1
             } else {
+                _ = self.insert(index)
                 // we are adding
-                self.rawInsert(blockIndex)
-                self.count += 1
+//                self.rawInsert(blockIndex)
+//                self.count += 1
             }
         }
     }
