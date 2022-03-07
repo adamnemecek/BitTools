@@ -150,9 +150,8 @@ extension BitArrayIterator2: IteratorProtocol {
     }
 }
 
-
-//func test() {
+// func test() {
 //    var a = [1,2,3,4]
 //
 //    var i = a.makeIterator()
-//}
+// }

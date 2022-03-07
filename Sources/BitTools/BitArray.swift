@@ -606,7 +606,7 @@ extension BitArray {
     }
 }
 
-//extension BitArray {
+// extension BitArray {
 //    subscript(block: BlockIndex) -> Bool {
 //        get {
 //            fatalError()
@@ -615,7 +615,7 @@ extension BitArray {
 //            fatalError()
 //        }
 //    }
-//}
+// }
 
 @inline(__always)
 func blockIndex(_ value: Int) -> BlockIndex {

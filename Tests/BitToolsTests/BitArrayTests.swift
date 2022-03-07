@@ -257,12 +257,12 @@ class BitArrayTest: XCTestCase {
     }
 
     func testEqual() {
-        var a: BitArray = [1,2,4,10, 1000, 10000]
+        var a: BitArray = [1, 2, 4, 10, 1000, 10000]
         _ = a.remove(10000)
         a.insert(20000)
         a.remove(20000)
 
-        var b: BitArray = [4,10,2]
+        var b: BitArray = [4, 10, 2]
         _ = b.insert(1000)
         _ = b.insert(1)
 
