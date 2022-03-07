@@ -162,6 +162,29 @@ class BitArrayTest: XCTestCase {
         XCTAssert(result.equal(to: expected))
     }
 
+
+    func testSubtracting() {
+        let a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        let b: BitArray = [10, 22, 75, 63, 100]
+
+        let expected = Set(a).subtracting(b)
+        let result = a.subtracting(b)
+        print(expected)
+        print(result)
+
+        XCTAssert(result.equal(to: expected))
+    }
+
+    func testSubtract() {
+        var result: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        let b: BitArray = [10, 22, 75, 63, 100]
+
+        let expected = Set(result).subtracting(b)
+        result.subtract(b)
+
+        XCTAssert(result.equal(to: expected))
+    }
+
     func testFormSymmetricDifference() {
         var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
         print(a)
