@@ -40,10 +40,16 @@ extension BitArray {
 // }
 
 class BitArrayTest: XCTestCase {
-    typealias Harness = BitArrayTestHarness<BitArray>
+//    typealias Harness = BitArrayTestHarness<BitArray>
 
     func testBundle() {
         //        koremetalbundle()
+    }
+
+    func testArrayExpressible() {
+        let a: BitArray = [0,10,20,30,100]
+
+        XCTAssert(a.elementsEqual([0,10,20,30,100]))
     }
 
     func testUnion1() {
