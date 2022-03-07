@@ -306,47 +306,50 @@ extension BitArray: SetAlgebra {
         self.count += newCount - oldCount
     }
 
-    public __consuming func intersection(
-        _ other: Self
-    ) -> Self {
-        let capacity = Swift.min(self.capacity, other.capacity)
-
-        var count = 0
-        var inner = ContiguousArray<UInt64>(zeros: capacity)
-
-        for i in 0..<capacity {
-            let new = self.inner[i] & other.inner[i]
-            count += new.nonzeroBitCount
-            inner[i] = new
-        }
-
-        return Self(
-            count: count,
-            inner: inner
-        )
-    }
 
     public func nonzeroBitCount() -> Int {
         self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
     }
 
+    public __consuming func intersection(
+        _ other: Self
+    ) -> Self {
+        let capacity = Swift.min(self.capacity, other.capacity)
+        var nonzeroBitCount = 0
+
+        var inner = ContiguousArray<UInt64>(zeros: capacity)
+
+        for i in 0..<capacity {
+            let new = self.inner[i] & other.inner[i]
+            inner[i] = new
+
+            nonzeroBitCount += new.nonzeroBitCount
+        }
+
+        return Self(
+            count: nonzeroBitCount,
+            inner: inner
+        )
+    }
+
+
     public mutating func formIntersection(
         _ other: Self
     ) {
-
-        var nonzerBitCount = 0
         let capacity = Swift.min(self.capacity, other.capacity)
+        var nonzeroBitCount = 0
 
         for i in 0 ..< capacity {
             let old = self.inner[i]
             let new = old & other.inner[i]
 
-            nonzerBitCount += new.nonzeroBitCount
+            nonzeroBitCount += new.nonzeroBitCount
 
             self.inner[i] = new
         }
+        // elements that are only in the current need to be removed
         self.inner[capacity...].zeroAll()
-        self.count = nonzerBitCount
+        self.count = nonzeroBitCount
     }
 
     func ratio(for member: Int) -> Ratio<Int> {
@@ -389,8 +392,9 @@ extension BitArray: SetAlgebra {
     ) {
         var oldCount = 0
         var newCount = 0
-        self.reserveCapacity(other.inner.count)
-        for i in 0 ..< other.inner.count {
+
+        self.reserveCapacity(other.capacity)
+        for i in 0 ..< other.capacity {
             let old = self.inner[i]
             let new = old ^ other.inner[i]
 
