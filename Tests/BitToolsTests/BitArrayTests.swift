@@ -12,16 +12,41 @@ class BitArrayTest: XCTestCase {
     }
 
     func testModule() {
-        var a: BitArray = [60, 80, 70]
+        var a: BitArray = [60, 80, 70, 75]
         print(a)
 
-        let b: BitArray = [10,  22, 63]
+        let b: BitArray = [10,  22, 75, 63, 100]
 
         print(b)
-    
+
         a.formUnion(b)
 
         print(a)
+        print(a.count)
+//        XCTAssert(a.check())
+//        var a: Harness = [60, 80, 70]
+//
+//        let b: Harness = [10, 63, 22]
+//
+//        a.formUnion(b)
+//
+//        XCTAssert(a.check())
+    }
+
+    func testFormIntersection1() {
+        var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        print(a)
+
+        let b: BitArray = [10,  22, 75, 63, 100]
+
+//        print(b)
+
+        a.formIntersection(b)
+
+
+        print(a)
+//        XCTAssert(a.check())
+//        print(a.count == a.nonzeroBitCount())
 //        XCTAssert(a.check())
 //        var a: Harness = [60, 80, 70]
 //

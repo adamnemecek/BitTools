@@ -30,6 +30,8 @@ struct BitArrayTestHarness<S>: SetAlgebra, Sequence, ExpressibleByArrayLiteral w
 
     func check() -> Bool {
         let sorted = self.set.sorted()
+        print(self.array)
+        print(sorted)
         return sorted.elementsEqual(self.array)
     }
 
@@ -120,6 +122,12 @@ struct BitArrayTestHarness<S>: SetAlgebra, Sequence, ExpressibleByArrayLiteral w
             return na
         }
     }
+
+//    var description: String {
+//        "\(self.self)(\(Array(self)))"
+//    }
 }
+
+
 
 

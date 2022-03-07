@@ -323,8 +323,8 @@ extension BitArray: SetAlgebra {
 
             self.inner[i] = new
         }
-//        print("count \(count)")
-        self.count += oldCount - newCount
+
+        self.count +=  newCount - oldCount
     }
 
     public __consuming func intersection(
@@ -347,19 +347,26 @@ extension BitArray: SetAlgebra {
         )
     }
 
+    public func nonzeroBitCount() -> Int {
+        self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
+    }
+
     public mutating func formIntersection(
         _ other: Self
     ) {
+//        let (minCapacity = self.capacity.order(other.capacity)
+        var nonzerBitCount = 0
         let capacity = Swift.min(self.capacity, other.capacity)
+        for i in 0 ..< capacity {
+            let old = self.inner[i]
+            let new = old & other.inner[i]
 
-        var count = 0
-        for i in 0..<capacity {
-            let new = self.inner[i] & other.inner[i]
-            count += new.nonzeroBitCount
+            nonzerBitCount += new.nonzeroBitCount
+
             self.inner[i] = new
         }
-
-        self.count = count
+        self.inner[capacity...].zeroAll()
+        self.count = nonzerBitCount
     }
 
     func ratio(for member: Int) -> Ratio<Int> {
