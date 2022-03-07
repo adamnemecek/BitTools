@@ -58,10 +58,10 @@ extension BitArrayIterator: IteratorProtocol {
             bitBlockOffset: 0
         )
     }
-
-    public var underestimatedCount: Int {
-        fatalError()
-    }
+//
+//    public var underestimatedCount: Int {
+//        fatalError()
+//    }
 
     @inline(__always)
     public mutating func next() -> Int? {

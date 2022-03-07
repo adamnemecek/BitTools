@@ -10,10 +10,12 @@ public struct BitArray {
     ///
     /// capacity in blocks
     ///
+    @inline(__always)
     public var capacity: Int {
         self.inner.count
     }
 
+    @inline(__always)
     public var bitCapacity: Int {
         self.capacity * Block.bitWidth
     }
@@ -55,6 +57,7 @@ extension BitArray: Sequence {
         try self.inner.withUnsafeBufferPointer(body)
     }
 
+    @inline(__always)
     public func makeIterator() -> BitArrayIterator {
         let bitCount = self.count
         return self.withUnsafeBufferPointer {

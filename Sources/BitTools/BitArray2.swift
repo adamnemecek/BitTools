@@ -238,7 +238,10 @@ extension BitArray2 : SetAlgebra {
 
 extension BitArray2 : Sequence {
     public func makeIterator() -> BitArrayIterator {
-        fatalError()
+        let bitCount = self.count
+        return self.withUnsafeBufferPointer {
+            BitArrayIterator(ptr: $0, nonzeroBitCount: bitCount)
+        }
     }
 
     public var underestimatedCount: Int {

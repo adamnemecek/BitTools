@@ -5,6 +5,10 @@ class BitArray2Tests: XCTestCase {
 
     func testBitArray() {
         let a: BitArray2 = [1,2,1000, 2000]
+
+        for e in a {
+            print(e)
+        }
     }
 
     override func setUpWithError() throws {
