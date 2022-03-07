@@ -4,11 +4,18 @@ import BitTools
 class BitArray2Tests: XCTestCase {
 
     func testBitArray() {
-        let a: BitArray2 = [1,2,1000, 2000]
+        var a: BitArray2 = [1,2,1000, 2000]
 
-        for e in a {
-            print(e)
-        }
+        let b: BitArray2 = [3,4,500, 4000]
+
+        let c = Set(a).union(b).sorted()
+
+        a.formUnion(b)
+
+//        for e in a {
+//            print(e)
+//        }
+        XCTAssert(a.elementsEqual(c))
     }
 
     override func setUpWithError() throws {
