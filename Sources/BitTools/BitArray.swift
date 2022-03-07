@@ -290,27 +290,6 @@ extension BitArray: SetAlgebra {
     public mutating func formUnion(
         _ other: __owned Self
     ) {
-//        let (
-//            minCapacity,
-//            maxCapacity
-//        ) = self.capacity.order(other.capacity)
-
-//        self.reserveCapacity(other.capacity)
-//
-//        var count = 0
-//        for i in 0..<minCapacity {
-//            let new = self.inner[i] | other.inner[i]
-//            self.inner[i] = new
-//            count += new.nonzeroBitCount
-//        }
-//
-//        let tail = other.inner[minCapacity...]
-//
-//        for i in minCapacity..<maxCapacity {
-//            let new = tail[i]
-//            self.inner[i] = new
-//            count += new.nonzeroBitCount
-//        }
         var oldCount = 0
         var newCount = 0
         self.reserveCapacity(other.inner.count)
@@ -324,7 +303,7 @@ extension BitArray: SetAlgebra {
             self.inner[i] = new
         }
 
-        self.count +=  newCount - oldCount
+        self.count += newCount - oldCount
     }
 
     public __consuming func intersection(
@@ -354,9 +333,10 @@ extension BitArray: SetAlgebra {
     public mutating func formIntersection(
         _ other: Self
     ) {
-//        let (minCapacity = self.capacity.order(other.capacity)
+
         var nonzerBitCount = 0
         let capacity = Swift.min(self.capacity, other.capacity)
+
         for i in 0 ..< capacity {
             let old = self.inner[i]
             let new = old & other.inner[i]
@@ -407,29 +387,20 @@ extension BitArray: SetAlgebra {
     public mutating func formSymmetricDifference(
         _ other: __owned Self
     ) {
-        let (
-            minCapacity,
-            maxCapacity
-        ) = self.capacity.order(other.capacity)
+        var oldCount = 0
+        var newCount = 0
+        self.reserveCapacity(other.inner.count)
+        for i in 0 ..< other.inner.count {
+            let old = self.inner[i]
+            let new = old ^ other.inner[i]
 
-        self.reserveCapacity(other.capacity)
+            oldCount += old.nonzeroBitCount
+            newCount += new.nonzeroBitCount
 
-        var count = 0
-        for i in 0..<minCapacity {
-            let new = self.inner[i] | other.inner[i]
-            count += new.nonzeroBitCount
             self.inner[i] = new
         }
 
-        let tail = other.inner[minCapacity...]
-
-        for i in minCapacity..<maxCapacity {
-            let new = tail[i]
-            self.inner[i] = new
-            count += new.nonzeroBitCount
-        }
-
-        self.count = count
+        self.count += newCount - oldCount
     }
 
     public mutating func insert(

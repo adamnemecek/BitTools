@@ -57,6 +57,30 @@ class BitArrayTest: XCTestCase {
 //        XCTAssert(a.check())
     }
 
+    func testFormSymmetricDifference() {
+        var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        print(a)
+
+        let b: BitArray = [10,  22, 75, 63, 100]
+
+//        print(b)
+
+        a.formSymmetricDifference(b)
+
+        
+
+//        XCTAssert(a.check())
+//        print(a.count == a.nonzeroBitCount())
+//        XCTAssert(a.check())
+//        var a: Harness = [60, 80, 70]
+//
+//        let b: Harness = [10, 63, 22]
+//
+//        a.formUnion(b)
+//
+//        XCTAssert(a.check())
+    }
+
     func testBitArray() {
         var a: BitArray = [100, 64, 1000]
 
