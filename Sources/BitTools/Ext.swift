@@ -56,6 +56,15 @@ extension MutableCollection where Element == Bool {
     }
 }
 
+extension MutableCollection where Element: FixedWidthInteger {
+    @inline(__always)
+    mutating func zeroAll() {
+        for i in indices {
+            self[i] = 0
+        }
+    }
+}
+
 extension RangeReplaceableCollection where Element == Bool {
     public init(false count: Int) {
         self.init(repeating: false, count: count)
@@ -78,11 +87,11 @@ extension RangeReplaceableCollection where Element: FixedWidthInteger {
         self.reserveBitCapacity(bitCapacity)
     }
 
-    public mutating func zeroAll() {
-        let count = self.count
-        self.removeAll(keepingCapacity: true)
-        self.append(zeros: count)
-    }
+//    public mutating func zeroAll() {
+//        let count = self.count
+//        self.removeAll(keepingCapacity: true)
+//        self.append(zeros: count)
+//    }
 
     public mutating func reserveBitCapacity(_ bitCapacity: Int) {
         let minimumCapacity = bitCapacity.blockCount(bitWidth: Element.bitWidth)
