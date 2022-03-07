@@ -83,6 +83,7 @@ extension FixedWidthInteger {
     /// 0 => 1
     /// 127 => 2
     /// 128 => 3
+    @inlinable @inline(__always)
     func blockCount(bitWidth: Int) -> Int {
         let count = (self + 1).roundUp(to: Self(bitWidth))
         return Int(count / Self(bitWidth))

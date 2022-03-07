@@ -34,6 +34,7 @@ extension BitArray2: ExpressibleByArrayLiteral {
 extension BitArray2 : SetAlgebra {
 
     public typealias Element = Int
+    public typealias Block = UInt64
 
     public init() {
         self.init(count: 0, inner: [])
@@ -59,6 +60,12 @@ extension BitArray2 : SetAlgebra {
         let count = minimumCapacity - self.count
         guard count > 0 else { return }
         self.inner.append(zeros: count)
+    }
+
+    @inlinable @inline(__always)
+    mutating func reserveCapacity(for value: Element) {
+        let a = value.blockCount(bitWidth: Block.bitWidth)
+        self.reserveCapacity(a)
     }
 
     @inlinable @inline(__always)
@@ -210,8 +217,22 @@ extension BitArray2 : SetAlgebra {
         fatalError()
     }
 
-    public func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
-        fatalError()
+
+    @inlinable @inline(__always)
+    func ratio(for member: Int) -> Ratio<Int> {
+        member.ratio(Block.bitWidth)
+    }
+
+//    @inlinable @inline(__always)
+    public mutating func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
+        self.reserveCapacity(for: newMember)
+
+        let ratio = self.ratio(for: newMember)
+        let contains = self.inner[ratio]
+        guard !contains else { return (false, newMember) }
+        self.inner[ratio] = true
+        self.count += 1
+        return (true, newMember)
     }
 }
 
