@@ -6,6 +6,39 @@ import BitTools
 //    let sorted = b.sorted()
 //    return a.elementsEqual(sorted)
 //}
+extension Range where Bound == Int {
+    func randomElements(_ count: Int) -> [Bound] {
+        (0..<count).map { _ in self.randomElement()! }
+    }
+}
+
+
+extension BitArray {
+    func equal(to other: Set<Int>) -> Bool {
+        let sorted = other.sorted()
+        return self.count == sorted.count && self.elementsEqual(sorted)
+    }
+}
+
+//func testUnion(_ a: [Int], _ b: [Int]) -> Bool {
+//    let a = BitArray(a)
+//    let b = BitArray(b)
+//
+//    let expected = Set(a).union(b)
+//    let result = a.union(b)
+//
+//    return result.equal(to: expected)
+//}
+//
+//func testFormUnion(_ a: [Int], _ b: [Int]) -> Bool {
+//    let a = BitArray(a)
+//    let b = BitArray(b)
+//
+//    let expected = Set(a).union(b)
+//    let result = a.union(b)
+//
+//    return result.equal(to: expected)
+//}
 
 
 class BitArrayTest: XCTestCase {
@@ -19,11 +52,41 @@ class BitArrayTest: XCTestCase {
         let a: BitArray = [60, 80, 70, 75]
         let b: BitArray = [10, 22, 75, 63, 100]
 
-        let expected = Set(a).union(b).sorted()
+        let expected = Set(a).union(b)
         let result = a.union(b)
 
-        XCTAssert(result.count == expected.count)
-        XCTAssert(result.elementsEqual(expected))
+        XCTAssert(result.equal(to: expected))
+    }
+
+    func testFormUnion1() {
+        var result: BitArray = [60, 80, 70, 75]
+        let b: BitArray = [10, 22, 75, 63, 100]
+
+        let expected = Set(result).union(b)
+        result.formUnion(b)
+
+        XCTAssert(result.equal(to: expected))
+    }
+
+    func testIntersection1() {
+        let a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        let b: BitArray = [10, 22, 75, 63, 100]
+
+        let expected = Set(a).intersection(b)
+        let result = a.intersection(b)
+        
+
+        XCTAssert(result.equal(to: expected))
+    }
+
+    func testFormIntersection1() {
+        var result: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        let b: BitArray = [10,  22, 75, 63, 100]
+
+        let expected = Set(result).intersection(b)
+        result.formIntersection(b)
+
+        XCTAssert(result.equal(to: expected))
     }
 
     func testModule() {
@@ -48,29 +111,29 @@ class BitArrayTest: XCTestCase {
 //        XCTAssert(a.check())
     }
 
-    func testFormIntersection1() {
-        var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
-        print(a)
-
-        let b: BitArray = [10,  22, 75, 63, 100]
-
-//        print(b)
-
-        a.formIntersection(b)
-
-
-        print(a)
-//        XCTAssert(a.check())
-//        print(a.count == a.nonzeroBitCount())
-//        XCTAssert(a.check())
-//        var a: Harness = [60, 80, 70]
+//    func testFormIntersection1() {
+//        var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+//        print(a)
 //
-//        let b: Harness = [10, 63, 22]
+//        let b: BitArray = [10,  22, 75, 63, 100]
 //
-//        a.formUnion(b)
+////        print(b)
 //
-//        XCTAssert(a.check())
-    }
+//        a.formIntersection(b)
+//
+//
+//        print(a)
+////        XCTAssert(a.check())
+////        print(a.count == a.nonzeroBitCount())
+////        XCTAssert(a.check())
+////        var a: Harness = [60, 80, 70]
+////
+////        let b: Harness = [10, 63, 22]
+////
+////        a.formUnion(b)
+////
+////        XCTAssert(a.check())
+//    }
 
     func testFormSymmetricDifference() {
         var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
