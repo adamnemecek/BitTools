@@ -170,6 +170,7 @@ extension BitArray: SetAlgebra {
         ) = self.capacity.order(other.capacity)
 
         var count = 0
+
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
         for i in 0..<minCapacity {

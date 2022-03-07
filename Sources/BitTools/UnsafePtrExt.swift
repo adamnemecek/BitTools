@@ -108,47 +108,43 @@ extension MutableCollection where Element: FixedWidthInteger {
 //}
 
 extension RangeReplaceableCollection where Self: BidirectionalCollection {
-    mutating func truncate(to count: Int) {
+    @inlinable @inline(__always)
+    public mutating func truncate(to count: Int) {
         fatalError()
 //        guard count > self.count else { return }
 //        self.removeLast(10)
     }
 }
-//
-//extension MutableCollection {
-//    subscript(in range: Range<Index>) -> AnyIterator<Element> {
-//        get {
-//            fatalError()
-//        }
-//        set {
-//            fatalError()
-//        }
-//    }
-//
-//    subscript(in range: PartialRangeFrom<Index>) -> AnyIterator<Element> {
-//        get {
-//            fatalError()
-//        }
-//        set {
-//            fatalError()
-//        }
-//    }
-//
-//    subscript<C>(in range: PartialRangeUpTo<Index>) -> AnyIterator<Element> where C: {
-//        get {
-//            fatalError()
-//        }
-//        set {
-//
-//            fatalError()
-//        }
-//    }
-//}
 
-func test2() {
-    var a = [1,2,3,4]
+extension MutableCollection {
+    @inlinable @inline(__always)
+    public mutating func replaceSubrange(_ subrange: Range<Index>, with element: Element) {
+        var startIndex = subrange.lowerBound
+        let endIndex = subrange.upperBound
 
-    a[in: 0...]
+        while startIndex != endIndex {
+            self[startIndex] = element
+            startIndex = self.index(after: startIndex)
+        }
+    }
+
+    public mutating func mapSubrange<S>(
+        subrange: Range<Index>,
+        _ other: S,
+        _ transform: (Element, S.Element) -> Element
+    ) -> Int where S: Sequence{
+        var i = other.makeIterator()
+
+        var startIndex = subrange.lowerBound
+        let endIndex = subrange.upperBound
+
+        while startIndex != endIndex {
+            self[startIndex] = transform(self[startIndex], i.next()!)
+            startIndex = self.index(after: startIndex)
+        }
+//        return 0
+        fatalError()
+    }
 }
 
 extension RangeReplaceableCollection {
@@ -157,6 +153,7 @@ extension RangeReplaceableCollection {
         contentsOf newElements: S,
         _ body: (Element) -> Void
     ) -> Int where S : Sequence, Self.Element == S.Element {
+
         self.reserveCapacity(newElements.underestimatedCount)
 
         var offset = 0
@@ -169,6 +166,8 @@ extension RangeReplaceableCollection {
 
         return offset
     }
+
+
 }
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {

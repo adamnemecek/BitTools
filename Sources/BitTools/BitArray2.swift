@@ -13,54 +13,64 @@ import Ext
 //    }
 //}
 
-struct BitArray2 {
+public struct BitArray2 {
     public private(set) var count: Int
+    @usableFromInline
     var inner: ContiguousArray<UInt64>
 
-    init(count: Int, inner: ContiguousArray<UInt64>) {
-        fatalError()
+    public init(count: Int, inner: ContiguousArray<UInt64>) {
+        self.count = 0
+        self.inner = inner
     }
 }
 
 extension BitArray2: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Int...) {
-        fatalError()
+        self.init(elements)
     }
 }
 
-
 extension BitArray2 : SetAlgebra {
+
     public typealias Element = Int
 
-    init() {
+    public init() {
+        self.init(count: 0, inner: [])
+    }
+
+    public init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
         fatalError()
     }
 
-    init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
-        fatalError()
-    }
-
-    var capacity: Int {
-        fatalError()
+    public var capacity: Int {
+        self.inner.count
     }
 
     func reserveCapacity(_ minimumCapacity: Int) {
-
-    }
-
-    @inlinable @inline(__always)
-    public func withUnsafeMutableBufferPointer<R>(
-        _ body: (UnsafeMutableBufferPointer<UInt64>
-    ) throws -> R) rethrows -> R {
+//        self.inner.
         fatalError()
     }
 
-    @inlinable @inline(__always)
+    @inline(__always)
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
-        fatalError()
+        try self.inner.withUnsafeBufferPointer(body)
     }
+
+    @inlinable @inline(__always)
+    public mutating func withUnsafeMutableBufferPointer<R>(
+        _ body: (inout UnsafeMutableBufferPointer<UInt64>
+    ) throws -> R) rethrows -> R {
+        try self.inner.withUnsafeMutableBufferPointer(body)
+    }
+//
+//    @inlinable @inline(__always)
+//    public func withUnsafeBufferPointer<R>(
+//        _ body: (UnsafeBufferPointer<UInt64>
+//        ) throws -> R) rethrows -> R {
+//        fatalError()
+//    }
 
 //    mutating func formUnion(_ other: Self) {
 //        let (minCapacity, _) = self.capacity.order(other.capacity)
@@ -76,48 +86,24 @@ extension BitArray2 : SetAlgebra {
 ////        }
 //    }
 
-    func union(_ other: Self) -> Self {
+    public func union(_ other: Self) -> Self {
         let (minCapacity, maxCapacity) = self.capacity.order(other.capacity)
-        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+        var inner = ContiguousArray<UInt64>(capacity: maxCapacity)
 
-        let count =
-        inner.withUnsafeMutableBufferPointer { dst in
-            self.withUnsafeBufferPointer { a in
-                other.withUnsafeBufferPointer { b in
-                    dst.bitOp(a, b, count: minCapacity, op: |) +
-                    dst.bitCopy(a, offset: minCapacity) +
-                    dst.bitCopy(b, offset: minCapacity)
-                }
-            }
-        }
-
-//        inner.withUnsafeMutableBufferPointer { dst in
-//            self.withUnsafeBufferPointer { a in
-//                other.withUnsafeBufferPointer { b in
-//                    dst.initialize(from: a | b)
-////
-////                    dst[..<minCapacity] = a[..<minCapacity] | b[..<minCapacity]
-////                    dst[minCapacity...] = a[minCapacity...]
-////                    dst[minCapacity...] = b[minCapacity...]
-////                    dst.bitOp(a, b, count: minCapacity, op: |) +
-////                    dst.bitCopy(a, offset: minCapacity) +
-////                    dst.bitCopy(b, offset: minCapacity)
-//                }
-//            }
-//        }
-
-        var offset = 0
         var nonzeroBitCount = 0
 
-//        offset += inner.append(contentsOf: inner | inner) {
-//            nonzeroBitCount += $0.nonzeroBitCount
-//        }
+        _ = inner.append(contentsOf: self.inner | other.inner) {
+            nonzeroBitCount += $0.nonzeroBitCount
+        }
+        assert(inner.count == minCapacity)
 
-        offset += inner.append(contentsOf: self.inner[offset...]) {
+        assert(self.inner[minCapacity...].isEmpty)
+        _ = inner.append(contentsOf: self.inner[minCapacity...]) {
             nonzeroBitCount += $0.nonzeroBitCount
         }
 
-        offset += inner.append(contentsOf: other.inner[offset...]) {
+        assert(other.inner[minCapacity...].isEmpty)
+        _ = inner.append(contentsOf: other.inner[minCapacity...]) {
             nonzeroBitCount += $0.nonzeroBitCount
         }
 
@@ -125,35 +111,32 @@ extension BitArray2 : SetAlgebra {
     }
 
 
-    mutating func formUnion(_ other: Self) {
-        let (minCapacity, maxCapacity) = self.capacity.order(other.capacity)
+    mutating public func formUnion(_ other: Self) {
+        let (_, maxCapacity) = self.capacity.order(other.capacity)
         self.reserveCapacity(maxCapacity)
-
-        self.count = self.withUnsafeMutableBufferPointer { dst in
-            other.withUnsafeBufferPointer { src in
-                dst.bitOp(src, count: minCapacity, op: |) +
-                dst.bitCopy(src, offset: minCapacity)
-            }
-        }
+        fatalError()
+//        self.count = self.withUnsafeMutableBufferPointer { dst in
+//            other.withUnsafeBufferPointer { src in
+//                dst.bitOp(src, count: minCapacity, op: |) +
+//                dst.bitCopy(src, offset: minCapacity)
+//            }
+//        }
     }
 
-    func intersection(_ other: Self) -> Self {
+    public func intersection(_ other: Self) -> Self {
         let (minCapacity, _) = self.capacity.order(other.capacity)
-        var inner = ContiguousArray<UInt64>(zeros: minCapacity)
+        var inner = ContiguousArray<UInt64>(capacity: minCapacity)
 
-        let count =
-        inner.withUnsafeMutableBufferPointer { dst in
-            self.withUnsafeBufferPointer { a in
-                other.withUnsafeBufferPointer { b in
-                    dst.bitOp(a, b, count: minCapacity, op: &)
-                }
-            }
+        var nonzeroBitCount = 0
+        _ = inner.append(contentsOf: self.inner & other.inner) {
+            nonzeroBitCount += $0.nonzeroBitCount
         }
+        assert(inner.count == minCapacity)
 
-        return Self(count: count, inner: inner)
+        return Self(count: nonzeroBitCount, inner: inner)
     }
 
-    mutating func formIntersection(_ other: Self) {
+    mutating public func formIntersection(_ other: Self) {
         let (minCapacity, _) = self.capacity.order(other.capacity)
 
         self.count = self.withUnsafeMutableBufferPointer { dst in
@@ -167,50 +150,62 @@ extension BitArray2 : SetAlgebra {
         }
     }
 
-    func symmetricDifference(_ other: Self) -> Self {
+    public func symmetricDifference(_ other: Self) -> Self {
         let (minCapacity, maxCapacity) = self.capacity.order(other.capacity)
-        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+        var inner = ContiguousArray<UInt64>(capacity: maxCapacity)
 
-        let count =
-        inner.withUnsafeMutableBufferPointer { dst in
-            self.withUnsafeBufferPointer { a in
-                other.withUnsafeBufferPointer { b in
-                    dst.bitOp(a, b, count: minCapacity, op: ^) +
-                    dst.advanced(by: minCapacity).bitCopy(a.advanced(by: minCapacity))
-//                    dst.bitCopy(a, offset: minCapacity) +
-//                    dst.bitCopy(b, offset: minCapacity)
-                }
-            }
+        var nonzeroBitCount = 0
+        _ = inner.append(contentsOf: self.inner ^ other.inner) {
+            nonzeroBitCount += $0.nonzeroBitCount
+        }
+        assert(inner.count == minCapacity)
+
+        _ = inner.append(contentsOf: self.inner[minCapacity...]) {
+            nonzeroBitCount += $0.nonzeroBitCount
         }
 
-        return Self(count: count, inner: inner)
+        _ = inner.append(contentsOf: other.inner[minCapacity...]) {
+            nonzeroBitCount += $0.nonzeroBitCount
+        }
+        assert(inner.count == maxCapacity)
+        return Self(count: nonzeroBitCount, inner: inner)
     }
 
-    func formSymmetricDifference(_ other: Self) {
+    public func formSymmetricDifference(_ other: Self) {
         fatalError()
     }
 
-    func subtract(_ other: Self) {
+    public func subtract(_ other: Self) {
         fatalError()
     }
 
-    func subtracting(_ other: Self) -> Self {
+    public func subtracting(_ other: Self) -> Self {
         fatalError()
     }
 
-    func contains(_ member: Element) -> Bool {
+    public func contains(_ member: Element) -> Bool {
         fatalError()
     }
 
-    func remove(_ member: Element) -> Element? {
+    public func remove(_ member: Element) -> Element? {
         fatalError()
     }
 
-    func update(with newMember: Element) -> Element? {
+    public func update(with newMember: Element) -> Element? {
         fatalError()
     }
 
-    func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
+    public func insert(_ newMember: Element) -> (inserted: Bool, memberAfterInsert: Element) {
         fatalError()
+    }
+}
+
+extension BitArray2 : Sequence {
+    public func makeIterator() -> BitArrayIterator {
+        fatalError()
+    }
+
+    public var underestimatedCount: Int {
+        self.count
     }
 }
