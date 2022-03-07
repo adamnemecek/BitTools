@@ -225,7 +225,17 @@ class BitArrayTest: XCTestCase {
     func testSubscript() {
         var a: BitArray = [0, 10, 20, 500, 1000]
 
+        XCTAssert(a.count == 5)
         XCTAssert(a[20])
+        XCTAssert(!a[30])
+
+        a[30] = true
+        XCTAssert(a[30])
+        XCTAssert(a.count == 6)
+
+        a[30] = false
+        XCTAssert(!a[30])
+        XCTAssert(a.count == 5)
     }
 
     func testBitArray() {
