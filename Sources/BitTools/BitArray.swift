@@ -161,13 +161,8 @@ extension BitArray: SetAlgebra {
         self.inner.append(zeros: count)
     }
 
-    mutating func reserveCapacity(for value: Element) {
-        let a = value.blockCount(bitWidth: Block.bitWidth)
-        self.reserveCapacity(a)
-    }
-
-    mutating func reserveBitCapacity(_ bitCapacity: Int) {
-        self.reserveCapacity(bitCapacity.roundUp(to: Block.bitWidth))
+    mutating func reserveCapacity(for blockIndex: BlockIndex) {
+        self.reserveCapacity(blockIndex.blocksNeeded)
     }
 
     // done
@@ -287,10 +282,6 @@ extension BitArray: SetAlgebra {
         // elements that are only in the current need to be removed
         self.inner[capacity...].zeroAll()
         self.count = nonzeroBitCount
-    }
-
-    func ratio(for member: Int) -> Ratio<Int> {
-        member.ratio(Block.bitWidth)
     }
 
     // done?
@@ -475,14 +466,14 @@ extension BitArray: SetAlgebra {
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
-        self.reserveCapacity(for: newMember)
+        let blockIndex = blockIndex(newMember)
 
-        let index = blockIndex(newMember)
+        self.reserveCapacity(for: blockIndex)
 
-        let contains = self.rawContains(index)
+        let contains = self.rawContains(blockIndex)
 
         guard !contains else { return (false, newMember) }
-        self.rawInsert(index)
+        self.rawInsert(blockIndex)
         self.count += 1
         return (true, newMember)
 
@@ -552,7 +543,7 @@ extension BitArray {
         self.init()
 
         guard let max = sequence.max() else { return }
-        self.reserveCapacity(for: max)
+        self.reserveCapacity(for: blockIndex(max))
         sequence.forEach {
             _ = self.insert($0)
         }
@@ -655,5 +646,9 @@ struct BlockIndex: Equatable {
 
     var value: Int {
         self.blockIndex << 6 + self.bitIndex
+    }
+
+    var blocksNeeded: Int {
+        Int((value + 1).roundUp(to: UInt64.bitWidth) / UInt64.bitWidth)
     }
 }

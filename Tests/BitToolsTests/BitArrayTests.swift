@@ -235,6 +235,8 @@ class BitArrayTest: XCTestCase {
         a[30] = false
         XCTAssert(!a[30])
         XCTAssert(a.count == 5)
+
+        a[5000] = true
     }
 
     func testBitArray() {
