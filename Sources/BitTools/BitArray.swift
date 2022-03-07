@@ -18,7 +18,7 @@ public struct BitArray {
 
     @inline(__always)
     public var bitCapacity: Int {
-        self.capacity * Block.bitWidth
+        self.capacity << 6
     }
 
     @inline(__always)
@@ -144,7 +144,7 @@ extension BitArray: SetAlgebra {
 //    }
 
     // call this after
-    public mutating func updateCount() {
+    public mutating func recalculateCount() {
         self.count = self.nonzeroBitCount
     }
 
@@ -387,9 +387,8 @@ extension BitArray: SetAlgebra {
 
 
     public func subtracting(_ other: Self) -> Self {
-        // this is essentially intersect but with a different operator
-        // and the fact that we copy the tail
-//        let capacity = Swift.max(self.capacity, other.capacity)
+        // this is essentially intersect but with a different operator, capacity
+        // and the fact that we are copying the tail
         let (
             minCapacity,
             maxCapacity
@@ -446,15 +445,33 @@ extension BitArray: SetAlgebra {
 //
 //    x.isStrictSubset(of: y) if and only if x.isSubset(of: y) && x != y
 
+    @inline(__always)
+    private func rawContains(_ idx: BlockIndex) -> Bool {
+        (self.inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
+    }
+
+    // insert without checking
+    @inline(__always)
+    mutating func rawInsert(_ idx: BlockIndex) {
+        self.inner[idx.blockIndex] |= (1 << idx.bitIndex)
+    }
+
+    @inline(__always)
+    mutating func rawRemove(_ idx: BlockIndex) {
+        self.inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
+    }
+
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
         self.reserveCapacity(for: newMember)
 
-        let ratio = self.ratio(for: newMember)
-        let contains = self.inner[ratio]
+        let index = blockIndex(newMember)
+
+        let contains = self.rawContains(index)
+
         guard !contains else { return (false, newMember) }
-        self.inner[ratio] = true
+        self.rawInsert(index)
         self.count += 1
         return (true, newMember)
 
@@ -463,9 +480,9 @@ extension BitArray: SetAlgebra {
     public func contains(
         _ member: Element
     ) -> Bool {
+        assert(member >= 0)
         guard member < self.bitCapacity else { return false }
-        let ratio = self.ratio(for: member)
-        return self.inner[ratio]
+        return self.rawContains(BlockIndex(member))
     }
 
     public mutating func remove(
@@ -584,6 +601,20 @@ extension BitArray {
             fatalError()
         }
     }
+}
+
+@inline(__always)
+func blockIndex(_ value: Int) -> BlockIndex {
+    // 2^6 = 64
+    let blockIndex = value >> 6
+
+    let ret = BlockIndex(
+        blockIndex: blockIndex,
+        bitIndex: value - (blockIndex << 6)
+    )
+
+    assert(ret.value == value)
+    return ret
 }
 
 // this is a divrem with 64
