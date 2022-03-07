@@ -1,7 +1,11 @@
 import XCTest
 import BitTools
 
-
+//func check(_ a: BitArray, _ b: Set<Int>) -> Bool {
+//    guard a.count == b.count else { return false }
+//    let sorted = b.sorted()
+//    return a.elementsEqual(sorted)
+//}
 
 
 class BitArrayTest: XCTestCase {
@@ -9,6 +13,17 @@ class BitArrayTest: XCTestCase {
 
     func testBundle() {
         //        koremetalbundle()
+    }
+
+    func testUnion1() {
+        let a: BitArray = [60, 80, 70, 75]
+        let b: BitArray = [10, 22, 75, 63, 100]
+
+        let expected = Set(a).union(b).sorted()
+        let result = a.union(b)
+
+        XCTAssert(result.count == expected.count)
+        XCTAssert(result.elementsEqual(expected))
     }
 
     func testModule() {
@@ -67,7 +82,7 @@ class BitArrayTest: XCTestCase {
 
         a.formSymmetricDifference(b)
 
-        
+
 
 //        XCTAssert(a.check())
 //        print(a.count == a.nonzeroBitCount())
