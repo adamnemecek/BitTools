@@ -197,9 +197,9 @@ class BitArrayTest: XCTestCase {
 
         XCTAssert(!a.contains(5000))
         XCTAssert(a.count == 3)
-        for e in a {
-            print(e)
-        }
+//        for e in a {
+//            print(e)
+//        }
     }
 
     func testAndNot() {

@@ -32,8 +32,7 @@ public struct BitArray {
     }
 
     public init() {
-        self.count = 0
-        self.inner = []
+        self.init(count: 0, inner: [])
     }
 
     init(
@@ -46,6 +45,8 @@ public struct BitArray {
 }
 
 extension BitArray: Sequence {
+    public typealias Iterator = BitArrayIterator
+
     @inline(__always)
     public var underestimatedCount: Int {
         self.count
@@ -59,7 +60,7 @@ extension BitArray: Sequence {
     }
 
     @inline(__always)
-    public func makeIterator() -> BitArrayIterator {
+    public func makeIterator() -> Iterator {
         let bitCount = self.count
         return self.withUnsafeBufferPointer {
             BitArrayIterator(ptr: $0, nonzeroBitCount: bitCount)
@@ -137,12 +138,13 @@ extension BitArray: SetAlgebra {
         self.inner = ContiguousArray(zeros: count)
     }
 
-    public init(bitCapacity: Int) {
-        self.count = 0
-        self.inner = []
-        self.reserveBitCapacity(bitCapacity)
-    }
+//    public init(bitCapacity: Int) {
+//        self.count = 0
+//        self.inner = []
+//        self.reserveBitCapacity(bitCapacity)
+//    }
 
+    // call this after 
     public mutating func updateCount() {
         self.count = self.nonzeroBitCount
     }
@@ -181,8 +183,9 @@ extension BitArray: SetAlgebra {
         // combine the two that the arrays have in common
         for i in 0..<minCapacity {
             let new = self.inner[i] | other.inner[i]
-            nonzeroBitCount += new.nonzeroBitCount
             inner[i] = new
+
+            nonzeroBitCount += new.nonzeroBitCount
         }
 
         // copy over the tail
@@ -234,10 +237,10 @@ extension BitArray: SetAlgebra {
         self.count += newCount - oldCount
     }
 
-
-    public func nonzeroBitCount() -> Int {
-        self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
-    }
+//
+//    public func nonzeroBitCount() -> Int {
+//        self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
+//    }
 
     // done
     public __consuming func intersection(
@@ -273,9 +276,9 @@ extension BitArray: SetAlgebra {
             let old = self.inner[i]
             let new = old & other.inner[i]
 
-            nonzeroBitCount += new.nonzeroBitCount
-
             self.inner[i] = new
+
+            nonzeroBitCount += new.nonzeroBitCount
         }
         // elements that are only in the current need to be removed
         self.inner[capacity...].zeroAll()
@@ -302,8 +305,10 @@ extension BitArray: SetAlgebra {
         // combine the two that the arrays have in common
         for i in 0..<minCapacity {
             let new = self.inner[i] ^ other.inner[i]
-            nonzeroBitCount += new.nonzeroBitCount
+
             inner[i] = new
+
+            nonzeroBitCount += new.nonzeroBitCount
         }
 
         // copy over the tail
