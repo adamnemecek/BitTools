@@ -142,12 +142,6 @@ extension BitArray: SetAlgebra {
         self.inner = ContiguousArray(zeros: count)
     }
 
-//    public init(bitCapacity: Int) {
-//        self.count = 0
-//        self.inner = []
-//        self.reserveBitCapacity(bitCapacity)
-//    }
-
     // call this after
     public mutating func recalculateCount() {
         self.count = self.nonzeroBitCount
@@ -180,7 +174,7 @@ extension BitArray: SetAlgebra {
         var inner = ContiguousArray<Block>(zeros: maxCapacity)
 
         // combine the two that the arrays have in common
-        for i in 0..<minCapacity {
+        for i in 0 ..< minCapacity {
             let new = self.inner[i] | other.inner[i]
             inner[i] = new
 
@@ -252,7 +246,7 @@ extension BitArray: SetAlgebra {
 
         var inner = ContiguousArray<Block>(zeros: capacity)
 
-        for i in 0..<capacity {
+        for i in 0 ..< capacity {
             let new = self.inner[i] & other.inner[i]
             inner[i] = new
 
@@ -299,7 +293,7 @@ extension BitArray: SetAlgebra {
         var inner = ContiguousArray<Block>(zeros: maxCapacity)
 
         // combine the two parts that the arrays have in common
-        for i in 0..<minCapacity {
+        for i in 0 ..< minCapacity {
             let new = self.inner[i] ^ other.inner[i]
 
             inner[i] = new
@@ -583,7 +577,6 @@ extension BitArray {
             self.contains(index)
         }
         set {
-
 //            let blockIndex = blockIndex(index)
             let oldValue = self.contains(index)
             guard oldValue != newValue else { return }

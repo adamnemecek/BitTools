@@ -237,6 +237,9 @@ class BitArrayTest: XCTestCase {
         XCTAssert(a.count == 5)
 
         a[5000] = true
+
+        XCTAssert(a[5000])
+        XCTAssert(a.count == 6)
     }
 
     func testBitArray() {
@@ -251,6 +254,21 @@ class BitArrayTest: XCTestCase {
 //        for e in a {
 //            print(e)
 //        }
+    }
+
+    func testEqual() {
+        var a: BitArray = [1,2,4,10, 1000, 10000]
+        _ = a.remove(10000)
+        a.insert(20000)
+        a.remove(20000)
+
+        var b: BitArray = [4,10,2]
+        _ = b.insert(1000)
+        _ = b.insert(1)
+
+        XCTAssert(b.count == 5)
+        XCTAssert(a == b)
+
     }
 
     func testAndNot() {
