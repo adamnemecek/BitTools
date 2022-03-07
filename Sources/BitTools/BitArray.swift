@@ -354,14 +354,66 @@ extension BitArray: SetAlgebra {
             let old = self.inner[i]
             let new = old ^ other.inner[i]
 
+            self.inner[i] = new
+
             oldCount += old.nonzeroBitCount
             newCount += new.nonzeroBitCount
-
-            self.inner[i] = new
         }
 
         self.count += newCount - oldCount
     }
+
+
+    public mutating func subtract(_ other: Self) {
+        // remove elements in the other set from this set
+
+        var oldCount = 0
+        var newCount = 0
+
+        let capacity = Swift.min(self.capacity, other.capacity)
+
+        for i in 0..<capacity {
+            let old = self.inner[i]
+            let new = old & ~other.inner[i]
+
+            self.inner[i] = new
+
+            oldCount += old.nonzeroBitCount
+            newCount += new.nonzeroBitCount
+        }
+
+        self.count += newCount - oldCount
+    }
+
+    public func subtracting(_ other: Self) -> Self {
+        fatalError()
+    }
+
+    public func isSubset(of other: Self) -> Bool {
+        fatalError()
+    }
+
+    public func isSuperset(of other: Self) -> Bool {
+        fatalError()
+    }
+
+    public func isDisjoint(with other: Self) -> Bool {
+        fatalError()
+    }
+
+    public func isStrictSubset(of other: Self) -> Bool {
+        fatalError()
+    }
+
+//    x.isSubset(of: y) implies x.union(y) == y
+//
+//    x.isSuperset(of: y) implies x.union(y) == x
+//
+//    x.isSubset(of: y) if and only if y.isSuperset(of: x)
+//
+//    x.isStrictSuperset(of: y) if and only if x.isSuperset(of: y) && x != y
+//
+//    x.isStrictSubset(of: y) if and only if x.isSubset(of: y) && x != y
 
     public mutating func insert(
         _ newMember: __owned Element
@@ -409,16 +461,7 @@ extension BitArray: SetAlgebra {
         fatalError()
     }
 
-    public mutating func subtract(_ other: Self) {
-        let capacity = Swift.min(self.capacity, other.capacity)
-        for i in 0..<capacity {
-            self.inner[i].subtract(bits: other.inner[i])
-        }
-    }
 
-    public func subtracting(_ other: Self) -> Self {
-        fatalError()
-    }
 
 }
 
@@ -498,5 +541,43 @@ extension BitArray {
             }
             self.inner[bit: index] = newValue
         }
+    }
+}
+
+extension BitArray {
+    subscript(block: BlockIndex) -> Bool {
+        get {
+            fatalError()
+        }
+        set {
+            fatalError()
+        }
+    }
+}
+
+// this is a divrem with 64
+struct BlockIndex : Equatable {
+    let blockIndex: Int
+    let bitIndex: Int
+
+    init(blockIndex: Int, bitIndex: Int) {
+        self.blockIndex = blockIndex
+        self.bitIndex = bitIndex
+    }
+
+    init(_ value: Int) {
+        // 2^6 = 64
+        let blockIndex = value >> 6
+
+        self.init(
+            blockIndex: blockIndex,
+            bitIndex: value - (blockIndex << 6)
+        )
+
+        assert(self.value == value)
+    }
+
+    var value: Int {
+        self.blockIndex << 6 + self.bitIndex
     }
 }
