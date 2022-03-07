@@ -388,16 +388,29 @@ extension BitArray: SetAlgebra {
 
     public func subtracting(_ other: Self) -> Self {
         // this is essentially intersect but with a different operator
-        let capacity = Swift.min(self.capacity, other.capacity)
+        // and the fact that we copy the tail
+//        let capacity = Swift.max(self.capacity, other.capacity)
+        let (
+            minCapacity,
+            maxCapacity
+        ) = self.capacity.order(other.capacity)
+
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<UInt64>(zeros: capacity)
+        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
-        for i in 0..<capacity {
+        for i in 0..<minCapacity {
             let new = self.inner[i] & ~other.inner[i]
             inner[i] = new
 
             nonzeroBitCount += new.nonzeroBitCount
+        }
+
+        var idx = minCapacity
+        for e in self.inner[minCapacity...] {
+            inner[idx] = e
+            nonzeroBitCount += e.nonzeroBitCount
+            idx += 1
         }
 
         return Self(
