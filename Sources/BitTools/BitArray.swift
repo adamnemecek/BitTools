@@ -7,10 +7,10 @@ import Ext
 @frozen
 public struct BitArray {
     public typealias Element = Int
-    typealias Block = UInt64
+    public typealias Block = UInt64
 
     public private(set) var count: Int
-    private var inner: ContiguousArray<UInt64>
+    private var inner: ContiguousArray<Block>
 
     ///
     /// capacity in blocks
@@ -35,13 +35,14 @@ public struct BitArray {
         !self.isEmpty
     }
 
+    @inline(__always)
     public init() {
         self.init(count: 0, inner: [])
     }
 
     init(
         count: Int,
-        inner: ContiguousArray<UInt64>
+        inner: ContiguousArray<Block>
     ) {
         self.count = count
         self.inner = inner
@@ -176,7 +177,7 @@ extension BitArray: SetAlgebra {
 
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+        var inner = ContiguousArray<Block>(zeros: maxCapacity)
 
         // combine the two that the arrays have in common
         for i in 0..<minCapacity {
@@ -249,7 +250,7 @@ extension BitArray: SetAlgebra {
         let capacity = Swift.min(self.capacity, other.capacity)
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<UInt64>(zeros: capacity)
+        var inner = ContiguousArray<Block>(zeros: capacity)
 
         for i in 0..<capacity {
             let new = self.inner[i] & other.inner[i]
@@ -295,7 +296,7 @@ extension BitArray: SetAlgebra {
 
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+        var inner = ContiguousArray<Block>(zeros: maxCapacity)
 
         // combine the two parts that the arrays have in common
         for i in 0..<minCapacity {
@@ -389,7 +390,7 @@ extension BitArray: SetAlgebra {
 
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
+        var inner = ContiguousArray<Block>(zeros: maxCapacity)
 
         for i in 0 ..< minCapacity {
             let new = self.inner[i] & ~other.inner[i]
@@ -515,9 +516,9 @@ extension BitArray {
         where shouldBeRemoved: (Element) throws -> Bool
     ) rethrows {
         var i = self.makeIterator2()
-        while let (value, block, bit) = i.next() {
+        while let (value, index) = i.next() {
             if try shouldBeRemoved(value) {
-                self.inner[block].remove(bit: UInt64(bit))
+                self.rawRemove(index)
                 self.count -= 1
             }
         }
@@ -531,10 +532,25 @@ extension BitArray: Equatable {
     ///
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs.count == rhs.count else { return false }
+//        let (
+//            minCapacity,
+//            maxCapacity
+//        ) = lhs.capacity.order(rhs.capacity)
         let capacity = Swift.min(lhs.capacity, rhs.capacity)
 
-        let tail = lhs.inner[capacity...] || rhs.inner[capacity...]
-        return tail.allZeros() || lhs.inner[..<capacity].elementsEqual(rhs.inner[..<capacity])
+        for i in 0..<capacity where lhs.inner[i] != rhs.inner[i] {
+            return false
+        }
+
+        for e in lhs.inner[capacity...] where e != 0 {
+            return false
+        }
+
+        for e in rhs.inner[capacity...] where e != 0 {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -616,8 +632,8 @@ func blockIndex(_ value: Int) -> BlockIndex {
     let blockIndex = value >> 6
 
     let ret = BlockIndex(
-        blockIndex: blockIndex,
-        bitIndex: value - (blockIndex << 6)
+        blockIndex,
+        value - (blockIndex << 6)
     )
 
     assert(ret.value == value)
@@ -629,22 +645,24 @@ struct BlockIndex: Equatable {
     let blockIndex: Int
     let bitIndex: Int
 
-    init(blockIndex: Int, bitIndex: Int) {
+    @inline(__always)
+    init(_ blockIndex: Int, _ bitIndex: Int) {
         self.blockIndex = blockIndex
         self.bitIndex = bitIndex
     }
 
     @inline(__always)
     init(_ value: Int) {
-        // 2^6 = 64
-        let blockIndex = value >> 6
-
-        self.init(
-            blockIndex: blockIndex,
-            bitIndex: value - (blockIndex << 6)
-        )
-
-        assert(self.value == value)
+        self = BitTools.blockIndex(value)
+//        // 2^6 = 64
+//        let blockIndex = value >> 6
+//
+//        self.init(
+//            blockIndex,
+//            value - (blockIndex << 6)
+//        )
+//
+//        assert(self.value == value)
     }
 
     var value: Int {

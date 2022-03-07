@@ -81,7 +81,7 @@ extension BitArrayIterator: IteratorProtocol {
     }
 }
 
-public struct BitArrayIterator2 {
+struct BitArrayIterator2 {
     private var ptr: UnsafePointer<UInt64>
 
     ///
@@ -126,12 +126,12 @@ extension BitArrayIterator2: IteratorProtocol {
         )
     }
 
-    public var underestimatedCount: Int {
+    var underestimatedCount: Int {
         fatalError()
     }
 
     @inline(__always)
-    public mutating func next() -> (value: Int, block: Int, bit: Int)? {
+    mutating func next() -> (value: Int, index: BlockIndex)? {
         while self.block == 0 {
             self.blockIndex  += 1
             if self.remainingNonzeroBitCount == 0 || self.blockIndex == self.blockCount {
@@ -146,6 +146,13 @@ extension BitArrayIterator2: IteratorProtocol {
         self.remainingNonzeroBitCount -= 1
         let trailing = block.trailingZeroBitCount
         self.block &= ~(1 << trailing)
-        return (self.bitBlockOffset + trailing, self.blockIndex, trailing)
+        return (self.bitBlockOffset + trailing, BlockIndex(self.blockIndex, trailing))
     }
 }
+
+
+//func test() {
+//    var a = [1,2,3,4]
+//
+//    var i = a.makeIterator()
+//}
