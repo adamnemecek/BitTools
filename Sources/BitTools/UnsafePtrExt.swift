@@ -147,28 +147,29 @@ extension MutableCollection {
     }
 }
 
-extension RangeReplaceableCollection {
-    @inlinable @inline(__always)
-    mutating func append<S>(
-        contentsOf newElements: S,
-        _ body: (Element) -> Void
-    ) -> Int where S : Sequence, Self.Element == S.Element {
+//extension RangeReplaceableCollection {
+//    @inlinable @inline(__always)
+//    mutating func append<S>(
+//        contentsOf newElements: S,
+//        _ body: (Element) -> Void
+//    ) -> Int where S : Sequence, Self.Element == S.Element {
+//
+//        self.reserveCapacity(newElements.underestimatedCount)
+//
+//        var offset = 0
+//
+//        for e in newElements {
+//            self.append(e)
+//            body(e)
+//            offset += 1
+//        }
+//
+//        return offset
+//    }
+//}
 
-        self.reserveCapacity(newElements.underestimatedCount)
 
-        var offset = 0
-
-        for e in newElements {
-            self.append(e)
-            body(e)
-            offset += 1
-        }
-
-        return offset
-    }
-
-
-}
+///////////////// push
 
 extension RangeReplaceableCollection where Element: FixedWidthInteger {
     
@@ -193,17 +194,33 @@ extension RangeReplaceableCollection where Element: FixedWidthInteger {
     }
 }
 
-extension UnsafeMutableBufferPointer where Element == UInt64 {
-    func bitInitialize<S>(
-        from source: S
-    ) -> (
-        iter: S.Iterator,
-        offset: Index,
-        nonzeroBitCount: Int
-    ) where Element == S.Element, S : Sequence {
+extension UnsafeMutableBufferPointer {
+//    @inlinable @inline(__always)
+//    public func initialize<S>(
+//        from source: S,
+//        _ op: (Element) -> Void
+//    ) -> (
+//        iter: S.Iterator,
+//        offset: Index
+//    ) where S : Sequence, Element == S.Element  {
+//
+//        fatalError()
+//        var src = source.makeIterator()
+//        var offset = 0
+//
+//        guard var dst = self.baseAddress else { return (src, offset) }
+//
+//        while let next = src.next() {
+//            offset += 1
+//        }
+//
+//        return (src, offset + 1)
+//
+//    }
+}
 
-        fatalError()
-    }
+extension UnsafeMutableBufferPointer where Element == UInt64 {
+
 //    func assign(
 //        _ other: UnsafeBufferPointer<Element>
 //    ) {

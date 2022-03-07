@@ -15,6 +15,7 @@ import Ext
 
 public struct BitArray2 {
     public private(set) var count: Int
+
     @usableFromInline
     var inner: ContiguousArray<UInt64>
 
@@ -39,19 +40,28 @@ extension BitArray2 : SetAlgebra {
     }
 
     public init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
-        fatalError()
+        self.init()
+
+        guard let max = sequence.max() else { return }
+        self.reserveCapacity(max + 1)
+        sequence.forEach {
+            _ = self.insert($0)
+        }
     }
 
+    @inlinable @inline(__always)
     public var capacity: Int {
         self.inner.count
     }
 
-    func reserveCapacity(_ minimumCapacity: Int) {
-//        self.inner.
-        fatalError()
+    @inlinable @inline(__always)
+    public mutating func reserveCapacity(_ minimumCapacity: Int) {
+        let count = minimumCapacity - self.count
+        guard count > 0 else { return }
+        self.inner.append(zeros: count)
     }
 
-    @inline(__always)
+    @inlinable @inline(__always)
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
@@ -92,35 +102,40 @@ extension BitArray2 : SetAlgebra {
 
         var nonzeroBitCount = 0
 
-        _ = inner.append(contentsOf: self.inner | other.inner) {
+        inner.push((self.inner | other.inner).tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
+        })
         assert(inner.count == minCapacity)
 
         assert(self.inner[minCapacity...].isEmpty)
-        _ = inner.append(contentsOf: self.inner[minCapacity...]) {
+        inner.push(self.inner[minCapacity...].tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
+        })
 
         assert(other.inner[minCapacity...].isEmpty)
-        _ = inner.append(contentsOf: other.inner[minCapacity...]) {
+        inner.push(other.inner[minCapacity...].tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
-
+        })
         return Self(count: nonzeroBitCount, inner: inner)
     }
 
 
     mutating public func formUnion(_ other: Self) {
-        let (_, maxCapacity) = self.capacity.order(other.capacity)
+        let (minCapacity, maxCapacity) = self.capacity.order(other.capacity)
         self.reserveCapacity(maxCapacity)
-        fatalError()
-//        self.count = self.withUnsafeMutableBufferPointer { dst in
-//            other.withUnsafeBufferPointer { src in
-//                dst.bitOp(src, count: minCapacity, op: |) +
-//                dst.bitCopy(src, offset: minCapacity)
-//            }
-//        }
+
+        var nonzeroBitCount = 0
+        self.withUnsafeMutableBufferPointer { self_ in
+            other.withUnsafeBufferPointer { other_ in
+                _ = self_.initialize(from: (self_ | other_).tee {
+                    nonzeroBitCount += $0.nonzeroBitCount
+                })
+                _ = self_.advanced(by: minCapacity).initialize(from: other_.advanced(by: minCapacity).tee {
+                    nonzeroBitCount += $0.nonzeroBitCount
+                })
+            }
+        }
+        self.count = nonzeroBitCount
     }
 
     public func intersection(_ other: Self) -> Self {
@@ -128,9 +143,9 @@ extension BitArray2 : SetAlgebra {
         var inner = ContiguousArray<UInt64>(capacity: minCapacity)
 
         var nonzeroBitCount = 0
-        _ = inner.append(contentsOf: self.inner & other.inner) {
+        inner.push((self.inner & other.inner).tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
+        })
         assert(inner.count == minCapacity)
 
         return Self(count: nonzeroBitCount, inner: inner)
@@ -155,18 +170,18 @@ extension BitArray2 : SetAlgebra {
         var inner = ContiguousArray<UInt64>(capacity: maxCapacity)
 
         var nonzeroBitCount = 0
-        _ = inner.append(contentsOf: self.inner ^ other.inner) {
+        inner.push((self.inner ^ other.inner).tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
+        })
         assert(inner.count == minCapacity)
 
-        _ = inner.append(contentsOf: self.inner[minCapacity...]) {
+        inner.push(self.inner[minCapacity...].tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
+        })
 
-        _ = inner.append(contentsOf: other.inner[minCapacity...]) {
+        inner.push(other.inner[minCapacity...].tee {
             nonzeroBitCount += $0.nonzeroBitCount
-        }
+        })
         assert(inner.count == maxCapacity)
         return Self(count: nonzeroBitCount, inner: inner)
     }
