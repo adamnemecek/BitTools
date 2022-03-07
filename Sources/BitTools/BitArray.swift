@@ -144,7 +144,7 @@ extension BitArray: SetAlgebra {
 //        self.reserveBitCapacity(bitCapacity)
 //    }
 
-    // call this after 
+    // call this after
     public mutating func updateCount() {
         self.count = self.nonzeroBitCount
     }
@@ -221,10 +221,12 @@ extension BitArray: SetAlgebra {
     public mutating func formUnion(
         _ other: __owned Self
     ) {
+        self.reserveCapacity(other.capacity)
+
         var oldCount = 0
         var newCount = 0
-        self.reserveCapacity(other.inner.count)
-        for i in 0 ..< other.inner.count {
+
+        for i in 0 ..< other.capacity {
             let old = self.inner[i]
             let new = old | other.inner[i]
 
@@ -302,7 +304,7 @@ extension BitArray: SetAlgebra {
 
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
-        // combine the two that the arrays have in common
+        // combine the two parts that the arrays have in common
         for i in 0..<minCapacity {
             let new = self.inner[i] ^ other.inner[i]
 

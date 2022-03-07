@@ -144,7 +144,7 @@ extension MutableCollection where Index == Int, Element: FixedWidthInteger {
             } else {
                 // remove
                 self[index.quot].remove(bit: Element(index.rem))
-                }
+            }
         }
     }
 
