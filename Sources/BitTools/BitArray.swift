@@ -372,7 +372,7 @@ extension BitArray: SetAlgebra {
 
         let capacity = Swift.min(self.capacity, other.capacity)
 
-        for i in 0..<capacity {
+        for i in 0 ..< capacity {
             let old = self.inner[i]
             let new = old & ~other.inner[i]
 
@@ -398,8 +398,9 @@ extension BitArray: SetAlgebra {
 
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
-        for i in 0..<minCapacity {
+        for i in 0 ..< minCapacity {
             let new = self.inner[i] & ~other.inner[i]
+
             inner[i] = new
 
             nonzeroBitCount += new.nonzeroBitCount
@@ -482,18 +483,17 @@ extension BitArray: SetAlgebra {
     ) -> Bool {
         assert(member >= 0)
         guard member < self.bitCapacity else { return false }
-        return self.rawContains(BlockIndex(member))
+        return self.rawContains(blockIndex(member))
     }
 
     public mutating func remove(
         _ member: Element
     ) -> Element? {
+        assert(member >= 0)
         guard member < self.bitCapacity else { return nil }
-        let ratio = self.ratio(for: member)
-        let contains = self.inner[ratio]
-        guard contains else { return nil }
-
-        self.inner[ratio] = false
+        let blockIndex = blockIndex(member)
+        guard self.rawContains(blockIndex) else { return nil }
+        self.rawRemove(blockIndex)
         self.count -= 1
         return member
 
@@ -576,6 +576,7 @@ extension BitArray {
     @inline(__always)
     public subscript(index: Int) -> Bool {
         get {
+            
             self.inner[bit: index]
         }
         set {
@@ -627,6 +628,7 @@ struct BlockIndex : Equatable {
         self.bitIndex = bitIndex
     }
 
+    @inline(__always)
     init(_ value: Int) {
         // 2^6 = 64
         let blockIndex = value >> 6
