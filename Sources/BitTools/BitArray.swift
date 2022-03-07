@@ -385,25 +385,43 @@ extension BitArray: SetAlgebra {
         self.count += newCount - oldCount
     }
 
+
     public func subtracting(_ other: Self) -> Self {
-        fatalError()
+        // this is essentially intersect but with a different operator
+        let capacity = Swift.min(self.capacity, other.capacity)
+        var nonzeroBitCount = 0
+
+        var inner = ContiguousArray<UInt64>(zeros: capacity)
+
+        for i in 0..<capacity {
+            let new = self.inner[i] & ~other.inner[i]
+            inner[i] = new
+
+            nonzeroBitCount += new.nonzeroBitCount
+        }
+
+        return Self(
+            count: nonzeroBitCount,
+            inner: inner
+        )
     }
 
-    public func isSubset(of other: Self) -> Bool {
-        fatalError()
-    }
+//    public func isSubset(of other: Self) -> Bool {
+//        fatalError()
+//    }
+//
+//    public func isSuperset(of other: Self) -> Bool {
+//        fatalError()
+//    }
+//
+//    public func isDisjoint(with other: Self) -> Bool {
+//        fatalError()
+//    }
 
-    public func isSuperset(of other: Self) -> Bool {
-        fatalError()
-    }
+//    public func isStrictSubset(of other: Self) -> Bool {
+//        fatalError()
+//    }
 
-    public func isDisjoint(with other: Self) -> Bool {
-        fatalError()
-    }
-
-    public func isStrictSubset(of other: Self) -> Bool {
-        fatalError()
-    }
 
 //    x.isSubset(of: y) implies x.union(y) == y
 //
