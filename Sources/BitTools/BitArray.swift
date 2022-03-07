@@ -169,9 +169,9 @@ extension BitArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.order(other.capacity)
 
-        var nonzeroBitCount = 0
-
         var inner = ContiguousArray<Block>(zeros: maxCapacity)
+
+        var nonzeroBitCount = 0
 
         // combine the two that the arrays have in common
         for i in 0 ..< minCapacity {
@@ -534,6 +534,8 @@ extension BitArray: Equatable {
             return false
         }
 
+
+        // only one of these two loops is executed
         for e in lhs.inner[capacity...] where e != 0 {
             return false
         }
