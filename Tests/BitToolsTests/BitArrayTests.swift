@@ -205,6 +205,29 @@ class BitArrayTest: XCTestCase {
 //        XCTAssert(a.check())
     }
 
+    func testRemove() {
+        var a: BitArray = [0, 10, 20, 500, 1000]
+        XCTAssert(a.count == 5)
+        XCTAssert(a.contains(20))
+        XCTAssert(!a.contains(30))
+
+        _ = a.remove(20)
+        XCTAssert(a.count == 4)
+        XCTAssert(!a.contains(20))
+
+        _ = a.remove(500)
+        XCTAssert(a.count == 3)
+        XCTAssert(!a.contains(500))
+//        XCTAssert(!a.contains(30))
+
+    }
+
+    func testSubscript() {
+        var a: BitArray = [0, 10, 20, 500, 1000]
+
+        XCTAssert(a[20])
+    }
+
     func testBitArray() {
         var a: BitArray = [100, 64, 1000]
 

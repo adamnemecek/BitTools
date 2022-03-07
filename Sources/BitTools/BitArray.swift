@@ -1,4 +1,8 @@
 import Ext
+///
+/// some of this is based on BigInt
+/// this file has a lot of bitshifting by 6 since 2^6 = 64
+///
 
 @frozen
 public struct BitArray {
@@ -446,6 +450,7 @@ extension BitArray: SetAlgebra {
 //
 //    x.isStrictSubset(of: y) if and only if x.isSubset(of: y) && x != y
 
+    // note that none of the raw apis update the count
     @inline(__always)
     private func rawContains(_ idx: BlockIndex) -> Bool {
         (self.inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
@@ -453,13 +458,21 @@ extension BitArray: SetAlgebra {
 
     // insert without checking
     @inline(__always)
-    mutating func rawInsert(_ idx: BlockIndex) {
+    private mutating func rawInsert(_ idx: BlockIndex) {
         self.inner[idx.blockIndex] |= (1 << idx.bitIndex)
     }
 
     @inline(__always)
-    mutating func rawRemove(_ idx: BlockIndex) {
+    private mutating func rawRemove(_ idx: BlockIndex) {
         self.inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
+    }
+
+    public func contains(
+        _ member: Element
+    ) -> Bool {
+        assert(member >= 0)
+        guard member < self.bitCapacity else { return false }
+        return self.rawContains(blockIndex(member))
     }
 
     public mutating func insert(
@@ -478,14 +491,6 @@ extension BitArray: SetAlgebra {
 
     }
 
-    public func contains(
-        _ member: Element
-    ) -> Bool {
-        assert(member >= 0)
-        guard member < self.bitCapacity else { return false }
-        return self.rawContains(blockIndex(member))
-    }
-
     public mutating func remove(
         _ member: Element
     ) -> Element? {
@@ -496,17 +501,16 @@ extension BitArray: SetAlgebra {
         self.rawRemove(blockIndex)
         self.count -= 1
         return member
-
     }
 
     public mutating func update(
         with newMember: __owned Element
     ) -> Element? {
-        let ratio = self.ratio(for: newMember)
-        //        if !contains {
-        //
-        //        }
-        fatalError()
+        let blockIndex = blockIndex(newMember)
+        guard !self.rawContains(blockIndex) else { return newMember }
+        self.rawInsert(blockIndex)
+        self.count += 1
+        return nil
     }
 
 
@@ -572,23 +576,38 @@ extension BitArray: CustomStringConvertible {
     }
 }
 
+
 extension BitArray {
     @inline(__always)
     public subscript(index: Int) -> Bool {
         get {
-            
-            self.inner[bit: index]
+            self.contains(index)
         }
         set {
-            switch (self.inner[bit: index], newValue) {
-            case (true, false):
-                count -= 1
-            case (false, true):
-                count += 1
-            default:
-                break
+            let blockIndex = blockIndex(index)
+            let oldValue = self.rawContains(blockIndex)
+            guard oldValue != newValue else { return }
+
+            // this means that either we are adding or removing
+            // if it was false and it's set to false, noop
+            // if true, true, noop as well
+            //
+            // 0, 0 =>  0
+            // 1, 0 => -1
+            // 0, 1 =>  1
+            // 1, 1 =>  0
+            //
+
+
+            if oldValue {
+                // we are removing
+                self.rawRemove(blockIndex)
+                self.count -= 1
+            } else {
+                // we are adding
+                self.rawInsert(blockIndex)
+                self.count += 1
             }
-            self.inner[bit: index] = newValue
         }
     }
 }
