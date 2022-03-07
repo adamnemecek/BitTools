@@ -74,10 +74,19 @@ class BitArrayTest: XCTestCase {
 
         let expected = Set(a).intersection(b)
         let result = a.intersection(b)
-        
 
         XCTAssert(result.equal(to: expected))
     }
+
+//    func testIntersectionRandom() {
+//        let a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+//        let b: BitArray = [10, 22, 75, 63, 100]
+//
+//        let expected = Set(a).intersection(b)
+//        let result = a.intersection(b)
+//
+//        XCTAssert(result.equal(to: expected))
+//    }
 
     func testFormIntersection1() {
         var result: BitArray = [60, 80, 63, 70, 75, 300, 1000]
@@ -135,13 +144,33 @@ class BitArrayTest: XCTestCase {
 ////        XCTAssert(a.check())
 //    }
 
+    func testSymmetricDifference1() {
+        let a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        let b: BitArray = [10, 22, 75, 63, 100]
+
+        let expected = Set(a).symmetricDifference(b)
+        let result = a.symmetricDifference(b)
+
+        XCTAssert(result.equal(to: expected))
+    }
+
+    func testFormSymmetricDifference1() {
+        var result: BitArray = [60, 80, 63, 70, 75, 300, 1000]
+        let b: BitArray = [10,  22, 75, 63, 100]
+
+        let expected = Set(result).symmetricDifference(b)
+        result.formSymmetricDifference(b)
+
+        XCTAssert(result.equal(to: expected))
+    }
+
     func testFormSymmetricDifference() {
         var a: BitArray = [60, 80, 63, 70, 75, 300, 1000]
         print(a)
 
         let b: BitArray = [10,  22, 75, 63, 100]
 
-//        print(b)
+
 
         a.formSymmetricDifference(b)
 

@@ -165,6 +165,7 @@ extension BitArray: SetAlgebra {
         self.reserveCapacity(bitCapacity.roundUp(to: Block.bitWidth))
     }
 
+    // done
     public __consuming func union(
         _ other: __owned Self
     ) -> Self {
@@ -213,6 +214,7 @@ extension BitArray: SetAlgebra {
         )
     }
 
+    // done
     public mutating func formUnion(
         _ other: __owned Self
     ) {
@@ -237,6 +239,7 @@ extension BitArray: SetAlgebra {
         self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
     }
 
+    // done
     public __consuming func intersection(
         _ other: Self
     ) -> Self {
@@ -259,6 +262,7 @@ extension BitArray: SetAlgebra {
     }
 
 
+    // done
     public mutating func formIntersection(
         _ other: Self
     ) {
@@ -282,6 +286,7 @@ extension BitArray: SetAlgebra {
         member.ratio(Block.bitWidth)
     }
 
+    // done?
     public __consuming func symmetricDifference(
         _ other: __owned Self
     ) -> Self {
@@ -290,25 +295,42 @@ extension BitArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.order(other.capacity)
 
-        var count = 0
+        var nonzeroBitCount = 0
+
         var inner = ContiguousArray<UInt64>(zeros: maxCapacity)
 
+        // combine the two that the arrays have in common
         for i in 0..<minCapacity {
             let new = self.inner[i] ^ other.inner[i]
-            count += new.nonzeroBitCount
+            nonzeroBitCount += new.nonzeroBitCount
             inner[i] = new
         }
 
-        let tail = self.inner[minCapacity...] || other.inner[minCapacity...]
+        // copy over the tail
+        // note that only one of two loops will be executed, the
+        // other one is empty
 
-        for i in minCapacity..<maxCapacity {
-            let new = tail[i]
-            inner[i] = new
-            count += new.nonzeroBitCount
+        assert(
+            self.inner[minCapacity...].isEmpty
+            || other.inner[minCapacity...].isEmpty
+        )
+
+        var idx = minCapacity
+
+        for e in self.inner[minCapacity...] {
+            inner[idx] = e
+            nonzeroBitCount += e.nonzeroBitCount
+            idx += 1
+        }
+
+        for e in other.inner[minCapacity...] {
+            inner[idx] = e
+            nonzeroBitCount += e.nonzeroBitCount
+            idx += 1
         }
 
         return Self(
-            count: count,
+            count: nonzeroBitCount,
             inner: inner
         )
     }
@@ -316,10 +338,13 @@ extension BitArray: SetAlgebra {
     public mutating func formSymmetricDifference(
         _ other: __owned Self
     ) {
+        // resize
+        // go through the shared length and count
+        self.reserveCapacity(other.capacity)
+
         var oldCount = 0
         var newCount = 0
 
-        self.reserveCapacity(other.capacity)
         for i in 0 ..< other.capacity {
             let old = self.inner[i]
             let new = old ^ other.inner[i]
@@ -410,27 +435,6 @@ extension BitArray {
                 self.count -= 1
             }
         }
-//        var i = (0..<self.inner.count).makeIterator()
-//
-//        var blockBitOffset = 0
-//        var count = 0
-//
-//        let nonzeroBitCount = self.nonzeroBitCount
-//        var newCount = 0
-//
-//        while let index = i.next(), count < nonzeroBitCount {
-//            let current = self.inner[index]
-//            count += current.nonzeroBitCount
-//
-//            let new = try current.removingAll {
-//                try shouldBeRemoved(blockBitOffset + Int($0))
-//            }
-//
-//            newCount += new.nonzeroBitCount
-//            self.inner[index] = new
-//            blockBitOffset += Block.bitWidth
-//        }
-//        self.count = newCount
     }
 }
 
