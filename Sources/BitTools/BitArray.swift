@@ -495,13 +495,11 @@ extension BitArray: SetAlgebra {
     public mutating func update(
         with newMember: __owned Element
     ) -> Element? {
-        let blockIndex = blockIndex(newMember)
-        guard !self.rawContains(blockIndex) else { return newMember }
-        self.rawInsert(blockIndex)
-        self.count += 1
-        return nil
+        if self.insert(newMember).inserted {
+            return nil
+        }
+        return newMember
     }
-
 }
 
 extension BitArray {
@@ -615,16 +613,16 @@ extension BitArray {
     }
 }
 
-extension BitArray {
-    subscript(block: BlockIndex) -> Bool {
-        get {
-            fatalError()
-        }
-        set {
-            fatalError()
-        }
-    }
-}
+//extension BitArray {
+//    subscript(block: BlockIndex) -> Bool {
+//        get {
+//            fatalError()
+//        }
+//        set {
+//            fatalError()
+//        }
+//    }
+//}
 
 @inline(__always)
 func blockIndex(_ value: Int) -> BlockIndex {
