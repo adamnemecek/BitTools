@@ -290,29 +290,41 @@ extension BitArray: SetAlgebra {
     public mutating func formUnion(
         _ other: __owned Self
     ) {
-        let (
-            minCapacity,
-            maxCapacity
-        ) = self.capacity.order(other.capacity)
+//        let (
+//            minCapacity,
+//            maxCapacity
+//        ) = self.capacity.order(other.capacity)
 
-        self.reserveCapacity(other.capacity)
+//        self.reserveCapacity(other.capacity)
+//
+//        var count = 0
+//        for i in 0..<minCapacity {
+//            let new = self.inner[i] | other.inner[i]
+//            self.inner[i] = new
+//            count += new.nonzeroBitCount
+//        }
+//
+//        let tail = other.inner[minCapacity...]
+//
+//        for i in minCapacity..<maxCapacity {
+//            let new = tail[i]
+//            self.inner[i] = new
+//            count += new.nonzeroBitCount
+//        }
+        var oldCount = 0
+        var newCount = 0
+        self.reserveCapacity(other.inner.count)
+        for i in 0 ..< other.inner.count {
+            let old = self.inner[i]
+            let new = old | other.inner[i]
 
-        var count = 0
-        for i in 0..<minCapacity {
-            let new = self.inner[i] | other.inner[i]
+            oldCount += old.nonzeroBitCount
+            newCount += new.nonzeroBitCount
+
             self.inner[i] = new
-            count += new.nonzeroBitCount
         }
-
-        let tail = other.inner[minCapacity...]
-
-        for i in minCapacity..<maxCapacity {
-            let new = tail[i]
-            self.inner[i] = new
-            count += new.nonzeroBitCount
-        }
-
-        self.count = count
+//        print("count \(count)")
+        self.count += oldCount - newCount
     }
 
     public __consuming func intersection(

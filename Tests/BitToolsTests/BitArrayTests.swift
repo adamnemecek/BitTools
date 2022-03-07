@@ -6,9 +6,30 @@ import BitTools
 
 class BitArrayTest: XCTestCase {
     typealias Harness = BitArrayTestHarness<BitArray>
+
+    func testBundle() {
+        //        koremetalbundle()
+    }
+
     func testModule() {
-        var harness = Harness()
-        koremetalbundle()
+        var a: BitArray = [60, 80, 70]
+        print(a)
+
+        let b: BitArray = [10,  22, 63]
+
+        print(b)
+    
+        a.formUnion(b)
+
+        print(a)
+//        XCTAssert(a.check())
+//        var a: Harness = [60, 80, 70]
+//
+//        let b: Harness = [10, 63, 22]
+//
+//        a.formUnion(b)
+//
+//        XCTAssert(a.check())
     }
 
     func testBitArray() {
