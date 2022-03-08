@@ -40,21 +40,28 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
     }
 
     /// returns diff
+    @inline(__always)
     func formUnion(
         _ other: UnsafeBufferPointer<UInt64>,
         capacity: Int
     ) -> Int {
+        guard var self_ = self.baseAddress,
+              var other_ = other.baseAddress else { fatalError() }
+
         var oldCount = 0
         var newCount = 0
 
-        for i in 0 ..< capacity {
-            let old = self[i]
-            let new = old | other[i]
+        for _ in 0 ..< capacity {
+            let old = self_.pointee
+            let new = old | other_.pointee
+
+            self_.pointee = new
 
             oldCount += old.nonzeroBitCount
             newCount += new.nonzeroBitCount
 
-            self[i] = new
+            self_ = self_.successor()
+            other_ = other_.successor()
         }
 
         return newCount - oldCount

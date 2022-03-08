@@ -12,6 +12,7 @@ extension UnsafeBufferPointer where Element == UInt64 {
     }
 }
 
+@frozen
 public struct BitArrayIterator {
     private var ptr: UnsafePointer<UInt64>
 
@@ -43,7 +44,7 @@ public struct BitArrayIterator {
 }
 
 extension BitArrayIterator: IteratorProtocol {
-    init(ptr: UnsafeBufferPointer<UInt64>, nonzeroBitCount: Int) {
+    public init(ptr: UnsafeBufferPointer<UInt64>, nonzeroBitCount: Int) {
         guard let p = ptr.baseAddress else { fatalError() }
 
         self.init(

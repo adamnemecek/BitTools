@@ -5,12 +5,15 @@ import Ext
 ///
 
 @frozen
-public struct BitArray {
+
+public struct BitArray5 {
     public typealias Element = Int
     public typealias Block = UInt64
 
     public private(set) var count: Int
-    private var inner: ContiguousArray<Block>
+
+
+    public var inner: ContiguousArray<Block>
 
     ///
     /// capacity in blocks
@@ -25,21 +28,22 @@ public struct BitArray {
         self.capacity << 6
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var isEmpty: Bool {
         self.count == 0
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var isSome: Bool {
         !self.isEmpty
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public init() {
         self.init(count: 0, inner: [])
     }
 
+    @usableFromInline
     init(
         count: Int,
         inner: ContiguousArray<Block>
@@ -49,22 +53,22 @@ public struct BitArray {
     }
 }
 
-extension BitArray: Sequence {
+extension BitArray5: Sequence {
     public typealias Iterator = BitArrayIterator
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var underestimatedCount: Int {
         self.count
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
         try self.inner.withUnsafeBufferPointer(body)
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public func makeIterator() -> Iterator {
         let bitCount = self.count
         return self.withUnsafeBufferPointer {
@@ -135,7 +139,7 @@ extension BitArray: Sequence {
 
 }
 
-extension BitArray: SetAlgebra {
+extension BitArray5: SetAlgebra {
 
     public init(capacity: Int) {
         self.count = 0
@@ -211,6 +215,8 @@ extension BitArray: SetAlgebra {
     }
 
     // done
+
+    @inline(__always)
     public mutating func formUnion(
         _ other: __owned Self
     ) {
@@ -496,7 +502,7 @@ extension BitArray: SetAlgebra {
     }
 }
 
-extension BitArray {
+extension BitArray5 {
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
@@ -517,10 +523,10 @@ extension BitArray {
     }
 }
 
-extension BitArray: Equatable {
+extension BitArray5: Equatable {
     ///
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
-    /// in which case the `BitArray`s are zero
+    /// in which case the `BitArray5`s are zero
     ///
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs.count == rhs.count else { return false }
@@ -547,7 +553,7 @@ extension BitArray: Equatable {
     }
 }
 
-extension BitArray {
+extension BitArray5 {
     public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
         self.init()
 
@@ -559,19 +565,19 @@ extension BitArray {
     }
 }
 
-extension BitArray: ExpressibleByArrayLiteral {
+extension BitArray5: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Element...) {
         self.init(elements)
     }
 }
 
-extension BitArray: CustomStringConvertible {
+extension BitArray5: CustomStringConvertible {
     public var description: String {
-        "BitArray(\(Array(self)))"
+        "BitArray5(\(Array(self)))"
     }
 }
 
-extension BitArray {
+extension BitArray5 {
     @inline(__always)
     public subscript(index: Int) -> Bool {
         get {
@@ -607,13 +613,3 @@ extension BitArray {
     }
 }
 
-// extension BitArray {
-//    subscript(block: BlockIndex) -> Bool {
-//        get {
-//            fatalError()
-//        }
-//        set {
-//            fatalError()
-//        }
-//    }
-// }

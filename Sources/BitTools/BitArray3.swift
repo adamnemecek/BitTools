@@ -1,4 +1,4 @@
-
+@frozen
 public struct BitArray3 {
     public typealias Element = Int
 
@@ -57,14 +57,57 @@ extension BitArray3 : SetAlgebra {
         fatalError()
     }
 
-    public mutating func formUnion(_ other: Self) {
-        let capacity = other.inner.capacity
-        self.reserveCapacity(capacity)
-        self.count += self.inner.withUnsafeMutableBufferPointer { dst in
-            other.inner.withUnsafeBufferPointer { src in
-                dst.formUnion(src, capacity: capacity)
+    @inline(__always)
+    public var capacity: Int {
+        self.inner.count
+    }
+
+
+    public mutating func formUnion(
+        _ other: __owned Self) {
+//        let capacity = other.inner.capacity
+//        self.reserveCapacity(capacity)
+//        self.count += self.inner.withUnsafeMutableBufferPointer { dst in
+//            other.inner.withUnsafeBufferPointer { src in
+//                guard var self_ = dst.baseAddress,
+//                      var other_ = src.baseAddress else { fatalError() }
+//
+//                var oldCount = 0
+//                var newCount = 0
+//
+//                for _ in 0 ..< capacity {
+//                    let old = self_.pointee
+//                    let new = old | other_.pointee
+//
+//                    self_.pointee = new
+//
+//                    oldCount += old.nonzeroBitCount
+//                    newCount += new.nonzeroBitCount
+//
+//                    self_ = self_.successor()
+//                    other_ = other_.successor()
+//                }
+//
+//                return newCount - oldCount
+//            }
+//        }
+
+            self.reserveCapacity(other.capacity)
+
+            var oldCount = 0
+            var newCount = 0
+
+            for i in 0 ..< other.capacity {
+                let old = self.inner[i]
+                let new = old | other.inner[i]
+
+                oldCount += old.nonzeroBitCount
+                newCount += new.nonzeroBitCount
+
+                self.inner[i] = new
             }
-        }
+
+            self.count += newCount - oldCount
     }
 
     public mutating func insert(

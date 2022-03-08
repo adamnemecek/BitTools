@@ -5,12 +5,20 @@ import Ext
 ///
 
 @frozen
-public struct BitArray {
+public struct BitArray4<C:
+                                RangeReplaceableCollection &
+                            MutableCollection &
+                            ExpressibleByArrayLiteral &
+                            ContiguousCollection> where
+                            C.Index == Int, C.Element == UInt64 {
     public typealias Element = Int
     public typealias Block = UInt64
 
-    public private(set) var count: Int
-    private var inner: ContiguousArray<Block>
+    @usableFromInline
+    internal var count: Int
+
+    @usableFromInline
+    internal var inner: C
 
     ///
     /// capacity in blocks
@@ -42,14 +50,14 @@ public struct BitArray {
 
     init(
         count: Int,
-        inner: ContiguousArray<Block>
+        inner: C
     ) {
         self.count = count
         self.inner = inner
     }
 }
 
-extension BitArray: Sequence {
+extension BitArray4: Sequence {
     public typealias Iterator = BitArrayIterator
 
     @inline(__always)
@@ -135,11 +143,11 @@ extension BitArray: Sequence {
 
 }
 
-extension BitArray: SetAlgebra {
+extension BitArray4: SetAlgebra {
 
     public init(capacity: Int) {
         self.count = 0
-        self.inner = ContiguousArray(zeros: count)
+        self.inner = C(zeros: count)
     }
 
     // call this after
@@ -150,6 +158,7 @@ extension BitArray: SetAlgebra {
     ///
     /// this is in blocks
     ///
+    @usableFromInline
     mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self.inner.count
         guard count > 0 else { return }
@@ -169,7 +178,7 @@ extension BitArray: SetAlgebra {
             maxCapacity
         ) = self.capacity.order(other.capacity)
 
-        var inner = ContiguousArray<Block>(zeros: maxCapacity)
+        var inner = C(zeros: maxCapacity)
 
         var nonzeroBitCount = 0
 
@@ -211,6 +220,8 @@ extension BitArray: SetAlgebra {
     }
 
     // done
+
+    @inline(__always) @inlinable
     public mutating func formUnion(
         _ other: __owned Self
     ) {
@@ -244,7 +255,7 @@ extension BitArray: SetAlgebra {
         let capacity = Swift.min(self.capacity, other.capacity)
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<Block>(zeros: capacity)
+        var inner = C(zeros: capacity)
 
         for i in 0 ..< capacity {
             let new = self.inner[i] & other.inner[i]
@@ -290,7 +301,7 @@ extension BitArray: SetAlgebra {
 
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<Block>(zeros: maxCapacity)
+        var inner = C(zeros: maxCapacity)
 
         // combine the two parts that the arrays have in common
         for i in 0 ..< minCapacity {
@@ -384,7 +395,7 @@ extension BitArray: SetAlgebra {
 
         var nonzeroBitCount = 0
 
-        var inner = ContiguousArray<Block>(zeros: maxCapacity)
+        var inner = C(zeros: maxCapacity)
 
         for i in 0 ..< minCapacity {
             let new = self.inner[i] & ~other.inner[i]
@@ -496,7 +507,7 @@ extension BitArray: SetAlgebra {
     }
 }
 
-extension BitArray {
+extension BitArray4 {
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
@@ -517,10 +528,10 @@ extension BitArray {
     }
 }
 
-extension BitArray: Equatable {
+extension BitArray4: Equatable {
     ///
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
-    /// in which case the `BitArray`s are zero
+    /// in which case the `BitArray4`s are zero
     ///
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs.count == rhs.count else { return false }
@@ -547,7 +558,7 @@ extension BitArray: Equatable {
     }
 }
 
-extension BitArray {
+extension BitArray4 {
     public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
         self.init()
 
@@ -559,19 +570,19 @@ extension BitArray {
     }
 }
 
-extension BitArray: ExpressibleByArrayLiteral {
+extension BitArray4: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Element...) {
         self.init(elements)
     }
 }
 
-extension BitArray: CustomStringConvertible {
+extension BitArray4: CustomStringConvertible {
     public var description: String {
-        "BitArray(\(Array(self)))"
+        "BitArray4(\(Array(self)))"
     }
 }
 
-extension BitArray {
+extension BitArray4 {
     @inline(__always)
     public subscript(index: Int) -> Bool {
         get {
@@ -607,7 +618,7 @@ extension BitArray {
     }
 }
 
-// extension BitArray {
+// extension BitArray4 {
 //    subscript(block: BlockIndex) -> Bool {
 //        get {
 //            fatalError()
@@ -617,3 +628,5 @@ extension BitArray {
 //        }
 //    }
 // }
+
+
