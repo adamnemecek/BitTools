@@ -5,8 +5,7 @@ import Ext
 ///
 
 @frozen
-public struct BitArray4<C:
-                                RangeReplaceableCollection &
+public struct BitArray4<C: RangeReplaceableCollection &
                             MutableCollection &
                             ExpressibleByArrayLiteral &
                             ContiguousCollection> where
@@ -14,11 +13,9 @@ public struct BitArray4<C:
     public typealias Element = Int
     public typealias Block = UInt64
 
-    @usableFromInline
-    internal var count: Int
+    @usableFromInline internal var count: Int
 
-    @usableFromInline
-    internal var inner: C
+    @usableFromInline internal var inner: C
 
     ///
     /// capacity in blocks
@@ -38,15 +35,12 @@ public struct BitArray4<C:
         self.count == 0
     }
 
+                                
     @inline(__always)
     public var isSome: Bool {
         !self.isEmpty
     }
 
-    @inline(__always)
-    public init() {
-        self.init(count: 0, inner: [])
-    }
 
     init(
         count: Int,
@@ -59,6 +53,11 @@ public struct BitArray4<C:
 
 extension BitArray4: Sequence {
     public typealias Iterator = BitArrayIterator
+
+    @inline(__always)
+    public init() {
+        self.init(count: 0, inner: [])
+    }
 
     @inline(__always)
     public var underestimatedCount: Int {
@@ -560,7 +559,7 @@ extension BitArray4: Equatable {
 
 extension BitArray4 {
     public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
-        self.init()
+        self.init(capacity: 1)
 
         guard let max = sequence.max() else { return }
         self.reserveCapacity(for: blockIndex(max))

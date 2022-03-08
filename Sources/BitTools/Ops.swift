@@ -40,7 +40,7 @@ extension UnsafeMutableBufferPointer where Element == UInt64 {
     }
 
     /// returns diff
-    @inline(__always)
+    @inlinable @inline(__always)
     func formUnion(
         _ other: UnsafeBufferPointer<UInt64>,
         capacity: Int
