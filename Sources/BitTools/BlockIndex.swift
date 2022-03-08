@@ -19,8 +19,13 @@ func blockIndex(_ value: Int) -> BlockIndex {
 @usableFromInline
 @frozen
 struct BlockIndex: Equatable {
+    @usableFromInline
     let blockIndex: Int
+
+    @usableFromInline
     let bitIndex: Int
+
+    @usableFromInline
     let value: Int
 
     @inline(__always)
