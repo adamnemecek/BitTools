@@ -412,7 +412,7 @@ extension BitArray: SetAlgebra {
 
     ///
     public func isSubset(of other: Self) -> Bool {
-        let capacity = self.capacity.min(other.capacity)
+        let capacity = Swift.min(self.capacity, other.capacity)
 
         for i in 0 ..< capacity {
             let a = self.inner[i]
@@ -438,7 +438,7 @@ extension BitArray: SetAlgebra {
     }
 
     public func isDisjoint(with other: Self) -> Bool {
-        let capacity = self.capacity.min(other.capacity)
+        let capacity = Swift.min(self.capacity, other.capacity)
 
         //
         //
