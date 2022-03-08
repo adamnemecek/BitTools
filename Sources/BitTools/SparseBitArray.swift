@@ -12,6 +12,12 @@ import Foundation
 /// this is a sparse bit array
 /// that lets you iterate over a sparse array very quickyl
 /// imagine a bitarray with 10000 values only 10 of which are set
+/// 10000 bits = 156 uint64
+/// an extra level will take up 156 / 64 = ~2.4 = 3 extra bits but will be much faster
+/// to iterate and such
+/// but if we use an extra level and say the values are only in three blocks
+/// we can only ever deal with the blocks that have any values in them
+///
 
 
 //public struct SparseBitArray {
@@ -39,113 +45,121 @@ import Foundation
 //
 //}
 
-struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
+public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
 
-    typealias Element = Int
+    public typealias Element = Int
 
-    typealias ArrayLiteralElement = Element
+    public typealias ArrayLiteralElement = Element
 
     var meta: Meta
     var inner: BitArray
 
-    init() {
+    public init() {
         fatalError()
     }
 
-    init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
         fatalError()
     }
 
-    static func ==(lhs: Self, rhs: Self) -> Bool {
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
         fatalError()
     }
 
-    init(arrayLiteral elements: Element...) {
+    public init(arrayLiteral elements: Element...) {
         fatalError()
     }
 
-    var isEmpty: Bool {
+    public var isEmpty: Bool {
         fatalError()
     }
 
-    var isSome: Bool {
+    public var isSome: Bool {
         fatalError()
     }
 
-    func contains(_ member: Element) -> Bool {
+    public func contains(_ member: Element) -> Bool {
         fatalError()
     }
 
-    __consuming func union(_ other: __owned Self) -> Self {
+    public __consuming func union(_ other: __owned Self) -> Self {
         fatalError()
     }
 
-    mutating func formUnion(_ other: __owned Self) {
+    public mutating func formUnion(_ other: __owned Self) {
         fatalError()
     }
 
-    __consuming func intersection(_ other: Self) -> Self {
+    public __consuming func intersection(_ other: Self) -> Self {
         fatalError()
     }
 
-    mutating func formIntersection(_ other: Self) {
+    public mutating func formIntersection(_ other: Self) {
         fatalError()
     }
 
-    __consuming func symmetricDifference(_ other: __owned Self) -> Self {
+    public __consuming func symmetricDifference(_ other: __owned Self) -> Self {
         fatalError()
     }
 
-    mutating func formSymmetricDifference(_ other: __owned Self) {
+    public mutating func formSymmetricDifference(_ other: __owned Self) {
         fatalError()
     }
 
-    mutating func insert(_ newMember: __owned Element) -> (inserted: Bool, memberAfterInsert: Element) {
+    public mutating func subtract(_ other: Self) {
         fatalError()
     }
 
-    mutating func remove(_ member: Element) -> Element? {
+    public func subtracting(_ other: Self) -> Self {
         fatalError()
     }
 
-    mutating func update(with newMember: __owned Element) -> Element? {
+    public mutating func insert(_ newMember: __owned Element) -> (inserted: Bool, memberAfterInsert: Element) {
         fatalError()
     }
 
-    func subtract(_ other: Self) {
+    public mutating func remove(_ member: Element) -> Element? {
         fatalError()
     }
 
-    func subtracting(_ other: Self) -> Self {
+    public mutating func update(with newMember: __owned Element) -> Element? {
         fatalError()
     }
 
-    func isSubset(of other: Self) -> Bool {
+    public func isSubset(of other: Self) -> Bool {
         fatalError()
     }
 
-    func isSuperset(of other: Self) -> Bool {
+    public func isSuperset(of other: Self) -> Bool {
         fatalError()
     }
 
-    func isDisjoint(with other: Self) -> Bool {
+    public func isDisjoint(with other: Self) -> Bool {
+        fatalError()
+    }
+
+    public func removeAll() {
+        fatalError()
+    }
+
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         fatalError()
     }
 }
 
 extension SparseBitArray: Sequence {
-    func makeIterator() -> AnyIterator<Int> {
+    public func makeIterator() -> AnyIterator<Int> {
         fatalError()
     }
 }
 
 struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
 
-    typealias Element = Int
+    typealias Element = BlockIndex
 
     typealias ArrayLiteralElement = Element
 
-    var inner: ContiguousArray<UInt64>
+    var inner: BitArray
 
     // how many blocks can this accomodate
     var blockCapacity: Int {

@@ -14,6 +14,8 @@ extension UnsafeBufferPointer where Element == UInt64 {
 
 @frozen
 public struct BitArrayIterator {
+    public typealias Element = Int
+
     private var ptr: UnsafePointer<UInt64>
 
     ///
@@ -63,7 +65,7 @@ extension BitArrayIterator: IteratorProtocol {
 //    }
 
     @inline(__always)
-    public mutating func next() -> Int? {
+    public mutating func next() -> Element? {
         while self.block == 0 {
             self.blockIndex += 1
             if self.remainingNonzeroBitCount == 0 || self.blockIndex == self.blockCount {
