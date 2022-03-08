@@ -10,9 +10,7 @@ public struct BitArrayCopy {
     public typealias Block = UInt64
 
     public private(set) var count: Int
-
-
-    public var inner: ContiguousArray<Block>
+    private var inner: ContiguousArray<Block>
 
     ///
     /// capacity in blocks
@@ -27,22 +25,21 @@ public struct BitArrayCopy {
         self.capacity << 6
     }
 
-    @inline(__always) @inlinable
+    @inline(__always)
     public var isEmpty: Bool {
         self.count == 0
     }
 
-    @inline(__always) @inlinable
+    @inline(__always)
     public var isSome: Bool {
         !self.isEmpty
     }
 
-    @inline(__always) @inlinable
+    @inline(__always)
     public init() {
         self.init(count: 0, inner: [])
     }
 
-    @usableFromInline
     init(
         count: Int,
         inner: ContiguousArray<Block>
@@ -55,19 +52,19 @@ public struct BitArrayCopy {
 extension BitArrayCopy: Sequence {
     public typealias Iterator = BitArrayIterator
 
-    @inline(__always) @inlinable
+    @inline(__always)
     public var underestimatedCount: Int {
         self.count
     }
 
-    @inline(__always) @inlinable
+    @inline(__always)
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
         try self.inner.withUnsafeBufferPointer(body)
     }
 
-    @inline(__always) @inlinable
+    @inline(__always)
     public func makeIterator() -> Iterator {
         let bitCount = self.count
         return self.withUnsafeBufferPointer {
@@ -215,7 +212,6 @@ extension BitArrayCopy: SetAlgebra {
 
     // done
 
-    @inline(__always)
     public mutating func formUnion(
         _ other: __owned Self
     ) {
@@ -525,7 +521,7 @@ extension BitArrayCopy {
 extension BitArrayCopy: Equatable {
     ///
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
-    /// in which case the `BitArray5`s are zero
+    /// in which case the `BitArray`s are zero
     ///
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs.count == rhs.count else { return false }
@@ -572,7 +568,7 @@ extension BitArrayCopy: ExpressibleByArrayLiteral {
 
 extension BitArrayCopy: CustomStringConvertible {
     public var description: String {
-        "BitArray5(\(Array(self)))"
+        "BitArrayCopy(\(Array(self)))"
     }
 }
 
@@ -612,3 +608,13 @@ extension BitArrayCopy {
     }
 }
 
+// extension BitArrayCopy {
+//    subscript(block: BlockIndex) -> Bool {
+//        get {
+//            fatalError()
+//        }
+//        set {
+//            fatalError()
+//        }
+//    }
+// }
