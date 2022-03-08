@@ -243,7 +243,8 @@ extension BitArrayCopy: SetAlgebra {
         self.reserveCapacity(capacity)
         self.count += self.inner.withUnsafeMutableBufferPointer { dst in
             other.inner.withUnsafeBufferPointer { src in
-                dst.formUnion(src, capacity: capacity)
+//                dst.formUnion(src, capacity: capacity)
+                BitTools.formUnion(dst, src, capacity: capacity)
             }
         }
     }
