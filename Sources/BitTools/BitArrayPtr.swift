@@ -1,19 +1,20 @@
 @frozen
-public struct BitArrayPtr {
+public struct BitArrayPtr : SetAlgebra {
+    public typealias Block = UInt64
     public typealias Element = Int
 
     @usableFromInline
     internal private(set) var _count: Int
 
     @usableFromInline
-    internal var _inner: ContiguousArray<UInt64>
+    internal var _inner: ContiguousArray<Block>
 
     @inlinable @inline(__always)
     public var count: Int {
         self._count
     }
 
-    init(count: Int, inner: ContiguousArray<UInt64>) {
+    init(count: Int, inner: ContiguousArray<Block>) {
         self._count = count
         self._inner = inner
     }
@@ -31,9 +32,9 @@ public struct BitArrayPtr {
             _ = self.insert($0)
         }
     }
-}
+//}
 
-extension BitArrayPtr {
+//extension BitArrayPtr {
     @inlinable @inline(__always)
     public var capacity: Int {
         self._inner.count
@@ -59,12 +60,12 @@ extension BitArrayPtr {
     private mutating func reserveCapacity(for blockIndex: BlockIndex) {
         self.reserveCapacity(blockIndex.blocksNeeded)
     }
-}
+//}
 
-extension BitArrayPtr : SetAlgebra {
+//extension BitArrayPtr : SetAlgebra {
 
-    @inlinable @inline(__always)
-    public mutating func reserveCapacity(_ minimumCapacity: Int) {
+//    @inlinable @inline(__always)
+    mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self._inner.count
         guard count > 0 else { return }
         self._inner.append(zeros: count)
@@ -74,16 +75,39 @@ extension BitArrayPtr : SetAlgebra {
         fatalError()
     }
 
-    @inlinable @inline(__always)
-    public mutating func formUnion(_ other: Self) {
-        let capacity = other.capacity
-        self.reserveCapacity(capacity)
-        self._count += self._inner.withUnsafeMutableBufferPointer { dst in
-            other._inner.withUnsafeBufferPointer { src in
-                dst.formUnion(src, capacity: capacity)
-            }
+//    @inlinable @inline(__always)
+//    public mutating func formUnion(_ other: __owned Self) {
+//        let capacity = other.capacity
+//        self.reserveCapacity(capacity)
+//        self._count += self._inner.withUnsafeMutableBufferPointer { dst in
+//            other._inner.withUnsafeBufferPointer { src in
+//                dst.formUnion(src, capacity: capacity)
+//            }
+//        }
+//    }
+
+
+    public mutating func formUnion(
+        _ other: __owned Self
+    ) {
+        self.reserveCapacity(other.capacity)
+
+        var oldCount = 0
+        var newCount = 0
+
+        for i in 0 ..< other.capacity {
+            let old = self._inner[i]
+            let new = old | other._inner[i]
+
+            oldCount += old.nonzeroBitCount
+            newCount += new.nonzeroBitCount
+
+            self._inner[i] = new
         }
+
+        self._count += newCount - oldCount
     }
+
 
     public mutating func insert(
         _ newMember: __owned Element

@@ -211,6 +211,7 @@ extension BitArray: SetAlgebra {
     }
 
     // done
+    
     public mutating func formUnion(
         _ other: __owned Self
     ) {
