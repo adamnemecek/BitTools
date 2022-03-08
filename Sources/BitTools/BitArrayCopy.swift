@@ -10,7 +10,9 @@ public struct BitArrayCopy {
     public typealias Block = UInt64
 
     public private(set) var count: Int
-    private var inner: ContiguousArray<Block>
+
+
+    public var inner: ContiguousArray<Block>
 
     ///
     /// capacity in blocks
@@ -25,21 +27,22 @@ public struct BitArrayCopy {
         self.capacity << 6
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var isEmpty: Bool {
         self.count == 0
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var isSome: Bool {
         !self.isEmpty
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public init() {
         self.init(count: 0, inner: [])
     }
 
+    @usableFromInline
     init(
         count: Int,
         inner: ContiguousArray<Block>
@@ -52,19 +55,19 @@ public struct BitArrayCopy {
 extension BitArrayCopy: Sequence {
     public typealias Iterator = BitArrayIterator
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var underestimatedCount: Int {
         self.count
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
         try self.inner.withUnsafeBufferPointer(body)
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public func makeIterator() -> Iterator {
         let bitCount = self.count
         return self.withUnsafeBufferPointer {
@@ -212,25 +215,37 @@ extension BitArrayCopy: SetAlgebra {
 
     // done
 
-    public mutating func formUnion(
-        _ other: __owned Self
-    ) {
-        self.reserveCapacity(other.capacity)
+//    @inline(__always)
+//    public mutating func formUnion(
+//        _ other: __owned Self
+//    ) {
+//        self.reserveCapacity(other.capacity)
+//
+//        var oldCount = 0
+//        var newCount = 0
+//
+//        for i in 0 ..< other.capacity {
+//            let old = self.inner[i]
+//            let new = old | other.inner[i]
+//
+//            oldCount += old.nonzeroBitCount
+//            newCount += new.nonzeroBitCount
+//
+//            self.inner[i] = new
+//        }
+//
+//        self.count += newCount - oldCount
+//    }
 
-        var oldCount = 0
-        var newCount = 0
-
-        for i in 0 ..< other.capacity {
-            let old = self.inner[i]
-            let new = old | other.inner[i]
-
-            oldCount += old.nonzeroBitCount
-            newCount += new.nonzeroBitCount
-
-            self.inner[i] = new
+//    @inlinable @inline(__always)
+    public mutating func formUnion(_ other: __owned Self) {
+        let capacity = other.inner.count
+        self.reserveCapacity(capacity)
+        self.count += self.inner.withUnsafeMutableBufferPointer { dst in
+            other.inner.withUnsafeBufferPointer { src in
+                dst.formUnion(src, capacity: capacity)
+            }
         }
-
-        self.count += newCount - oldCount
     }
 
 //
@@ -521,7 +536,7 @@ extension BitArrayCopy {
 extension BitArrayCopy: Equatable {
     ///
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
-    /// in which case the `BitArray`s are zero
+    /// in which case the `BitArray5`s are zero
     ///
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs.count == rhs.count else { return false }
@@ -568,7 +583,7 @@ extension BitArrayCopy: ExpressibleByArrayLiteral {
 
 extension BitArrayCopy: CustomStringConvertible {
     public var description: String {
-        "BitArrayCopy(\(Array(self)))"
+        "BitArray5(\(Array(self)))"
     }
 }
 
@@ -608,13 +623,3 @@ extension BitArrayCopy {
     }
 }
 
-// extension BitArrayCopy {
-//    subscript(block: BlockIndex) -> Bool {
-//        get {
-//            fatalError()
-//        }
-//        set {
-//            fatalError()
-//        }
-//    }
-// }
