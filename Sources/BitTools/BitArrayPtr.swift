@@ -1,13 +1,21 @@
 @frozen
-public struct BitArray3 {
+public struct BitArrayPtr {
     public typealias Element = Int
 
-    public private(set) var count: Int
-    private var inner: ContiguousArray<UInt64>
+    @usableFromInline
+    internal private(set) var _count: Int
+
+    @usableFromInline
+    internal var _inner: ContiguousArray<UInt64>
+
+    @inlinable @inline(__always)
+    public var count: Int {
+        self._count
+    }
 
     init(count: Int, inner: ContiguousArray<UInt64>) {
-        self.count = count
-        self.inner = inner
+        self._count = count
+        self._inner = inner
     }
 
     public init() {
@@ -25,89 +33,50 @@ public struct BitArray3 {
     }
 }
 
-extension BitArray3 : SetAlgebra {
-
+extension BitArrayPtr {
     @inline(__always)
     private func rawContains(_ idx: BlockIndex) -> Bool {
-        (self.inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
+        (self._inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
     }
 
     // insert without checking
     @inline(__always)
     private mutating func rawInsert(_ idx: BlockIndex) {
-        self.inner[idx.blockIndex] |= (1 << idx.bitIndex)
+        self._inner[idx.blockIndex] |= (1 << idx.bitIndex)
     }
 
     @inline(__always)
     private mutating func rawRemove(_ idx: BlockIndex) {
-        self.inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
+        self._inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
     }
 
-    mutating func reserveCapacity(for blockIndex: BlockIndex) {
+    @inline(__always)
+    private mutating func reserveCapacity(for blockIndex: BlockIndex) {
         self.reserveCapacity(blockIndex.blocksNeeded)
     }
+}
 
-    mutating func reserveCapacity(_ minimumCapacity: Int) {
-        let count = minimumCapacity - self.inner.count
+extension BitArrayPtr : SetAlgebra {
+    @inlinable @inline(__always)
+    public mutating func reserveCapacity(_ minimumCapacity: Int) {
+        let count = minimumCapacity - self._inner.count
         guard count > 0 else { return }
-        self.inner.append(zeros: count)
+        self._inner.append(zeros: count)
     }
 
     public func union(_ other: Self) -> Self {
         fatalError()
     }
 
-    @inline(__always)
-    public var capacity: Int {
-        self.inner.count
-    }
-
-
-    public mutating func formUnion(
-        _ other: __owned Self) {
-//        let capacity = other.inner.capacity
-//        self.reserveCapacity(capacity)
-//        self.count += self.inner.withUnsafeMutableBufferPointer { dst in
-//            other.inner.withUnsafeBufferPointer { src in
-//                guard var self_ = dst.baseAddress,
-//                      var other_ = src.baseAddress else { fatalError() }
-//
-//                var oldCount = 0
-//                var newCount = 0
-//
-//                for _ in 0 ..< capacity {
-//                    let old = self_.pointee
-//                    let new = old | other_.pointee
-//
-//                    self_.pointee = new
-//
-//                    oldCount += old.nonzeroBitCount
-//                    newCount += new.nonzeroBitCount
-//
-//                    self_ = self_.successor()
-//                    other_ = other_.successor()
-//                }
-//
-//                return newCount - oldCount
-//            }
-//        }
-
-            self.reserveCapacity(other.capacity)
-
-            var oldCount = 0
-            var newCount = 0
-
-            for i in 0 ..< other.capacity {
-                let old = self.inner[i]
-                let new = old | other.inner[i]
-
-                oldCount += old.nonzeroBitCount
-                newCount += new.nonzeroBitCount
-
-                self.inner[i] = new
+    @inlinable @inline(__always)
+    public mutating func formUnion(_ other: Self) {
+        let capacity = other._inner.capacity
+        self.reserveCapacity(capacity)
+        self._count += self._inner.withUnsafeMutableBufferPointer { dst in
+            other._inner.withUnsafeBufferPointer { src in
+                dst.formUnion(src, capacity: capacity)
             }
-
-            self.count += newCount - oldCount
+        }
     }
 
     public mutating func insert(
@@ -121,7 +90,7 @@ extension BitArray3 : SetAlgebra {
 
         guard !contains else { return (false, newMember) }
         self.rawInsert(blockIndex)
-        self.count += 1
+        self._count += 1
         return (true, newMember)
 
     }
@@ -164,27 +133,27 @@ extension BitArray3 : SetAlgebra {
     }
 }
 
-extension BitArray3: ExpressibleByArrayLiteral {
+extension BitArrayPtr: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: ArrayLiteralElement...) {
         self.init(elements)
     }
 }
 
-extension BitArray3: Equatable {
+extension BitArrayPtr: Equatable {
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         fatalError()
     }
 }
 
-extension BitArray3: Sequence {
+extension BitArrayPtr: Sequence {
     public func makeIterator() -> BitArrayIterator {
-        let bitCount = self.count
-        return self.inner.withUnsafeBufferPointer {
+        let bitCount = self._count
+        return self._inner.withUnsafeBufferPointer {
             BitArrayIterator(ptr: $0, nonzeroBitCount: bitCount)
         }
     }
 
     public var underestimatedCount: Int {
-        self.count
+        self._count
     }
 }

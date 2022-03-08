@@ -6,7 +6,7 @@ import Ext
 
 @frozen
 
-public struct BitArray5 {
+public struct BitArrayCopy {
     public typealias Element = Int
     public typealias Block = UInt64
 
@@ -53,7 +53,7 @@ public struct BitArray5 {
     }
 }
 
-extension BitArray5: Sequence {
+extension BitArrayCopy: Sequence {
     public typealias Iterator = BitArrayIterator
 
     @inline(__always) @inlinable
@@ -139,7 +139,7 @@ extension BitArray5: Sequence {
 
 }
 
-extension BitArray5: SetAlgebra {
+extension BitArrayCopy: SetAlgebra {
 
     public init(capacity: Int) {
         self.count = 0
@@ -502,7 +502,7 @@ extension BitArray5: SetAlgebra {
     }
 }
 
-extension BitArray5 {
+extension BitArrayCopy {
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
@@ -523,7 +523,7 @@ extension BitArray5 {
     }
 }
 
-extension BitArray5: Equatable {
+extension BitArrayCopy: Equatable {
     ///
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
     /// in which case the `BitArray5`s are zero
@@ -553,7 +553,7 @@ extension BitArray5: Equatable {
     }
 }
 
-extension BitArray5 {
+extension BitArrayCopy {
     public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
         self.init()
 
@@ -565,19 +565,19 @@ extension BitArray5 {
     }
 }
 
-extension BitArray5: ExpressibleByArrayLiteral {
+extension BitArrayCopy: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Element...) {
         self.init(elements)
     }
 }
 
-extension BitArray5: CustomStringConvertible {
+extension BitArrayCopy: CustomStringConvertible {
     public var description: String {
         "BitArray5(\(Array(self)))"
     }
 }
 
-extension BitArray5 {
+extension BitArrayCopy {
     @inline(__always)
     public subscript(index: Int) -> Bool {
         get {

@@ -5,7 +5,7 @@ import Ext
 ///
 
 @frozen
-public struct BitArray4<C: RangeReplaceableCollection &
+public struct BitArrayGeneric<C: RangeReplaceableCollection &
                             MutableCollection &
                             ExpressibleByArrayLiteral &
                             ContiguousCollection> where
@@ -51,7 +51,7 @@ public struct BitArray4<C: RangeReplaceableCollection &
     }
 }
 
-extension BitArray4: Sequence {
+extension BitArrayGeneric: Sequence {
     public typealias Iterator = BitArrayIterator
 
     @inline(__always)
@@ -142,7 +142,7 @@ extension BitArray4: Sequence {
 
 }
 
-extension BitArray4: SetAlgebra {
+extension BitArrayGeneric: SetAlgebra {
 
     public init(capacity: Int) {
         self.count = 0
@@ -506,7 +506,7 @@ extension BitArray4: SetAlgebra {
     }
 }
 
-extension BitArray4 {
+extension BitArrayGeneric {
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
@@ -527,7 +527,7 @@ extension BitArray4 {
     }
 }
 
-extension BitArray4: Equatable {
+extension BitArrayGeneric: Equatable {
     ///
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
     /// in which case the `BitArray4`s are zero
@@ -557,7 +557,7 @@ extension BitArray4: Equatable {
     }
 }
 
-extension BitArray4 {
+extension BitArrayGeneric {
     public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
         self.init(capacity: 1)
 
@@ -569,19 +569,19 @@ extension BitArray4 {
     }
 }
 
-extension BitArray4: ExpressibleByArrayLiteral {
+extension BitArrayGeneric: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Element...) {
         self.init(elements)
     }
 }
 
-extension BitArray4: CustomStringConvertible {
+extension BitArrayGeneric: CustomStringConvertible {
     public var description: String {
         "BitArray4(\(Array(self)))"
     }
 }
 
-extension BitArray4 {
+extension BitArrayGeneric {
     @inline(__always)
     public subscript(index: Int) -> Bool {
         get {
