@@ -1,5 +1,4 @@
-
-//extension UnsafeMutableBufferPointer where Element == UInt64 {
+// extension UnsafeMutableBufferPointer where Element == UInt64 {
 //    // calculates a union of the two
 //    func union(
 //        _ a: UnsafeBufferPointer<UInt64>,
@@ -66,12 +65,12 @@
 //
 //        return newCount - oldCount
 //    }
-//}
+// }
 
 /// returns diff
 @inlinable @inline(__always)
 func formUnion(
-    _ self_ : UnsafeMutableBufferPointer<UInt64>,
+    _ self_: UnsafeMutableBufferPointer<UInt64>,
     _ other: UnsafeBufferPointer<UInt64>,
     capacity: Int
 ) -> Int {
@@ -96,7 +95,6 @@ func formUnion(
 
     return newCount - oldCount
 }
-
 
 ///
 /// returns count

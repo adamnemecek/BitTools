@@ -1,5 +1,3 @@
-
-
 @inline(__always) @inlinable
 func blockIndex(_ value: Int) -> BlockIndex {
     // 2^6 = 64
@@ -70,8 +68,8 @@ struct BlockIndex: Equatable {
 //    }
 }
 
-//extension Int {
+// extension Int {
 //    func roundUp64() -> Self {
 //        let m = self - self
 //    }
-//}
+// }

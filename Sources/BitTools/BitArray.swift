@@ -213,7 +213,7 @@ extension BitArray: SetAlgebra {
     }
 
     // done
-    
+
     public mutating func formUnion(
         _ other: __owned Self
     ) {
@@ -451,7 +451,6 @@ extension BitArray: SetAlgebra {
         return true
     }
 
-
 //    public func isStrictSubset(of other: Self) -> Bool {
 //        fatalError()
 //    }
@@ -536,7 +535,7 @@ extension BitArray {
         keepingCapacity keepCapacity: Bool = false
     ) {
         self.count = 0
-        self.inner.zeroAll()
+        self.inner.removeAll(keepingCapacity: true)
     }
 
     public mutating func removeAll(
@@ -583,7 +582,7 @@ extension BitArray: Equatable {
 }
 
 extension BitArray {
-    public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         self.init()
 
         guard let max = sequence.max() else { return }

@@ -11,7 +11,6 @@ public struct BitArrayCopy {
 
     public private(set) var count: Int
 
-
     public var inner: ContiguousArray<Block>
 
     ///
@@ -565,7 +564,7 @@ extension BitArrayCopy: Equatable {
 }
 
 extension BitArrayCopy {
-    public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         self.init()
 
         guard let max = sequence.max() else { return }
@@ -623,4 +622,3 @@ extension BitArrayCopy {
         }
     }
 }
-

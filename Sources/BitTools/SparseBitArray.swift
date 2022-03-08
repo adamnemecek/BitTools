@@ -1,10 +1,10 @@
 import Foundation
 
-//public func koremetalbundle() {
+// public func koremetalbundle() {
 //    for b in Bundle.allFrameworks {
 //        print(b)
 //    }
-//}
+// }
 ///
 /// this stores data
 ///
@@ -19,13 +19,12 @@ import Foundation
 /// we can only ever deal with the blocks that have any values in them
 ///
 
-
-//public struct SparseBitArray {
+// public struct SparseBitArray {
 //    var meta: SparseBitArrayMeta
 //    var inner: BitArray
-//}
+// }
 
-//extension SparseBitArray {
+// extension SparseBitArray {
 //
 //    var capacity: Int {
 //        self.inner.capacity
@@ -43,12 +42,10 @@ import Foundation
 //    }
 //
 //
-//}
+// }
 
 public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
-
     public typealias Element = Int
-
     public typealias ArrayLiteralElement = Element
 
     var meta: Meta
@@ -58,7 +55,7 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
         fatalError()
     }
 
-    public init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         fatalError()
     }
 
@@ -170,10 +167,9 @@ struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
         fatalError()
     }
 
-    init<S>(_ sequence: __owned S) where S : Sequence, Int == S.Element {
+    init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         fatalError()
     }
-
 
     init(arrayLiteral elements: Element...) {
         fatalError()

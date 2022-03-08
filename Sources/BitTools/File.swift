@@ -1,5 +1,3 @@
-
-
 ///
 /// this is a flipside of the the sparse array
 ///

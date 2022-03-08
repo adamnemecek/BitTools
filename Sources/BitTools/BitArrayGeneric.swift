@@ -17,7 +17,6 @@ public struct BitArrayGeneric<C: RangeReplaceableCollection &
 
     @usableFromInline internal var inner: C
 
-
     init(
         count: Int,
         inner: C
@@ -46,12 +45,10 @@ extension BitArrayGeneric {
         self.count == 0
     }
 
-                                
     @inlinable @inline(__always)
     public var isSome: Bool {
         !self.isEmpty
     }
-
 
 }
 
@@ -562,7 +559,7 @@ extension BitArrayGeneric: Equatable {
 }
 
 extension BitArrayGeneric {
-    public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         self.init(capacity: 1)
 
         guard let max = sequence.max() else { return }
@@ -631,5 +628,3 @@ extension BitArrayGeneric {
 //        }
 //    }
 // }
-
-

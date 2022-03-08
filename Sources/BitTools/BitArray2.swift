@@ -27,7 +27,7 @@ public struct BitArray2: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
         self.init(count: 0, inner: [])
     }
 
-    public init<S>(_ sequence: __owned S) where S: Sequence, Int == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         self.init()
 
         guard let max = sequence.max() else { return }

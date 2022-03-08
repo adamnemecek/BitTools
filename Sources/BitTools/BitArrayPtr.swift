@@ -1,5 +1,5 @@
 @frozen
-public struct BitArrayPtr : SetAlgebra {
+public struct BitArrayPtr: SetAlgebra {
     public typealias Block = UInt64
     public typealias Element = Int
 
@@ -23,7 +23,7 @@ public struct BitArrayPtr : SetAlgebra {
         self.init(count: 0, inner: [])
     }
 
-    public init<S>(_ sequence: __owned S) where S : Sequence, Element == S.Element {
+    public init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         self.init()
 
         guard let max = sequence.max() else { return }
@@ -32,9 +32,9 @@ public struct BitArrayPtr : SetAlgebra {
             _ = self.insert($0)
         }
     }
-//}
+// }
 
-//extension BitArrayPtr {
+// extension BitArrayPtr {
     @inlinable @inline(__always)
     public var capacity: Int {
         self._inner.count
@@ -60,9 +60,9 @@ public struct BitArrayPtr : SetAlgebra {
     private mutating func reserveCapacity(for blockIndex: BlockIndex) {
         self.reserveCapacity(blockIndex.blocksNeeded)
     }
-//}
+// }
 
-//extension BitArrayPtr : SetAlgebra {
+// extension BitArrayPtr : SetAlgebra {
 
 //    @inlinable @inline(__always)
     mutating func reserveCapacity(_ minimumCapacity: Int) {
@@ -86,7 +86,6 @@ public struct BitArrayPtr : SetAlgebra {
 //        }
 //    }
 
-
     public mutating func formUnion(
         _ other: __owned Self
     ) {
@@ -108,7 +107,6 @@ public struct BitArrayPtr : SetAlgebra {
         self._count += newCount - oldCount
     }
 
-
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
@@ -124,7 +122,6 @@ public struct BitArrayPtr : SetAlgebra {
         return (true, newMember)
 
     }
-
 
     public mutating func update(with newMember: Element) -> Element? {
         fatalError()
