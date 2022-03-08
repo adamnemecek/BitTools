@@ -34,6 +34,11 @@ public struct BitArrayPtr {
 }
 
 extension BitArrayPtr {
+    @inlinable @inline(__always)
+    public var capacity: Int {
+        self._inner.count
+    }
+
     @inline(__always)
     private func rawContains(_ idx: BlockIndex) -> Bool {
         (self._inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
@@ -71,7 +76,7 @@ extension BitArrayPtr : SetAlgebra {
 
     @inlinable @inline(__always)
     public mutating func formUnion(_ other: Self) {
-        let capacity = other._inner.capacity
+        let capacity = other.capacity
         self.reserveCapacity(capacity)
         self._count += self._inner.withUnsafeMutableBufferPointer { dst in
             other._inner.withUnsafeBufferPointer { src in
