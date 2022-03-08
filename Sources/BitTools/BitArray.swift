@@ -408,17 +408,47 @@ extension BitArray: SetAlgebra {
         )
     }
 
-//    public func isSubset(of other: Self) -> Bool {
-//        fatalError()
-//    }
-//
-//    public func isSuperset(of other: Self) -> Bool {
-//        fatalError()
-//    }
-//
-//    public func isDisjoint(with other: Self) -> Bool {
-//        fatalError()
-//    }
+    ///
+    public func isSubset(of other: Self) -> Bool {
+        let capacity = self.capacity.min(other.capacity)
+
+        for i in 0 ..< capacity {
+            let a = self.inner[i]
+            let b = other.inner[i]
+
+            //
+            // we are checking that the other set has at
+            // least all the bits that this set has
+            //
+            if (a & b) != a {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    ///
+    /// - `x.isSubset(of: y)` if and only if `y.isSuperset(of: x)`
+    ///
+    public func isSuperset(of other: Self) -> Bool {
+        other.isSubset(of: self)
+    }
+
+    public func isDisjoint(with other: Self) -> Bool {
+        let capacity = self.capacity.min(other.capacity)
+
+        //
+        //
+        //
+        for i in 0 ..< capacity {
+            if (self.inner[i] & other.inner[i]) != 0 {
+                return false
+            }
+        }
+        return true
+    }
+
 
 //    public func isStrictSubset(of other: Self) -> Bool {
 //        fatalError()
@@ -475,6 +505,7 @@ extension BitArray: SetAlgebra {
 
     }
 
+    @discardableResult
     public mutating func remove(
         _ member: Element
     ) -> Element? {

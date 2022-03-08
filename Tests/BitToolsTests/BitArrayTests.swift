@@ -39,6 +39,47 @@ extension BitArray {
 //    return result.equal(to: expected)
 // }
 
+extension BitArray {
+    // - `S() == []`
+    static func testRule1() -> Bool {
+        Self() == []
+    }
+
+    // - `x.intersection(x) == x`
+    func testRule2() -> Bool {
+        self.intersection([]) == []
+    }
+
+    // - `x.intersection([]) == []`
+    static func testRule3() -> Bool {
+        Self([]).intersection([]) == []
+    }
+
+    // - `x.union(x) == x`
+    func testRule4() -> Bool {
+        self.union(self) == self
+    }
+    // - `x.union([]) == x`
+    func testRule5() -> Bool {
+        self.union([]) == self
+    }
+    // - `x.contains(e)` implies `x.union(y).contains(e)`
+//    func testRule5() -> Bool {
+//        let e = self.randomElement()
+//        return true
+//    }
+    // - `x.union(y).contains(e)` implies `x.contains(e) || y.contains(e)`
+    // - `x.contains(e) && y.contains(e)` if and only if
+    //   `x.intersection(y).contains(e)`
+    // - `x.isSubset(of: y)` if and only if `y.isSuperset(of: x)`
+    // - `x.isStrictSuperset(of: y)` if and only if `x.isSuperset(of: y) && x != y`
+    // - `x.isStrictSubset(of: y)` if and only if `x.isSubset(of: y) && x != y`
+    func testRules() {
+
+
+    }
+}
+
 class BitArrayTest: XCTestCase {
 //    typealias Harness = BitArrayTestHarness<BitArray>
 
@@ -50,6 +91,27 @@ class BitArrayTest: XCTestCase {
         let a: BitArray = [0,10,20,30,100]
 
         XCTAssert(a.elementsEqual([0,10,20,30,100]))
+    }
+
+    func testRules() {
+        let a: BitArray = [1,2,3,10, 20]
+//        XCTAssert(BitArray() == [])
+//
+//        XCTAssert(a.intersection(a) == a)
+        // - `S() == []`
+        // - `x.intersection(x) == x`
+        // - `x.intersection([]) == []`
+        // - `x.union(x) == x`
+        // - `x.union([]) == x`
+        // - `x.contains(e)` implies `x.union(y).contains(e)`
+        // - `x.union(y).contains(e)` implies `x.contains(e) || y.contains(e)`
+        // - `x.contains(e) && y.contains(e)` if and only if
+        //   `x.intersection(y).contains(e)`
+        // - `x.isSubset(of: y)` if and only if `y.isSuperset(of: x)`
+        // - `x.isStrictSuperset(of: y)` if and only if
+        //   `x.isSuperset(of: y) && x != y`
+        // - `x.isStrictSubset(of: y)` if and only if `x.isSubset(of: y) && x != y`
+
     }
 
     func testUnion1() {
@@ -218,6 +280,49 @@ class BitArrayTest: XCTestCase {
 //        a.formUnion(b)
 //
 //        XCTAssert(a.check())
+    }
+
+    func testIsSubset() {
+        let sub: BitArray = [10, 20, 30, 40, 50]
+        let sup: BitArray = [10, 20, 30, 40, 50, 60]
+
+        let expected = Set(sub).isSubset(of: sup)
+        let result = sub.isSubset(of: sup)
+        XCTAssert(expected == result)
+
+        let expected1 = Set(sup).isSubset(of: sub)
+        let result1 = sup.isSubset(of: sub)
+        XCTAssert(expected1 == result1)
+
+        let expected2 = Set(sub).isSubset(of: sub)
+        let result2 = sub.isSubset(of: sub)
+        print(expected2, expected2 == result2)
+    }
+
+    func testEq() {
+        var a: BitArray = [1,2,3,4, 1000]
+        let b: BitArray = [1,2,3,4]
+
+        XCTAssert(a != b)
+        XCTAssert(a.count == 5)
+
+        a.remove(1000)
+
+        XCTAssert(a == b)
+        XCTAssert(a.count == 4)
+    }
+
+    func testIsDisjoint() {
+        var a: BitArray = [1,2,3,4, 1000]
+        let b: BitArray = [1,2,3,4]
+
+        XCTAssert(a != b)
+        XCTAssert(a.count == 5)
+
+        a.remove(1000)
+
+        XCTAssert(a == b)
+        XCTAssert(a.count == 4)
     }
 
     func testRemove() {
