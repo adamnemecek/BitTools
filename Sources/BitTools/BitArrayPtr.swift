@@ -57,6 +57,7 @@ extension BitArrayPtr {
 }
 
 extension BitArrayPtr : SetAlgebra {
+
     @inlinable @inline(__always)
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self._inner.count

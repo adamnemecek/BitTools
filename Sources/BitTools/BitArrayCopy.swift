@@ -5,7 +5,6 @@ import Ext
 ///
 
 @frozen
-
 public struct BitArrayCopy {
     public typealias Element = Int
     public typealias Block = UInt64

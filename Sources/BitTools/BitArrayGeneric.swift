@@ -17,30 +17,6 @@ public struct BitArrayGeneric<C: RangeReplaceableCollection &
 
     @usableFromInline internal var inner: C
 
-    ///
-    /// capacity in blocks
-    ///
-    @inline(__always)
-    public var capacity: Int {
-        self.inner.count
-    }
-
-    @inline(__always)
-    public var bitCapacity: Int {
-        self.capacity << 6
-    }
-
-    @inline(__always)
-    public var isEmpty: Bool {
-        self.count == 0
-    }
-
-                                
-    @inline(__always)
-    public var isSome: Bool {
-        !self.isEmpty
-    }
-
 
     init(
         count: Int,
@@ -49,6 +25,34 @@ public struct BitArrayGeneric<C: RangeReplaceableCollection &
         self.count = count
         self.inner = inner
     }
+
+    ///
+    /// capacity in blocks
+    ///
+    @inlinable @inline(__always)
+    public var capacity: Int {
+        self.inner.count
+    }
+}
+extension BitArrayGeneric {
+
+    @inlinable @inline(__always)
+    public var bitCapacity: Int {
+        self.capacity << 6
+    }
+
+    @inlinable @inline(__always)
+    public var isEmpty: Bool {
+        self.count == 0
+    }
+
+                                
+    @inlinable @inline(__always)
+    public var isSome: Bool {
+        !self.isEmpty
+    }
+
+
 }
 
 extension BitArrayGeneric: Sequence {
