@@ -10,7 +10,9 @@ public struct BitArray {
     public typealias Block = UInt64
 
     public private(set) var count: Int
-    private var inner: ContiguousArray<Block>
+
+    @usableFromInline
+    internal var inner: ContiguousArray<Block>
 
     ///
     /// capacity in blocks
@@ -465,22 +467,23 @@ extension BitArray: SetAlgebra {
 //    x.isStrictSubset(of: y) if and only if x.isSubset(of: y) && x != y
 
     // note that none of the raw apis update the count
-    @inline(__always)
-    private func rawContains(_ idx: BlockIndex) -> Bool {
+    @inline(__always) @inlinable
+    func rawContains(_ idx: BlockIndex) -> Bool {
         (self.inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
     }
 
     // insert without checking
-    @inline(__always)
-    private mutating func rawInsert(_ idx: BlockIndex) {
+    @inline(__always) @inlinable
+    mutating func rawInsert(_ idx: BlockIndex) {
         self.inner[idx.blockIndex] |= (1 << idx.bitIndex)
     }
 
-    @inline(__always)
-    private mutating func rawRemove(_ idx: BlockIndex) {
+    @inline(__always) @inlinable
+    mutating func rawRemove(_ idx: BlockIndex) {
         self.inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
     }
 
+    @inline(__always) @inlinable
     public func contains(
         _ member: Element
     ) -> Bool {
@@ -489,6 +492,7 @@ extension BitArray: SetAlgebra {
         return self.rawContains(blockIndex(member))
     }
 
+    @discardableResult
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
@@ -502,7 +506,6 @@ extension BitArray: SetAlgebra {
         self.rawInsert(blockIndex)
         self.count += 1
         return (true, newMember)
-
     }
 
     @discardableResult
@@ -562,7 +565,7 @@ extension BitArray: Equatable {
 //        ) = lhs.capacity.order(rhs.capacity)
         let capacity = Swift.min(lhs.capacity, rhs.capacity)
 
-        for i in 0..<capacity where lhs.inner[i] != rhs.inner[i] {
+        for i in 0 ..< capacity where lhs.inner[i] != rhs.inner[i] {
             return false
         }
 

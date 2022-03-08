@@ -1,6 +1,6 @@
 
 
-@inline(__always)
+@inline(__always) @inlinable
 func blockIndex(_ value: Int) -> BlockIndex {
     // 2^6 = 64
     let blockIndex = value >> 6
@@ -28,14 +28,14 @@ struct BlockIndex: Equatable {
     @usableFromInline
     let value: Int
 
-    @inline(__always)
+    @inline(__always) @inlinable
     init(_ blockIndex: Int, _ bitIndex: Int, _ value: Int) {
         self.blockIndex = blockIndex
         self.bitIndex = bitIndex
         self.value = value
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     init(_ value: Int) {
         self = BitTools.blockIndex(value)
 //        // 2^6 = 64
@@ -49,10 +49,12 @@ struct BlockIndex: Equatable {
 //        assert(self.value == value)
     }
 
+    @usableFromInline
     var recalculatedValue: Int {
         self.blockIndex << 6 + self.bitIndex
     }
 
+    @usableFromInline
     var blocksNeeded: Int {
         Int((value + 1).roundUp(to: UInt64.bitWidth) / UInt64.bitWidth)
     }

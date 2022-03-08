@@ -301,7 +301,7 @@ class BitArrayTest: XCTestCase {
 
     func testEq() {
         var a: BitArray = [1,2,3,4, 1000]
-        let b: BitArray = [1,2,3,4]
+        var b: BitArray = [1,2,3,4]
 
         XCTAssert(a != b)
         XCTAssert(a.count == 5)
@@ -310,19 +310,27 @@ class BitArrayTest: XCTestCase {
 
         XCTAssert(a == b)
         XCTAssert(a.count == 4)
+
+        b.insert(2000)
+
+        XCTAssert(a != b)
+        XCTAssert(b.count == 5)
+
+        b.remove(2000)
+
+        XCTAssert(a == b)
+        XCTAssert(b.count == 4)
     }
 
     func testIsDisjoint() {
-        var a: BitArray = [1,2,3,4, 1000]
+        let a: BitArray = [1,2,3,4, 1000]
         let b: BitArray = [1,2,3,4]
 
-        XCTAssert(a != b)
-        XCTAssert(a.count == 5)
+        XCTAssert(!a.isDisjoint(with: b))
 
-        a.remove(1000)
-
-        XCTAssert(a == b)
-        XCTAssert(a.count == 4)
+        let c: BitArray = [3,4,5,6]
+        let d: BitArray = [7,8,9,10,11]
+        XCTAssert(c.isDisjoint(with: d))
     }
 
     func testRemove() {
