@@ -9,7 +9,17 @@ public struct BitArray {
     public typealias Element = Int
     public typealias Block = UInt64
 
-    public private(set) var count: Int
+    @usableFromInline
+    internal var _count: Int
+
+
+    ///
+    /// number of set bits
+    ///
+    @inline(__always) @inlinable
+    public var count: Int {
+        self._count
+    }
 
     @usableFromInline
     internal var inner: ContiguousArray<Block>
@@ -17,36 +27,37 @@ public struct BitArray {
     ///
     /// capacity in blocks
     ///
-    @inline(__always)
+    @inline(__always) @inlinable
     public var capacity: Int {
         self.inner.count
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var bitCapacity: Int {
         self.capacity << 6
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var isEmpty: Bool {
-        self.count == 0
+        self._count == 0
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var isSome: Bool {
         !self.isEmpty
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public init() {
         self.init(count: 0, inner: [])
     }
 
+    @inline(__always) @inlinable
     init(
         count: Int,
         inner: ContiguousArray<Block>
     ) {
-        self.count = count
+        self._count = count
         self.inner = inner
     }
 }
@@ -54,28 +65,28 @@ public struct BitArray {
 extension BitArray: Sequence {
     public typealias Iterator = BitArrayIterator
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public var underestimatedCount: Int {
-        self.count
+        self._count
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public func withUnsafeBufferPointer<R>(
         _ body: (UnsafeBufferPointer<UInt64>
         ) throws -> R) rethrows -> R {
         try self.inner.withUnsafeBufferPointer(body)
     }
 
-    @inline(__always)
+    @inline(__always) @inlinable
     public func makeIterator() -> Iterator {
-        let bitCount = self.count
+        let bitCount = self._count
         return self.withUnsafeBufferPointer {
             BitArrayIterator(ptr: $0, nonzeroBitCount: bitCount)
         }
     }
 
     func makeIterator2() -> BitArrayIterator2 {
-        let bitCount = self.count
+        let bitCount = self._count
         return self.withUnsafeBufferPointer {
             BitArrayIterator2(ptr: $0, nonzeroBitCount: bitCount)
         }
@@ -140,24 +151,26 @@ extension BitArray: Sequence {
 extension BitArray: SetAlgebra {
 
     public init(capacity: Int) {
-        self.count = 0
-        self.inner = ContiguousArray(zeros: count)
+        self._count = 0
+        self.inner = ContiguousArray(zeros: _count)
     }
 
     // call this after
     public mutating func recalculateCount() {
-        self.count = self.nonzeroBitCount
+        self._count = self.nonzeroBitCount
     }
 
     ///
     /// this is in blocks
     ///
+    @inline(__always) @inlinable
     mutating func reserveCapacity(_ minimumCapacity: Int) {
         let count = minimumCapacity - self.inner.count
         guard count > 0 else { return }
         self.inner.append(zeros: count)
     }
 
+    @inline(__always) @inlinable
     mutating func reserveCapacity(for bitIndex: BitIndex) {
         self.reserveCapacity(bitIndex.blocksNeeded)
     }
@@ -232,7 +245,7 @@ extension BitArray: SetAlgebra {
             self.inner[i] = new
         }
 
-        self.count += newCount - oldCount
+        self._count += newCount - oldCount
     }
 
 //
@@ -279,7 +292,7 @@ extension BitArray: SetAlgebra {
         }
         // elements that are only in the current need to be removed
         self.inner[capacity...].zeroAll()
-        self.count = nonzeroBitCount
+        self._count = nonzeroBitCount
     }
 
     // done?
@@ -353,7 +366,7 @@ extension BitArray: SetAlgebra {
             newCount += new.nonzeroBitCount
         }
 
-        self.count += newCount - oldCount
+        self._count += newCount - oldCount
     }
 
     public mutating func subtract(_ other: Self) {
@@ -374,7 +387,7 @@ extension BitArray: SetAlgebra {
             newCount += new.nonzeroBitCount
         }
 
-        self.count += newCount - oldCount
+        self._count += newCount - oldCount
     }
 
     public func subtracting(_ other: Self) -> Self {
@@ -397,6 +410,7 @@ extension BitArray: SetAlgebra {
             nonzeroBitCount += new.nonzeroBitCount
         }
 
+        // we copy only the tail of self
         var idx = minCapacity
         for e in self.inner[minCapacity...] {
             inner[idx] = e
@@ -410,7 +424,7 @@ extension BitArray: SetAlgebra {
         )
     }
 
-    ///
+    @inline(__always) @inlinable
     public func isSubset(of other: Self) -> Bool {
         let capacity = Swift.min(self.capacity, other.capacity)
 
@@ -433,10 +447,12 @@ extension BitArray: SetAlgebra {
     ///
     /// - `x.isSubset(of: y)` if and only if `y.isSuperset(of: x)`
     ///
+    @inline(__always) @inlinable
     public func isSuperset(of other: Self) -> Bool {
         other.isSubset(of: self)
     }
 
+    @inline(__always) @inlinable
     public func isDisjoint(with other: Self) -> Bool {
         let capacity = Swift.min(self.capacity, other.capacity)
 
@@ -492,6 +508,7 @@ extension BitArray: SetAlgebra {
     }
 
     @discardableResult
+    @inline(__always) @inlinable
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
@@ -503,11 +520,12 @@ extension BitArray: SetAlgebra {
 
         guard !contains else { return (false, newMember) }
         self.rawInsert(bitIndex)
-        self.count += 1
+        self._count += 1
         return (true, newMember)
     }
 
     @discardableResult
+    @inline(__always) @inlinable
     public mutating func remove(
         _ member: Element
     ) -> Element? {
@@ -516,11 +534,12 @@ extension BitArray: SetAlgebra {
         let bitIndex = bitIndex(member)
         guard self.rawContains(bitIndex) else { return nil }
         self.rawRemove(bitIndex)
-        self.count -= 1
+        self._count -= 1
         return member
     }
 
     @discardableResult
+    @inline(__always) @inlinable
     public mutating func update(
         with newMember: __owned Element
     ) -> Element? {
@@ -535,7 +554,7 @@ extension BitArray {
     public mutating func removeAll(
         keepingCapacity keepCapacity: Bool = false
     ) {
-        self.count = 0
+        self._count = 0
 //        self.inner.removeAll(keepingCapacity: true)
         self.inner.zeroAll()
     }
@@ -547,7 +566,7 @@ extension BitArray {
         while let (value, index) = i.next() {
             if try shouldBeRemoved(value) {
                 self.rawRemove(index)
-                self.count -= 1
+                self._count -= 1
             }
         }
     }
@@ -558,8 +577,9 @@ extension BitArray: Equatable {
     /// theoretically one bitset could be longer than the other and have only zeros in the tail
     /// in which case the `BitArray`s are zero
     ///
+    @inline(__always) @inlinable
     public static func ==(lhs: Self, rhs: Self) -> Bool {
-        guard lhs.count == rhs.count else { return false }
+        guard lhs._count == rhs._count else { return false }
 //        let (
 //            minCapacity,
 //            maxCapacity
@@ -612,7 +632,7 @@ extension BitArray: CustomStringConvertible {
 }
 
 extension BitArray {
-    @inline(__always)
+    @inline(__always) @inlinable
     public subscript(index: Int) -> Bool {
         get {
             self.contains(index)
