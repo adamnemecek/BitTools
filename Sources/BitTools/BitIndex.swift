@@ -33,6 +33,10 @@ struct BitIndex: Equatable {
         self.value = value
     }
 
+    var block: BlockIndex {
+        BlockIndex(index: self.blockIndex)
+    }
+
     @inline(__always) @inlinable
     init(_ value: Int) {
         self = BitTools.bitIndex(value)
