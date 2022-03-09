@@ -60,7 +60,7 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
     public typealias Element = Int
     public typealias ArrayLiteralElement = Element
 
-    var meta: Meta
+//    var meta: Meta
     var inner: BitArray
 
     public init() {
@@ -150,10 +150,10 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
     public func removeAll() {
         fatalError()
     }
-
-    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
-        fatalError()
-    }
+//
+//    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
+//        fatalError()
+//    }
 }
 
 extension SparseBitArray: Sequence {
@@ -164,7 +164,7 @@ extension SparseBitArray: Sequence {
 
 //struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
 //
-//    typealias Element = BlockIndex
+//    typealias Element = BitIndex
 //
 //    typealias ArrayLiteralElement = Element
 //

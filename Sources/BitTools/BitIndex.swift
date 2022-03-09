@@ -1,9 +1,9 @@
 @inline(__always) @inlinable
-func blockIndex(_ value: Int) -> BlockIndex {
+func bitIndex(_ value: Int) -> BitIndex {
     // 2^6 = 64
     let blockIndex = value >> 6
 
-    let ret = BlockIndex(
+    let ret = BitIndex(
         blockIndex,
         value - (blockIndex << 6),
         value
@@ -16,7 +16,7 @@ func blockIndex(_ value: Int) -> BlockIndex {
 // this is a divrem with 64
 @usableFromInline
 @frozen
-struct BlockIndex: Equatable {
+struct BitIndex: Equatable {
     @usableFromInline
     let blockIndex: Int
 
@@ -35,7 +35,7 @@ struct BlockIndex: Equatable {
 
     @inline(__always) @inlinable
     init(_ value: Int) {
-        self = BitTools.blockIndex(value)
+        self = BitTools.bitIndex(value)
 //        // 2^6 = 64
 //        let blockIndex = value >> 6
 //

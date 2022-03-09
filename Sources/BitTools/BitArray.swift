@@ -158,8 +158,8 @@ extension BitArray: SetAlgebra {
         self.inner.append(zeros: count)
     }
 
-    mutating func reserveCapacity(for blockIndex: BlockIndex) {
-        self.reserveCapacity(blockIndex.blocksNeeded)
+    mutating func reserveCapacity(for bitIndex: BitIndex) {
+        self.reserveCapacity(bitIndex.blocksNeeded)
     }
 
     // done
@@ -467,18 +467,18 @@ extension BitArray: SetAlgebra {
 
     // note that none of the raw apis update the count
     @inline(__always) @inlinable
-    func rawContains(_ idx: BlockIndex) -> Bool {
+    func rawContains(_ idx: BitIndex) -> Bool {
         (self.inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
     }
 
     // insert without checking
     @inline(__always) @inlinable
-    mutating func rawInsert(_ idx: BlockIndex) {
+    mutating func rawInsert(_ idx: BitIndex) {
         self.inner[idx.blockIndex] |= (1 << idx.bitIndex)
     }
 
     @inline(__always) @inlinable
-    mutating func rawRemove(_ idx: BlockIndex) {
+    mutating func rawRemove(_ idx: BitIndex) {
         self.inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
     }
 
@@ -488,21 +488,21 @@ extension BitArray: SetAlgebra {
     ) -> Bool {
         assert(member >= 0)
         guard member < self.bitCapacity else { return false }
-        return self.rawContains(blockIndex(member))
+        return self.rawContains(bitIndex(member))
     }
 
     @discardableResult
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
-        let blockIndex = blockIndex(newMember)
+        let bitIndex = bitIndex(newMember)
 
-        self.reserveCapacity(for: blockIndex)
+        self.reserveCapacity(for: bitIndex)
 
-        let contains = self.rawContains(blockIndex)
+        let contains = self.rawContains(bitIndex)
 
         guard !contains else { return (false, newMember) }
-        self.rawInsert(blockIndex)
+        self.rawInsert(bitIndex)
         self.count += 1
         return (true, newMember)
     }
@@ -513,9 +513,9 @@ extension BitArray: SetAlgebra {
     ) -> Element? {
         assert(member >= 0)
         guard member < self.bitCapacity else { return nil }
-        let blockIndex = blockIndex(member)
-        guard self.rawContains(blockIndex) else { return nil }
-        self.rawRemove(blockIndex)
+        let bitIndex = bitIndex(member)
+        guard self.rawContains(bitIndex) else { return nil }
+        self.rawRemove(bitIndex)
         self.count -= 1
         return member
     }
@@ -592,7 +592,7 @@ extension BitArray {
         self.init()
 
         guard let max = sequence.max() else { return }
-        self.reserveCapacity(for: blockIndex(max))
+        self.reserveCapacity(for: bitIndex(max))
         sequence.forEach {
             _ = self.insert($0)
         }
@@ -648,7 +648,7 @@ extension BitArray {
 }
 
 // extension BitArray {
-//    subscript(block: BlockIndex) -> Bool {
+//    subscript(block: BitIndex) -> Bool {
 //        get {
 //            fatalError()
 //        }

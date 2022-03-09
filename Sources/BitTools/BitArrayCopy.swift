@@ -158,8 +158,8 @@ extension BitArrayCopy: SetAlgebra {
         self.inner.append(zeros: count)
     }
 
-    mutating func reserveCapacity(for blockIndex: BlockIndex) {
-        self.reserveCapacity(blockIndex.blocksNeeded)
+    mutating func reserveCapacity(for bitIndex: BitIndex) {
+        self.reserveCapacity(bitIndex.blocksNeeded)
     }
 
     // done
@@ -451,18 +451,18 @@ extension BitArrayCopy: SetAlgebra {
 
     // note that none of the raw apis update the count
     @inline(__always)
-    private func rawContains(_ idx: BlockIndex) -> Bool {
+    private func rawContains(_ idx: BitIndex) -> Bool {
         (self.inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
     }
 
     // insert without checking
     @inline(__always)
-    private mutating func rawInsert(_ idx: BlockIndex) {
+    private mutating func rawInsert(_ idx: BitIndex) {
         self.inner[idx.blockIndex] |= (1 << idx.bitIndex)
     }
 
     @inline(__always)
-    private mutating func rawRemove(_ idx: BlockIndex) {
+    private mutating func rawRemove(_ idx: BitIndex) {
         self.inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
     }
 
@@ -471,13 +471,13 @@ extension BitArrayCopy: SetAlgebra {
     ) -> Bool {
         assert(member >= 0)
         guard member < self.bitCapacity else { return false }
-        return self.rawContains(blockIndex(member))
+        return self.rawContains(bitIndex(member))
     }
 
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
-        let blockIndex = blockIndex(newMember)
+        let blockIndex = bitIndex(newMember)
 
         self.reserveCapacity(for: blockIndex)
 
@@ -495,9 +495,9 @@ extension BitArrayCopy: SetAlgebra {
     ) -> Element? {
         assert(member >= 0)
         guard member < self.bitCapacity else { return nil }
-        let blockIndex = blockIndex(member)
-        guard self.rawContains(blockIndex) else { return nil }
-        self.rawRemove(blockIndex)
+        let bitIndex = bitIndex(member)
+        guard self.rawContains(bitIndex) else { return nil }
+        self.rawRemove(bitIndex)
         self.count -= 1
         return member
     }
@@ -568,7 +568,7 @@ extension BitArrayCopy {
         self.init()
 
         guard let max = sequence.max() else { return }
-        self.reserveCapacity(for: blockIndex(max))
+        self.reserveCapacity(for: bitIndex(max))
         sequence.forEach {
             _ = self.insert($0)
         }

@@ -41,24 +41,24 @@ public struct BitArrayPtr: SetAlgebra {
     }
 
     @inline(__always)
-    private func rawContains(_ idx: BlockIndex) -> Bool {
+    private func rawContains(_ idx: BitIndex) -> Bool {
         (self._inner[idx.blockIndex] & (1 << idx.bitIndex)) != 0
     }
 
     // insert without checking
     @inline(__always)
-    private mutating func rawInsert(_ idx: BlockIndex) {
+    private mutating func rawInsert(_ idx: BitIndex) {
         self._inner[idx.blockIndex] |= (1 << idx.bitIndex)
     }
 
     @inline(__always)
-    private mutating func rawRemove(_ idx: BlockIndex) {
+    private mutating func rawRemove(_ idx: BitIndex) {
         self._inner[idx.blockIndex] &= ~(1 << idx.bitIndex)
     }
 
     @inline(__always)
-    private mutating func reserveCapacity(for blockIndex: BlockIndex) {
-        self.reserveCapacity(blockIndex.blocksNeeded)
+    private mutating func reserveCapacity(for bitIndex: BitIndex) {
+        self.reserveCapacity(bitIndex.blocksNeeded)
     }
 // }
 
@@ -110,14 +110,14 @@ public struct BitArrayPtr: SetAlgebra {
     public mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
-        let blockIndex = blockIndex(newMember)
+        let bitIndex = bitIndex(newMember)
 
-        self.reserveCapacity(for: blockIndex)
+        self.reserveCapacity(for: bitIndex)
 
-        let contains = self.rawContains(blockIndex)
+        let contains = self.rawContains(bitIndex)
 
         guard !contains else { return (false, newMember) }
-        self.rawInsert(blockIndex)
+        self.rawInsert(bitIndex)
         self._count += 1
         return (true, newMember)
 

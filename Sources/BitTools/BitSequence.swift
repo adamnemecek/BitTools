@@ -134,7 +134,7 @@ extension BitArrayIterator2: IteratorProtocol {
     }
 
     @inline(__always)
-    mutating func next() -> (value: Int, index: BlockIndex)? {
+    mutating func next() -> (value: Int, index: BitIndex)? {
         while self.block == 0 {
             self.blockIndex  += 1
             if self.remainingNonzeroBitCount == 0 || self.blockIndex == self.blockCount {
@@ -150,7 +150,7 @@ extension BitArrayIterator2: IteratorProtocol {
         let trailing = block.trailingZeroBitCount
         self.block &= ~(1 << trailing)
         let value = self.bitBlockOffset + trailing
-        return (value, BlockIndex(self.blockIndex, trailing, value))
+        return (value, BitIndex(self.blockIndex, trailing, value))
     }
 }
 
