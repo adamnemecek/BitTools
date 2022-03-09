@@ -520,6 +520,7 @@ extension BitArray: SetAlgebra {
         return member
     }
 
+    @discardableResult
     public mutating func update(
         with newMember: __owned Element
     ) -> Element? {
@@ -535,7 +536,8 @@ extension BitArray {
         keepingCapacity keepCapacity: Bool = false
     ) {
         self.count = 0
-        self.inner.removeAll(keepingCapacity: true)
+//        self.inner.removeAll(keepingCapacity: true)
+        self.inner.zeroAll()
     }
 
     public mutating func removeAll(
@@ -563,6 +565,10 @@ extension BitArray: Equatable {
 //            maxCapacity
 //        ) = lhs.capacity.order(rhs.capacity)
         let capacity = Swift.min(lhs.capacity, rhs.capacity)
+
+//        return lhs.inner[...capacity] == rhs.inner[...capacity] &&
+//                lhs.inner[capacity...].allZeros() &&
+//                rhs.inner[capacity...].allZeros()
 
         for i in 0 ..< capacity where lhs.inner[i] != rhs.inner[i] {
             return false
