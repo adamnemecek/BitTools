@@ -44,7 +44,6 @@ import Foundation
 //
 // }
 
-
 extension BitArray {
     @inline(__always) @inlinable
     subscript(block index: Int) -> UInt64 {
@@ -174,7 +173,6 @@ extension SparseBitArray: Sequence {
 struct BlockIndex {
     let index: Int
 }
-
 
 struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
 

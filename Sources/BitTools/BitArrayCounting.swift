@@ -1,10 +1,8 @@
-
-
-//struct BitStatistics {
+// struct BitStatistics {
 //    let nonzeroBitCount: Int
 //    let startBit: Int
 //    let endBit: Int
-//}
+// }
 
 func countBits(
     _ a: UnsafePointer<UInt64>,
@@ -90,10 +88,10 @@ func pointersEqual(
     fatalError()
 }
 
-//func countUnion1(
+// func countUnion1(
 //    _ a: UnsafeBufferPointer<UInt64>,
 //    _ b: UnsafeBufferPointer<UInt64>
-//) -> Int {
+// ) -> Int {
 //
 //    guard var i = a.baseAddress,
 //          var j = b.baseAddress else { return 0 }
@@ -113,8 +111,7 @@ func pointersEqual(
 //    return nonzeroBitCount
 //    + countBits(i, count: a.count - count)
 //    + countBits(j, count: b.count - count)
-//}
-
+// }
 
 func countIntersection(
     //

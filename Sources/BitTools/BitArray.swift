@@ -12,7 +12,6 @@ public struct BitArray {
     @usableFromInline
     internal var _count: Int
 
-
     ///
     /// number of set bits
     ///
@@ -92,65 +91,67 @@ extension BitArray: Sequence {
         }
     }
 
-//    @inline(__always)
-//    public func makeIterator1() -> AnyIterator<Int> {
-//        var blocks = self.inner.makeIterator()
-//        guard let fst = blocks.next() else { return AnyIterator { nil } }
-//
-//        var remainingBitCount = self.count
-//
-//        var bitBlockOffset = 0
-//        var bitIterator = BitIterator(fst)
-//
-//        return AnyIterator {
-//            while remainingBitCount > 0 {
-//                guard let next = bitIterator.next() else {
-//                    guard let block = blocks.next() else {
-//                        return nil
-//                    }
-//                    bitIterator = BitIterator(block)
-//                    bitBlockOffset += Block.bitWidth
-//                    continue
-//                }
-//                remainingBitCount -= 1
-//                return bitBlockOffset + Int(next)
-//            }
-//            return nil
-//        }
-//    }
-//
-//
-//    @inline(__always)
-//    public func makeIterator2() -> AnyIterator<Int> {
-//        guard !self.inner.isEmpty else { return AnyIterator { nil } }
-//        var blockIndex = 0
-//        let blockCount = self.inner.count
-//        var block = self.inner[blockIndex]
-//        var bitBlockOffset = 0
-//        var remainingNonzeroBitCount = self.count
-//        //
-//        return AnyIterator {
-//            while block == 0 {
-//                blockIndex += 1
-//                if remainingNonzeroBitCount == 0 || blockIndex == blockCount {
-//                    return nil
-//                }
-//
-//                block = self.inner[blockIndex]
-//                bitBlockOffset += Block.bitWidth
-//            }
-//            remainingNonzeroBitCount -= 1
-//            let trailing = block.trailingZeroBitCount
-//            block = block & ~(1 << trailing)
-//            return bitBlockOffset + trailing
-//        }
-//    }
+    //    @inline(__always)
+    //    public func makeIterator1() -> AnyIterator<Int> {
+    //        var blocks = self.inner.makeIterator()
+    //        guard let fst = blocks.next() else { return AnyIterator { nil } }
+    //
+    //        var remainingBitCount = self.count
+    //
+    //        var bitBlockOffset = 0
+    //        var bitIterator = BitIterator(fst)
+    //
+    //        return AnyIterator {
+    //            while remainingBitCount > 0 {
+    //                guard let next = bitIterator.next() else {
+    //                    guard let block = blocks.next() else {
+    //                        return nil
+    //                    }
+    //                    bitIterator = BitIterator(block)
+    //                    bitBlockOffset += Block.bitWidth
+    //                    continue
+    //                }
+    //                remainingBitCount -= 1
+    //                return bitBlockOffset + Int(next)
+    //            }
+    //            return nil
+    //        }
+    //    }
+    //
+    //
+    //    @inline(__always)
+    //    public func makeIterator2() -> AnyIterator<Int> {
+    //        guard !self.inner.isEmpty else { return AnyIterator { nil } }
+    //        var blockIndex = 0
+    //        let blockCount = self.inner.count
+    //        var block = self.inner[blockIndex]
+    //        var bitBlockOffset = 0
+    //        var remainingNonzeroBitCount = self.count
+    //        //
+    //        return AnyIterator {
+    //            while block == 0 {
+    //                blockIndex += 1
+    //                if remainingNonzeroBitCount == 0 || blockIndex == blockCount {
+    //                    return nil
+    //                }
+    //
+    //                block = self.inner[blockIndex]
+    //                bitBlockOffset += Block.bitWidth
+    //            }
+    //            remainingNonzeroBitCount -= 1
+    //            let trailing = block.trailingZeroBitCount
+    //            block = block & ~(1 << trailing)
+    //            return bitBlockOffset + trailing
+    //        }
+    //    }
 
 }
 
 extension BitArray: SetAlgebra {
 
-    public init(capacity: Int) {
+    /// capacity in blocks
+    @inline(__always) @inlinable
+    init(capacity: Int) {
         self._count = 0
         self.inner = ContiguousArray(zeros: _count)
     }
@@ -248,10 +249,10 @@ extension BitArray: SetAlgebra {
         self._count += newCount - oldCount
     }
 
-//
-//    public func nonzeroBitCount() -> Int {
-//        self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
-//    }
+    //
+    //    public func nonzeroBitCount() -> Int {
+    //        self.inner.reduce(0) { $0 + $1.nonzeroBitCount }
+    //    }
 
     // done
     public __consuming func intersection(
@@ -467,19 +468,19 @@ extension BitArray: SetAlgebra {
         return true
     }
 
-//    public func isStrictSubset(of other: Self) -> Bool {
-//        fatalError()
-//    }
+    //    public func isStrictSubset(of other: Self) -> Bool {
+    //        fatalError()
+    //    }
 
-//    x.isSubset(of: y) implies x.union(y) == y
-//
-//    x.isSuperset(of: y) implies x.union(y) == x
-//
-//    x.isSubset(of: y) if and only if y.isSuperset(of: x)
-//
-//    x.isStrictSuperset(of: y) if and only if x.isSuperset(of: y) && x != y
-//
-//    x.isStrictSubset(of: y) if and only if x.isSubset(of: y) && x != y
+    //    x.isSubset(of: y) implies x.union(y) == y
+    //
+    //    x.isSuperset(of: y) implies x.union(y) == x
+    //
+    //    x.isSubset(of: y) if and only if y.isSuperset(of: x)
+    //
+    //    x.isStrictSuperset(of: y) if and only if x.isSuperset(of: y) && x != y
+    //
+    //    x.isStrictSubset(of: y) if and only if x.isSubset(of: y) && x != y
 
     // note that none of the raw apis update the count
     @inline(__always) @inlinable
@@ -555,7 +556,7 @@ extension BitArray {
         keepingCapacity keepCapacity: Bool = false
     ) {
         self._count = 0
-//        self.inner.removeAll(keepingCapacity: true)
+        //        self.inner.removeAll(keepingCapacity: true)
         self.inner.zeroAll()
     }
 
@@ -580,15 +581,15 @@ extension BitArray: Equatable {
     @inline(__always) @inlinable
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         guard lhs._count == rhs._count else { return false }
-//        let (
-//            minCapacity,
-//            maxCapacity
-//        ) = lhs.capacity.order(rhs.capacity)
+        //        let (
+        //            minCapacity,
+        //            maxCapacity
+        //        ) = lhs.capacity.order(rhs.capacity)
         let capacity = Swift.min(lhs.capacity, rhs.capacity)
 
-//        return lhs.inner[...capacity] == rhs.inner[...capacity] &&
-//                lhs.inner[capacity...].allZeros() &&
-//                rhs.inner[capacity...].allZeros()
+        //        return lhs.inner[...capacity] == rhs.inner[...capacity] &&
+        //                lhs.inner[capacity...].allZeros() &&
+        //                rhs.inner[capacity...].allZeros()
 
         for i in 0 ..< capacity where lhs.inner[i] != rhs.inner[i] {
             return false
@@ -638,7 +639,7 @@ extension BitArray {
             self.contains(index)
         }
         set {
-//            let blockIndex = blockIndex(index)
+            //            let blockIndex = blockIndex(index)
             let oldValue = self.contains(index)
             guard oldValue != newValue else { return }
 
@@ -655,13 +656,13 @@ extension BitArray {
             if oldValue {
                 // we are removing
                 _ = self.remove(index)
-//                self.rawRemove(blockIndex)
-//                self.count -= 1
+                //                self.rawRemove(blockIndex)
+                //                self.count -= 1
             } else {
                 _ = self.insert(index)
                 // we are adding
-//                self.rawInsert(blockIndex)
-//                self.count += 1
+                //                self.rawInsert(blockIndex)
+                //                self.count += 1
             }
         }
     }
