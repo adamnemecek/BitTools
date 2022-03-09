@@ -1,4 +1,5 @@
 import Ext
+// this is mostly for testing
 
 public struct BoolArray {
     public private(set) var count: Int

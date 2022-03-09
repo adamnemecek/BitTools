@@ -103,7 +103,8 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
     }
 
     public mutating func formUnion(_ other: __owned Self) {
-        fatalError()
+        self.meta.formUnion(other.meta)
+        self.inner.formUnion(other.inner)
     }
 
     public __consuming func intersection(_ other: Self) -> Self {
@@ -111,7 +112,8 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
     }
 
     public mutating func formIntersection(_ other: Self) {
-        fatalError()
+        self.meta.formUnion(other.meta)
+        self.inner.formUnion(other.inner)
     }
 
     public __consuming func symmetricDifference(_ other: __owned Self) -> Self {
@@ -135,11 +137,23 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
     }
 
     public mutating func remove(_ member: Element) -> Element? {
+        if let value = self.inner.remove(member) {
+            // update meta
+        } else {
+            // don't update meta
+        }
         fatalError()
     }
 
     public mutating func update(with newMember: __owned Element) -> Element? {
-        fatalError()
+        if let value = self.inner.update(with: newMember) {
+            // no need to meta
+            return value
+        } else {
+            fatalError()
+            // update meta
+            return nil
+        }
     }
 
     public func isSubset(of other: Self) -> Bool {
