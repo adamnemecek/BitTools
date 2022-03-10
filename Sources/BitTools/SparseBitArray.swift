@@ -196,7 +196,6 @@ func meta(
     fatalError()
 }
 
-
 @usableFromInline
 struct Meta: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
     @usableFromInline
