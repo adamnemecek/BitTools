@@ -46,6 +46,8 @@ public struct BitArrayIterator {
 }
 
 extension BitArrayIterator: IteratorProtocol {
+//    @inlinable
+    @inline(__always)
     public init(ptr: UnsafeBufferPointer<UInt64>, nonzeroBitCount: Int) {
         guard let p = ptr.baseAddress else { fatalError() }
 
@@ -64,6 +66,7 @@ extension BitArrayIterator: IteratorProtocol {
 //        fatalError()
 //    }
 
+//    @inlinable
     @inline(__always)
     public mutating func next() -> Element? {
         while self.block == 0 {
@@ -73,8 +76,8 @@ extension BitArrayIterator: IteratorProtocol {
             }
 
             self.ptr = self.ptr.successor()
-            block = self.ptr.pointee
-            bitBlockOffset += UInt64.bitWidth
+            self.block = self.ptr.pointee
+            self.bitBlockOffset += UInt64.bitWidth
         }
 
         self.remainingNonzeroBitCount -= 1
@@ -84,6 +87,7 @@ extension BitArrayIterator: IteratorProtocol {
     }
 }
 
+// iterates with value
 struct BitArrayIterator2 {
     private var ptr: UnsafePointer<UInt64>
 
@@ -142,8 +146,8 @@ extension BitArrayIterator2: IteratorProtocol {
             }
 
             self.ptr = self.ptr.successor()
-            block = self.ptr.pointee
-            bitBlockOffset += UInt64.bitWidth
+            self.block = self.ptr.pointee
+            self.bitBlockOffset += UInt64.bitWidth
         }
 
         self.remainingNonzeroBitCount -= 1
@@ -159,3 +163,77 @@ extension BitArrayIterator2: IteratorProtocol {
 //
 //    var i = a.makeIterator()
 // }
+
+// this one is not counted unlike the other one
+@frozen
+public struct BitArrayIterator3 {
+    public typealias Element = Int
+
+    private var ptr: UnsafePointer<UInt64>
+
+    ///
+    /// how many blocks total
+    ///
+    private let blockCount: Int
+
+    ///
+    /// how many bits were the at the beginning
+    ///
+//    private let nonzeroBitCount: Int
+    ///
+    /// how many nonzero bitcounts are there
+    ///
+//    private var remainingNonzeroBitCount: Int
+    ///
+    /// index of the block we are processing
+    ///
+    private var blockIndex: Int
+    ///
+    /// the current block we are iterating
+    ///
+    private var block: UInt64
+    ///
+    /// how many blocks have we seen so far (in bits)
+    ///
+    private var bitBlockOffset: Int
+}
+
+extension BitArrayIterator3: IteratorProtocol {
+//    @inlinable
+    @inline(__always)
+    public init(ptr: UnsafeBufferPointer<UInt64>) {
+        guard let p = ptr.baseAddress else { fatalError() }
+
+        self.init(
+            ptr: p,
+            blockCount: ptr.count,
+            blockIndex: 0,
+            block: p.pointee,
+            bitBlockOffset: 0
+        )
+    }
+//
+//    public var underestimatedCount: Int {
+//        fatalError()
+//    }
+
+//    @inlinable
+    @inline(__always)
+    public mutating func next() -> Element? {
+        while self.block == 0 {
+            self.blockIndex += 1
+            if self.blockIndex == self.blockCount {
+                return nil
+            }
+
+            self.ptr = self.ptr.successor()
+            self.block = self.ptr.pointee
+            self.bitBlockOffset += UInt64.bitWidth
+        }
+
+//        self.remainingNonzeroBitCount -= 1
+        let trailing = block.trailingZeroBitCount
+        self.block &= ~(1 << trailing)
+        return self.bitBlockOffset + trailing
+    }
+}
