@@ -166,7 +166,7 @@ extension BitArrayIterator2: IteratorProtocol {
 
 // this one is not counted unlike the other one
 @frozen
-public struct BitArrayIterator3 {
+public struct BitArrayIterator3: IteratorProtocol {
     public typealias Element = Int
 
     private var ptr: UnsafePointer<UInt64>
@@ -196,26 +196,17 @@ public struct BitArrayIterator3 {
     /// how many blocks have we seen so far (in bits)
     ///
     private var bitBlockOffset: Int
-}
 
-extension BitArrayIterator3: IteratorProtocol {
-//    @inlinable
     @inline(__always)
     public init(ptr: UnsafeBufferPointer<UInt64>) {
         guard let p = ptr.baseAddress else { fatalError() }
 
-        self.init(
-            ptr: p,
-            blockCount: ptr.count,
-            blockIndex: 0,
-            block: p.pointee,
-            bitBlockOffset: 0
-        )
+        self.ptr = p
+        self.blockCount = ptr.count
+        self.blockIndex = 0
+        self.block = p.pointee
+        self.bitBlockOffset = 0
     }
-//
-//    public var underestimatedCount: Int {
-//        fatalError()
-//    }
 
 //    @inlinable
     @inline(__always)
