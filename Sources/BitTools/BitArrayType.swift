@@ -4,7 +4,7 @@ import Foundation
 public protocol BitArrayType: Sequence,
                                 SetAlgebra,
 //                                ContiguousCollection,
-                                ContiguousMutableCollection {
+                                ContiguousCollection {
 
 }
 

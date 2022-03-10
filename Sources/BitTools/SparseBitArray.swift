@@ -86,16 +86,15 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
     }
 
     public var isEmpty: Bool {
-        fatalError()
+        self.inner.isEmpty
     }
 
     public var isSome: Bool {
-        fatalError()
+        self.inner.isSome
     }
 
     public func contains(_ member: Element) -> Bool {
-
-        fatalError()
+        self.inner.contains(member)
     }
 
     public __consuming func union(_ other: __owned Self) -> Self {
@@ -168,8 +167,9 @@ public struct SparseBitArray: SetAlgebra, ExpressibleByArrayLiteral {
         fatalError()
     }
 
-    public func removeAll() {
-        fatalError()
+    public mutating func removeAll() {
+        self.inner.removeAll()
+        self.meta.removeAll()
     }
     //
     //    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
@@ -185,15 +185,27 @@ extension SparseBitArray: Sequence {
 
 @usableFromInline
 struct BlockIndex {
+    @usableFromInline
     let index: Int
 }
 
-struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
+func meta(
+    bitset: BitArray
 
+) -> ContiguousArray<UInt64> {
+    fatalError()
+}
+
+
+@usableFromInline
+struct Meta: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
+    @usableFromInline
     typealias Element = BlockIndex
 
+    @usableFromInline
     typealias ArrayLiteralElement = Element
 
+    @usableFromInline
     var inner: BitArray
 
     // how many blocks can this accomodate
@@ -201,10 +213,12 @@ struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
         self.inner.count << 6
     }
 
+    @inline(__always) @inlinable
     init() {
         self.inner = []
     }
 
+    @inline(__always) @inlinable
     init<S>(_ sequence: __owned S) where S: Sequence, Element == S.Element {
         self.inner = []
         for e in sequence {
@@ -212,91 +226,120 @@ struct Meta: SetAlgebra, ExpressibleByArrayLiteral {
         }
     }
 
+    @inline(__always) @inlinable
     init(inner: BitArray) {
         self.inner = inner
     }
 
+    @inline(__always) @inlinable
     init(arrayLiteral elements: Element...) {
         self.init(elements)
     }
 
+    @inline(__always) @inlinable
     var isEmpty: Bool {
         self.inner.isEmpty
     }
 
+    @inline(__always) @inlinable
     var isSome: Bool {
         self.inner.isSome
     }
 
+    @inline(__always) @inlinable
     func contains(_ member: Element) -> Bool {
         self.inner.contains(member.index)
     }
 
+    @inline(__always) @inlinable
     __consuming func union(_ other: __owned Self) -> Self {
         Self(
             inner: self.inner.union(other.inner)
         )
     }
 
+    @inline(__always) @inlinable
     mutating func formUnion(_ other: __owned Self) {
         self.inner.formUnion(other.inner)
     }
 
+    @inline(__always) @inlinable
     __consuming func intersection(_ other: Self) -> Self {
         Self(
             inner: self.inner.intersection(other.inner)
         )
     }
 
+    @inline(__always) @inlinable
     mutating func formIntersection(_ other: Self) {
         self.inner.formIntersection(other.inner)
     }
 
+    @inline(__always) @inlinable
     __consuming func symmetricDifference(_ other: __owned Self) -> Self {
         Self(
             inner: self.inner.symmetricDifference(other.inner)
         )
     }
 
+    @inline(__always) @inlinable
     mutating func formSymmetricDifference(_ other: __owned Self) {
-        fatalError()
+        self.inner.formSymmetricDifference(other.inner)
     }
 
+    @inline(__always) @inlinable
     mutating func insert(
         _ newMember: __owned Element
     ) -> (inserted: Bool, memberAfterInsert: Element) {
-        fatalError()
+        (self.inner.insert(newMember.index).inserted, newMember)
     }
 
+    @inline(__always) @inlinable
     mutating func remove(_ member: Element) -> Element? {
         self.inner.remove(member.index)
         fatalError()
     }
 
+    @inline(__always) @inlinable
     mutating func update(with newMember: __owned Element) -> Element? {
         //        self.inner.update(newMember.blockIndex)
         fatalError()
     }
 
+    @inline(__always) @inlinable
     mutating func subtract(_ other: Self) {
         self.inner.subtract(other.inner)
     }
 
+    @inline(__always) @inlinable
     func subtracting(_ other: Self) -> Self {
         Self(
             inner: self.inner.subtracting(other.inner)
         )
     }
 
+    @inline(__always) @inlinable
     func isSubset(of other: Self) -> Bool {
         self.inner.isSubset(of: other.inner)
     }
 
+    @inline(__always) @inlinable
     func isSuperset(of other: Self) -> Bool {
         self.inner.isSuperset(of: other.inner)
     }
 
+    @inline(__always) @inlinable
     func isDisjoint(with other: Self) -> Bool {
         self.inner.isDisjoint(with: other.inner)
+    }
+
+    @inline(__always) @inlinable
+    mutating func removeAll() {
+        self.inner.removeAll()
+    }
+
+    @inline(__always) @inlinable
+    func makeIterator() -> AnyIterator<BlockIndex> {
+        fatalError()
     }
 }
