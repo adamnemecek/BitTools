@@ -187,6 +187,11 @@ extension SparseBitArray: Sequence {
 struct BlockIndex {
     @usableFromInline
     let index: Int
+
+    @inlinable @inline(__always)
+    init(index: Int) {
+        self.index = index
+    }
 }
 
 func meta(
@@ -233,6 +238,25 @@ struct Meta: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
     @inline(__always) @inlinable
     init(arrayLiteral elements: Element...) {
         self.init(elements)
+    }
+
+    public init(ptr: UnsafeBufferPointer<UInt64>) {
+        let count = ptr.count
+        self.inner = BitArray(capacity: count)
+
+        var index = 0
+        var i = ptr.baseAddress!
+
+        while index < count {
+            let value = i.pointee
+            if value.nonzeroBitCount != 0 {
+                _ = self.insert(BlockIndex(index: index))
+            }
+
+            index += 1
+            i = i.successor()
+        }
+
     }
 
     @inline(__always) @inlinable
@@ -339,6 +363,14 @@ struct Meta: SetAlgebra, ExpressibleByArrayLiteral, Sequence {
 
     @inline(__always) @inlinable
     func makeIterator() -> AnyIterator<BlockIndex> {
-        fatalError()
+        var i = self.inner.makeIterator()
+
+        return AnyIterator {
+            if let next = i.next() {
+                return BlockIndex(index: next)
+            }
+            return nil
+        }
+
     }
 }

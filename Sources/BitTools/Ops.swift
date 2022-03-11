@@ -1,3 +1,10 @@
+
+extension UnsafeBufferPointer where Element == UInt64 {
+//    struct OrBitIterator: IteratorProtocol {
+////        var
+//
+//    }
+}
 // extension UnsafeMutableBufferPointer where Element == UInt64 {
 //    // calculates a union of the two
 //    func union(

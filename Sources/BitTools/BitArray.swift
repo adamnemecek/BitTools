@@ -632,6 +632,12 @@ extension BitArray: CustomStringConvertible {
     }
 }
 
+extension BitArray: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "BitArray(\(self.inner.map { $0.binaryDescription }.joined(separator: ", ")))"
+    }
+}
+
 extension BitArray {
     @inline(__always) @inlinable
     public subscript(index: Int) -> Bool {

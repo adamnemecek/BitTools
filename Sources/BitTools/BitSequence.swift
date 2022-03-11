@@ -228,7 +228,6 @@ extension UnsafeBufferPointer where Element == UInt64 {
                 self.bitBlockOffset += UInt64.bitWidth
             }
 
-            //        self.remainingNonzeroBitCount -= 1
             let trailing = block.trailingZeroBitCount
             self.block &= ~(1 << trailing)
             return self.bitBlockOffset + trailing
