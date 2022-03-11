@@ -1,4 +1,3 @@
-
 extension UnsafeBufferPointer where Element == UInt64 {
 //    struct OrBitIterator: IteratorProtocol {
 ////        var
